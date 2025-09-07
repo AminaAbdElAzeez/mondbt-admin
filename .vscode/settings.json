@@ -1,0 +1,6 @@
+{
+    "i18n-ally.localesPaths": [
+        "src/utlis/config/translation/locales"
+    ],
+    "i18n-ally.keystyle": "nested"
+}
