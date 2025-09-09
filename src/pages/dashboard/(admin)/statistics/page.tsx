@@ -1,627 +1,327 @@
-import React, { useEffect, useState } from "react";
-import { Badge, Card, DatePicker, Progress } from "antd";
-import { FormattedMessage, useIntl } from "react-intl";
-import { BsArrowUpShort } from "react-icons/bs";
+import React, { useState } from 'react';
+import { MdAccessAlarms } from 'react-icons/md';
+import { RiFileEditLine, RiUserFollowLine, RiUserUnfollowLine } from 'react-icons/ri';
 import {
-  LineChart,
-  Line,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
   BarChart,
   Bar,
-  Legend,
-} from "recharts";
-import { FaCodeBranch, FaUsers } from "react-icons/fa";
-import { AiFillProduct } from "react-icons/ai";
-import { FaCarOn } from "react-icons/fa6";
-import axios from "utlis/library/helpers/axios";
-import { MdOutlineBrandingWatermark, MdOutlineCategory } from "react-icons/md";
-import { BiCategoryAlt } from "react-icons/bi";
-import RollerLoading from "components/loading/roller";
-import dayjs from "dayjs";
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts';
+
+type CircularProgressProps = {
+  percentage: number;
+  size?: number;
+  strokeWidth?: number;
+  color?: string;
+  bgColor?: string;
+};
+
+ function CircularProgress({
+   percentage,
+   size = 200,
+   strokeWidth = 20,
+   color = '#07A869',
+   bgColor = '#D9D9D9', // gray-200
+ }: CircularProgressProps) {
+   const radius = (size - strokeWidth) / 2;
+   const circumference = 2 * Math.PI * radius;
+   const offset = circumference - (percentage / 100) * circumference;
+
+   return (
+     <div className="relative flex items-center justify-center">
+       <svg width={size} height={size}>
+         <circle
+           stroke={bgColor}
+           fill="transparent"
+           strokeWidth={strokeWidth}
+           r={radius}
+           cx={size / 2}
+           cy={size / 2}
+         />
+         <circle
+           stroke={color}
+           fill="transparent"
+           strokeWidth={strokeWidth}
+           r={radius}
+           cx={size / 2}
+           cy={size / 2}
+           strokeDasharray={circumference}
+           strokeDashoffset={(1 - percentage / 100) * circumference}
+           transform={`rotate(90 ${size / 2} ${size / 2})`}
+         />
+       </svg>
+
+       <span className="absolute text-3xl font-bold text-[#15445A]">%{percentage}</span>
+     </div>
+   );
+ }
+
+
 
 const Statistics: React.FC = () => {
-  const intl = useIntl();
-  const [statistics, setStatistics] = useState<any>(null);
-  const [selectedYear, setSelectedYear] = useState<number>(dayjs().year());
+  const [selected, setSelected] = useState<'سنة' | 'شهر' | 'يوم'>('يوم');
+  const buttons: Array<'سنة' | 'شهر' | 'يوم'> = ['سنة', 'شهر', 'يوم'];
 
-  useEffect(() => {
-    const fetchStatistics = async () => {
-      try {
-        const language = intl.locale === "ar" ? "ar-SA" : "en";
-        const { data } = await axios.get("admin/statistics", {
-          headers: {
-            "Accept-Language": language,
-          },
-          params: {
-            year: selectedYear,
-          },
-        });
-        setStatistics(data.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const [selectedAttend, setSelectedAttend] = useState<
+    'التأخير' | 'الأعذار' | 'المكأفات' | 'الغياب' | 'الحضور'
+  >('الحضور');
 
-    fetchStatistics();
-  }, [selectedYear, intl.locale]);
-
-  if (!statistics) {
-    return <RollerLoading />;
-  }
-
-  const {
-    clients_count,
-    branches_count,
-    brands_count,
-    categories_count,
-    sub_categories_count,
-    products_count,
-    drivers_count,
-    total_price,
-    total_per_month,
-    total_products_sold,
-    prescription_orders_count,
-    accepted_orders_count,
-    completed_orders_count,
-    refunded_orders_count,
-    away_orders_count,
-    pharmacy_pickup_orders_count,
-    home_delivery_orders_count,
-    cash_orders_count,
-    credit_orders_count,
-    mada_orders_count,
-  } = statistics;
-
-  const overviewCards = [
+  const buttonsAttend: Array<'التأخير' | 'الأعذار' | 'المكأفات' | 'الغياب' | 'الحضور'> = [
+    'التأخير',
+    'الأعذار',
+    'المكأفات',
+    'الغياب',
+    'الحضور',
+  ];
+  const stats = [
     {
-      id: 1,
-      label: "statistics.clients",
-      value: clients_count,
-      icon: <FaUsers />,
-      color: "#ee6c5e",
-      percentage: 50,
+      title: 'الغرامات',
+      value: '1,020,935',
+      suffix: 'ريال سعودي',
+      bg: 'bg-[#07A869]',
+      text: 'text-white',
+      icon: '/riyal.png',
     },
     {
-      id: 2,
-      label: "statistics.branches",
-      value: branches_count,
-      icon: <FaCodeBranch />,
-      color: "#2ea5b8",
-      percentage: 50,
+      title: 'الاستئذان',
+      value: '12,650',
+      suffix: 'حالة استئذان',
+      bg: 'bg-white',
+      text: 'text-[#07A869]',
+      borderStyle: { border: '1px solid #C2C1C1', background: '#f9f9f9' },
     },
     {
-      id: 3,
-      label: "statistics.brands",
-      value: brands_count,
-      icon: <MdOutlineBrandingWatermark />,
-      color: "#fac03f",
-      percentage: 50,
+      title: 'التأخير',
+      value: '1,180,935',
+      suffix: 'حالة تأخير',
+      bg: 'bg-[#07A869]',
+      text: 'text-white',
     },
     {
-      id: 4,
-      label: "statistics.productsCount",
-      value: products_count,
-      icon: <AiFillProduct />,
-      color: "#9976c3",
-      percentage: 50,
+      title: 'الغياب',
+      value: '314,919',
+      suffix: 'طالب وطالبة',
+      bg: 'bg-white',
+      text: 'text-[#07A869]',
+      borderStyle: { border: '1px solid #C2C1C1', background: '#f9f9f9' },
     },
     {
-      id: 5,
-      label: "statistics.drivers",
-      value: drivers_count,
-      icon: <FaCarOn />,
-      color: "#1abc9c",
-      percentage: 50,
-    },
-    {
-      id: 6,
-      label: "statistics.categories",
-      value: categories_count,
-      icon: <BiCategoryAlt />,
-      color: "#8ac578",
-      percentage: 50,
-    },
-    {
-      id: 7,
-      label: "statistics.subCategories",
-      value: sub_categories_count,
-      icon: <MdOutlineCategory />,
-      color: "#dd5ec2",
-      percentage: 50,
+      title: 'الحضور',
+      value: '5,983,404',
+      suffix: 'طالب وطالبة',
+      bg: 'bg-[#07A869]',
+      text: 'text-white',
     },
   ];
 
-  const ordersStatus = [
-    {
-      name: "acceptedOrders",
-      value: accepted_orders_count,
-    },
-    {
-      name: "completedOrders",
-      value: completed_orders_count,
-    },
-    {
-      name: "refundedOrders",
-      value: refunded_orders_count,
-    },
-    {
-      name: "awayOrders",
-      value: away_orders_count,
-    },
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const data = [
+    { day: 15, value: 70, hijri: '21' },
+    { day: 16, value: 50, hijri: '20' },
+    { day: 17, value: 90, hijri: '19' },
+    { day: 18, value: 30, hijri: '18' },
+    { day: 19, value: 60, hijri: '17' },
+    { day: 20, value: 80, hijri: '16' },
+    { day: 21, value: 40, hijri: '15' },
   ];
-
-  const maxOrders = Math.max(
-    accepted_orders_count,
-    completed_orders_count,
-    refunded_orders_count,
-    away_orders_count
-  );
-  const currentYear = new Date().getFullYear();
-
-  const newOrdersData = [
-    {
-      // year: "2025",
-      // year: currentYear.toString(),
-      year: selectedYear,
-      pharmacyPickup: parseInt(pharmacy_pickup_orders_count),
-      homeDelivery: parseInt(home_delivery_orders_count),
-      cashOrders: parseInt(cash_orders_count),
-      creditOrders: parseInt(credit_orders_count),
-      madaOrders: parseInt(mada_orders_count),
-      prescriptionOrders: parseInt(prescription_orders_count),
-    },
-  ];
-
-  const gradientColors = [
-    { from: "#03b89e", to: "#10b981" },
-    { from: "#6366f1", to: "#8b5cf6" },
-    { from: "#f97316", to: "#facc15" },
-    { from: "#ec4899", to: "#f472b6" },
-  ];
-
-  // const orderData = Object.entries(total_per_month).map(([month, total]) => ({
-  //   month,
-  //   total: parseFloat(total as string),
-  // }));
-
-  const orderData = Object.entries(total_per_month).map(([month, total]) => ({
-    month: intl.formatMessage({ id: `months.${month.toLowerCase()}` }),
-    total: parseFloat(total as string),
-  }));
+  
 
   return (
-    <section className="container mx-auto">
-      <div>
-        <h2 className="text-[#15445A] hover:text-[#1384ad] transition-colors duration-[0.5s] text-[25px] tracking-wider font-[600] mt-4 mb-3">
-          {/* {intl.formatMessage({ id: "statistics.title" })} */}
+    <section dir="ltr" className="text-right px-2">
+      <div className=" mb-3 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start  gap-1 lg:gap-5">
+        <div
+          className="flex rounded-3xl h-9 w-max  overflow-hidden"
+          style={{ border: '1px solid #C2C1C1' }}
+        >
+          {buttons.map((btn) => {
+            const isSelected = selected === btn;
+            return (
+              <button
+                key={btn}
+                onClick={() => setSelected(btn)}
+                className={`
+              text-base h-8.5 w-[76px] sm:w-24 rounded-3xl transition-all duration-200 cursor-pointer
+              ${isSelected ? 'bg-[#07A869] text-white' : 'bg-transparent text-[#C2C1C1]'}
+              hover:${isSelected ? 'brightness-110' : 'bg-gray-100'}
+              outline-none border-none
+            `}
+              >
+                {btn}
+              </button>
+            );
+          })}
+        </div>
+        <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
           احصائيات الانضباط
         </h2>
-        <div className="border border-[#C2C1C1] rounded-2xl w-[300px] ">
-          <button className="text-[#C2C1C1] w-[33%] rounded-2xl border-none outline-0 py-2 bg-transparent">
-            سنة
-          </button>
-          <button className="text-[#C2C1C1] w-[33%] rounded-2xl border-none outline-0 py-2 bg-transparent">
-            سنة
-          </button>
-
-          <button className="text-[#fff] bg-[#07A869]  w-[33%] rounded-2xl border-none outline-0 py-2 bg-transparent">
-            سنة
-          </button>
-        </div>
       </div>
 
-      <div className="flex flex-wrap justify-start gap-4 mb-[30px]">
-        {overviewCards.map((card) => (
+      <div className="flex justify-between items-center flex-wrap gap-5 py-2 mb-5 ">
+        {stats.map((item, index) => (
           <div
-            key={card.id}
-            className="group flex-grow rounded-lg shadow-md flex items-center justify-start gap-3 p-6 w-[190px] min-w-[170px] hover:cursor-pointer
-                 transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg"
-            style={{
-              borderBottom: `3px solid ${card.color}`,
-              borderColor: "transparent",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.borderColor = card.color;
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.borderColor =
-                "transparent";
-            }}
+            key={index}
+            className={`rounded-xl shadow-md p-4 ${item.bg} transform transition duration-300 hover:scale-105 hover:shadow-xl flex-grow w-[160px] text-right`}
+            style={item.borderStyle || {}}
           >
-            <div className="relative w-[50px] h-[50px] flex items-center justify-center">
-              <div
-                className="absolute inset-0 rounded-full z-0 group-hover:animate-spin-slower"
-                style={{
-                  background: `conic-gradient(${card.color} 0% ${card.percentage}%, #f1f1f1 ${card.percentage}% 100%)`,
-                }}
-              ></div>
+            {/* Title */}
+            <h3 className={`${item.text} text-lg font-medium mb-1`}>{item.title}</h3>
 
-              <div className="w-[40px] h-[40px] rounded-full bg-white flex items-center justify-center z-10">
-                <div className="text-[20px]" style={{ color: card.color }}>
-                  {card.icon}
-                </div>
-              </div>
+            {/* Value + Icon */}
+            <div className="flex items-center gap-2 justify-end">
+              {item.icon && <img src={item.icon} alt="icon" className="w-7 h-7" />}
+              <span className={`${item.text} text-2xl font-semibold`}>{item.value}</span>
             </div>
 
-            <div>
-              <h3
-                className="text-[16px] font-[600] tracking-wider mb-[6px]"
-                style={{ color: card.color }}
-              >
-                {intl.formatMessage({ id: card.label })}
-              </h3>
-              <p className="text-[23px] font-[600] text-[#3d435b] dark:text-[#fff]">
-                {card.value}
-              </p>
-            </div>
+            {/* Suffix */}
+            <p className={`${item.text} text-base my-1`}>{item.suffix}</p>
           </div>
         ))}
       </div>
 
-      <div className="mb-5">
-        <DatePicker
-          className="w-[288px] h-[40px]"
-          picker="year"
-          value={dayjs().year(selectedYear)}
-          onChange={(date) => {
-            if (date) {
-              setSelectedYear(date.year());
+      <div className="flex flex-col xl:flex-row justify-between items-stretch  gap-6">
+        <div style={{ border: '1px solid #C2C1C1' }} className="p-4 rounded-lg w-full xl:w-1/2 ">
+          <div
+            className="flex  w-full rounded-3xl h-9.5 overflow-hidden ml-auto"
+            style={{ border: '1px solid #C2C1C1' }}
+          >
+            {buttonsAttend.map((btn) => {
+              const isSelected = selectedAttend === btn;
+              return (
+                <button
+                  key={btn}
+                  onClick={() => setSelectedAttend(btn)}
+                  className={`
+            text-[12px] lg:text-[15px] h-9 w-1/5 rounded-3xl transition-all duration-200 cursor-pointer
+            ${
+              isSelected
+                ? 'bg-[#07A869] text-white'
+                : 'bg-transparent text-[#C2C1C1] hover:bg-gray-100'
             }
-          }}
-        />
-      </div>
-
-      <div className="flex flex-col justify-start items-center min-[1116px]:flex-row min-[1116px]:justify-between min-[1116px]:items-start gap-3 mb-[20px]">
-        <Card
-          className="w-full text-[#03b89e] flex-grow min-[1116px]:w-[40%]"
-          title={
-            <h4 className="text-[#03b89e] hover:text-[#1384ad] transition-colors duration-[0.5s] text-[22px] font-semibold">
-              {intl.formatMessage({ id: "statistics.totalPrice" })}
-            </h4>
-          }
-        >
-          <div className="overflow-x-auto mt-[-25px] h-[372px]  custom-scroll">
-            <div className="mb-5 flex rtl:justify-end ltr:justify-start mx-[10px]">
-              {/* <DatePicker
-                picker="year"
-                value={dayjs().year(selectedYear)}
-                onChange={(date) => {
-                  if (date) {
-                    setSelectedYear(date.year());
-                  }
-                }}
-              /> */}
-            </div>
-            <Badge.Ribbon
-              style={{ direction: "ltr" }}
-              text={
-                <h4>
-                  {intl.formatMessage({ id: "totalPrice" })} : {total_price}
-                </h4>
-              }
-              color="#03b89e"
-            >
-              <div className="min-w-[400px] ">
-                <ResponsiveContainer
-                  width="100%"
-                  height={300}
-                  style={{ direction: "ltr" }}
+            outline-none border-none
+          `}
                 >
-                  <LineChart data={orderData}>
-                    <defs>
-                      <linearGradient
-                        id="colorOrder"
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
-                        <stop
-                          offset="0%"
-                          stopColor="#03b89e"
-                          stopOpacity={0.8}
-                        />
-                        <stop
-                          offset="100%"
-                          stopColor="#03b89e"
-                          stopOpacity={0.2}
-                        />
-                      </linearGradient>
-                    </defs>
-
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis dataKey="month" tick={{ fill: "#888" }} />
-                    <YAxis tick={{ fill: "#888" }} />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "#fff",
-                        borderRadius: 10,
-                        border: "none",
-                        padding: "20px",
-                        boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-                        direction: intl.locale === "ar" ? "rtl" : "ltr",
-                      }}
-                      formatter={(value: number) => [
-                        value,
-                        intl.formatMessage({ id: "statistics.price" }),
-                      ]}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="total"
-                      stroke="#03b89e"
-                      strokeWidth={3}
-                      dot={{
-                        r: 5,
-                        stroke: "#fff",
-                        strokeWidth: 2,
-                        fill: "#03b89e",
-                      }}
-                      activeDot={{ r: 8 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </Badge.Ribbon>
+                  {btn}
+                </button>
+              );
+            })}
           </div>
-        </Card>
 
-        <Card
-          className="w-[100%] h-[300px] min-[1116px]:h-[481px] relative flex-grow min-[1116px]:w-[40%] group"
-          title={
-            <h4 className="text-[#03b89e] hover:text-[#1384ad] transition-colors duration-[0.5s] text-[22px] font-semibold">
-              {intl.formatMessage({
-                id: "totalProductsSold",
-              })}
-            </h4>
-          }
-        >
-          <div className="overflow-x-auto custom-scroll">
-            <div className="min-w-[400px] h-[240px] min-[1116px]:h-[347px] flex items-center justify-center relative group">
-              <div
-                className="w-[230px] h-[220px]"
-                style={{ clipPath: "inset(0 0 50% 0)" }}
+          <div className="mt-6">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={data}
+                margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
+                barCategoryGap="20%"
               >
-                <Progress
-                  type="circle"
-                  percent={50}
-                  strokeColor={{
-                    "16%": "#03b89e",
-                    "100%": "#1384ad",
-                  }}
-                  trailColor="transparent"
-                  strokeWidth={12}
-                  width={230}
-                  format={() => ""}
-                  strokeLinecap="round"
-                  style={{
-                    transform: "rotate(-90deg)",
-                  }}
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis
+                  dataKey="day"
+                  tickFormatter={(day, index) => data[index].hijri}
+                  tick={{ fontSize: 12 }}
+                  interval={0}
                 />
+                <YAxis domain={[0, 100]} ticks={[0, 20, 40, 60, 80, 100]} tick={{ fontSize: 12 }} />
+                <Tooltip labelFormatter={(label: any) => `تاريخ: ${label}`} />
+
+                <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={40}>
+                  {data.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={activeIndex === index ? '#07A869' : '#C1DFDF'}
+                      onMouseEnter={() => setActiveIndex(index)}
+                      onMouseLeave={() => setActiveIndex(null)}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+            <div className="flex flex-col lg:flex-row justify-center lg:justify-between gap-4 lg:gap-8 py-4">
+              <div className="flex gap-2 items-center w-full lg:w-1/2">
+                <input
+                  id="to"
+                  placeholder=" ربيع الأول 1447"
+                  type="text"
+                  className="border border-[#C2C1C1] border-t-[#C2C1C1] border-b-[#C2C1C1] border-l-[#C2C1C1] border-r-[#C2C1C1] border-solid rounded-lg px-3 py-2 w-40 text-center focus:outline-none focus:ring-1 focus:ring-[#07A869] placeholder:text-sm text-sm text-[#15445A] placeholder:text-[#15445A] placeholder:font-semibold bg-[#DDDDDD] flex-grow"
+                />
+                <label htmlFor="to" className="text-[#15445A] text-base font-semibold">
+                  الي
+                </label>
               </div>
-
-              <div className="absolute inset-0 flex flex-col justify-center items-center text-[#03b89e] text-[20px] font-[600] tracking-wider">
-                <div className="relative w-[230px] h-[230px] flex items-center justify-center">
-                  <div
-                    className="absolute arrow"
-                    style={{
-                      top: "60px",
-                      left: "50%",
-                      transform: "translateX(-50%) rotate(0deg)",
-                      transformOrigin: "bottom center",
-                      animation:
-                        "swingArrow 1.5s linear infinite alternate-reverse",
-                    }}
-                  >
-                    <BsArrowUpShort size={33} color="#03b89e" />
-                  </div>
-                </div>
-
-                <div className="absolute flex justify-center items-center inset-0 font-bold text-[22px] text-[#03b89e]">
-                  {total_products_sold}
-                </div>
-              </div>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      <div className="flex flex-col justify-start items-center min-[1116px]:flex-row min-[1116px]:justify-between min-[1116px]:items-start gap-3 mb-[20px]">
-        <Card
-          className="w-[100%] h-[420px] min-[1116px]:w-[40%] min-[1116px]:h-[465px]"
-          title={
-            <h4 className="text-[#03b89e] hover:text-[#1384ad] transition-colors duration-[0.5s] text-[22px] sm:text-[20px] font-semibold">
-              {intl.formatMessage({ id: "statistics.OrderStatus" })}
-            </h4>
-          }
-        >
-          <div className="overflow-x-auto custom-scroll h-[330px]">
-            <div className="overflow-x-auto custom-scroll h-[330px]">
-              <div className="min-w-[300px]">
-                {ordersStatus.map((stat, idx) => {
-                  const color =
-                    gradientColors[idx % gradientColors.length].from;
-                  return (
-                    <div key={idx} style={{ marginBottom: 20 }}>
-                      <span
-                        className="block mb-1 font-medium"
-                        style={{ color }}
-                      >
-                        <FormattedMessage id={stat.name} />
-                      </span>
-                      <Progress
-                        percent={(stat.value / maxOrders) * 100}
-                        strokeColor={{
-                          "0%": color,
-                          "100%":
-                            gradientColors[idx % gradientColors.length].to,
-                        }}
-                        trailColor="#f3f4f6"
-                        format={(percent) => (
-                          <span style={{ color }}>{Math.round(percent)}%</span>
-                        )}
-                      />
-                    </div>
-                  );
-                })}
+              <div className="flex gap-2 items-center w-full lg:w-1/2">
+                <input
+                  id="from"
+                  placeholder=" ربيع الأول 1447"
+                  type="text"
+                  className="border border-[#C2C1C1] border-t-[#C2C1C1] border-b-[#C2C1C1] border-l-[#C2C1C1] border-r-[#C2C1C1] border-solid rounded-lg px-3 py-2 w-40 text-center focus:outline-none focus:ring-1 focus:ring-[#07A869] placeholder:text-sm text-sm text-[#15445A] placeholder:text-[#15445A] placeholder:font-semibold bg-[#DDDDDD] flex-grow"
+                />
+                <label htmlFor="from" className="text-[#15445A] text-base font-semibold">
+                  من
+                </label>
               </div>
             </div>
           </div>
-        </Card>
-
-        <Card
-          className="w-full min-[1116px]:w-[60%] h-[465px]"
-          title={
-            <h4 className="text-[#03b89e] hover:text-[#1384ad] transition-colors duration-[0.5s] text-[22px] font-semibold">
-              {intl.formatMessage({ id: "statistics.orders" })}
-            </h4>
-          }
-        >
-          <div className="overflow-x-auto custom-scroll h-[330px]">
-            <div className="min-w-[410px] h-[320px]">
-              <ResponsiveContainer
-                width="100%"
-                height="100%"
-                style={{ direction: "ltr" }}
-              >
-                <BarChart data={newOrdersData} barCategoryGap="25%" barGap={7}>
-                  <defs>
-                    <linearGradient
-                      id="pharmacyPickupGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop offset="0%" stopColor="#34D399" />
-                      <stop offset="100%" stopColor="#10B981" />
-                    </linearGradient>
-                    <linearGradient
-                      id="homeDeliveryGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop offset="0%" stopColor="#60A5FA" />
-                      <stop offset="100%" stopColor="#3B82F6" />
-                    </linearGradient>
-                    <linearGradient
-                      id="cashOrdersGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop offset="0%" stopColor="#FBBF24" />
-                      <stop offset="100%" stopColor="#F59E0B" />
-                    </linearGradient>
-                    <linearGradient
-                      id="creditOrdersGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop offset="0%" stopColor="#F472B6" />
-                      <stop offset="100%" stopColor="#EC4899" />
-                    </linearGradient>
-                    <linearGradient
-                      id="madaOrdersGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop offset="0%" stopColor="#5EEAD4" />
-                      <stop offset="100%" stopColor="#2DD4BF" />
-                    </linearGradient>
-                    <linearGradient
-                      id="prescriptionOrdersGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop offset="0%" stopColor="#F87171" />
-                      <stop offset="100%" stopColor="#EF4444" />
-                    </linearGradient>
-                  </defs>
-
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="year" />
-                  <YAxis />
-                  <Legend
-                    formatter={(value) => {
-                      return value === "pharmacyPickup"
-                        ? intl.formatMessage({
-                            id: "statistics.pharmacyPickup",
-                          })
-                        : value === "homeDelivery"
-                        ? intl.formatMessage({ id: "statistics.homeDelivery" })
-                        : value === "cashOrders"
-                        ? intl.formatMessage({ id: "statistics.cashOrders" })
-                        : value === "creditOrders"
-                        ? intl.formatMessage({ id: "statistics.creditOrders" })
-                        : value === "madaOrders"
-                        ? intl.formatMessage({ id: "statistics.madaOrders" })
-                        : intl.formatMessage({
-                            id: "statistics.prescriptionOrders",
-                          });
-                    }}
-                  />
-
-                  <Bar
-                    dataKey="pharmacyPickup"
-                    fill="url(#pharmacyPickupGradient)"
-                    stroke="#10B981"
-                    strokeWidth={1}
-                    radius={[6, 6, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="homeDelivery"
-                    fill="url(#homeDeliveryGradient)"
-                    stroke="#3B82F6"
-                    strokeWidth={1}
-                    radius={[6, 6, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="cashOrders"
-                    fill="url(#cashOrdersGradient)"
-                    stroke="#F59E0B"
-                    strokeWidth={1}
-                    radius={[6, 6, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="creditOrders"
-                    fill="url(#creditOrdersGradient)"
-                    stroke="#EC4899"
-                    strokeWidth={1}
-                    radius={[6, 6, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="madaOrders"
-                    fill="url(#madaOrdersGradient)"
-                    stroke="#2DD4BF"
-                    strokeWidth={1}
-                    radius={[6, 6, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="prescriptionOrders"
-                    fill="url(#prescriptionOrdersGradient)"
-                    stroke="#EF4444"
-                    strokeWidth={1}
-                    radius={[6, 6, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+        </div>
+        <div style={{ border: '1px solid #C2C1C1' }} className="p-4 rounded-lg w-full xl:w-1/2">
+          <div className="px-6 flex justify-center items-center mb-2 lg:mb-0">
+            <img src="/map.png" alt="map" className="w-full max-w-[500px] " />
+          </div>
+          <div className="flex flex-col lg:flex-row justify-center lg:justify-between gap-4 lg:gap-8 mb-2 lg:mb-0 py-4">
+            <div className="flex gap-2 items-center w-full lg:w-1/2">
+              <input
+                id="to"
+                placeholder=" ربيع الأول 1447"
+                type="text"
+                className="border border-[#C2C1C1] border-t-[#C2C1C1] border-b-[#C2C1C1] border-l-[#C2C1C1] border-r-[#C2C1C1] border-solid rounded-lg px-3 py-2 w-40 text-center focus:outline-none focus:ring-1 focus:ring-[#07A869] placeholder:text-sm text-sm text-[#15445A] placeholder:text-[#15445A] placeholder:font-semibold bg-[#DDDDDD] flex-grow"
+              />
+              <label htmlFor="to" className="text-[#15445A] text-base font-semibold">
+                الي
+              </label>
+            </div>
+            <div className="flex gap-2 items-center w-full lg:w-1/2">
+              <input
+                id="from"
+                placeholder=" ربيع الأول 1447"
+                type="text"
+                className="border border-[#C2C1C1] border-t-[#C2C1C1] border-b-[#C2C1C1] border-l-[#C2C1C1] border-r-[#C2C1C1] border-solid rounded-lg px-3 py-2 w-40 text-center focus:outline-none focus:ring-1 focus:ring-[#07A869] placeholder:text-sm text-sm text-[#15445A] placeholder:text-[#15445A] placeholder:font-semibold bg-[#DDDDDD] flex-grow"
+              />
+              <label htmlFor="from" className="text-[#15445A] text-base font-semibold">
+                من
+              </label>
             </div>
           </div>
-        </Card>
+          <div className="flex flex-col md:flex-row justify-center md:justify-between items-center gap-5 md:gap-0 mb-8">
+            <CircularProgress percentage={80} size={145} color="#07A869" bgColor="#E5E7EB" />
+            <div className="text-[#07A869] flex flex-col gap-3">
+              <div className="flex gap-1 group">
+                <p className="text-[#15445A] font-medium w-[50px] group-hover:text-[#07A869] transition-colors duration-500">
+                  الحضور
+                </p>
+                <RiUserFollowLine className="!text-xl" />
+              </div>
+              <div className="flex gap-1 group">
+                <p className="text-[#15445A] font-medium w-[50px] group-hover:text-[#07A869] transition-colors duration-500">
+                  الغياب
+                </p>
+                <RiUserUnfollowLine className="!text-xl" />
+              </div>
+              <div className="flex gap-1 group">
+                <p className="text-[#15445A] font-medium w-[50px] group-hover:text-[#07A869] transition-colors duration-500">
+                  التأخير
+                </p>
+                <MdAccessAlarms className="!text-xl" />
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-center items-center">
+            <button className="bg-[#07A869] outline-0 border border-[#07A869] border-solid rounded-3xl py-2 px-8 text-[#fff] text-base font-medium hover:bg-[#fff] hover:text-[#07A869] transition-colors duration-500 cursor-pointer mb-4">
+              إصدار التقرير
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   );

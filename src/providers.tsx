@@ -21,12 +21,9 @@ import Users from "./pages/dashboard/(admin)/users/page";
 import Orders from "./pages/dashboard/(admin)/orders/page";
 import OrderDetails from "./pages/dashboard/(admin)/orders/order";
 import PrescriptionOrders from "./pages/dashboard/(admin)/prescription-orders/page";
-import PrescriptionOrderDetails from "./pages/dashboard/(admin)/prescription-orders/order";
-import UserDetails from "./pages/dashboard/(admin)/users/User";
 import AddOrder from "./pages/dashboard/(admin)/orders/add-order";
 import Statistics from "./pages/dashboard/(admin)/statistics/page";
 import Products from "./pages/dashboard/(admin)/products/page";
-import ProductInBranches from "./pages/dashboard/(admin)/products/product-branches";
 
 const router = createBrowserRouter([
   {
@@ -67,9 +64,7 @@ const router = createBrowserRouter([
           {
             path: "departure",
             element: <Products />,
-            children: [
-              { path: "product-branchs", element: <ProductInBranches /> },
-            ],
+            
           },
           //     {
           //       path: "branches",
@@ -98,7 +93,6 @@ const router = createBrowserRouter([
           {
             path: "attendance",
             element: <Users />,
-            children: [{ path: "client-details", element: <UserDetails /> }],
           },
 
           // {
@@ -139,12 +133,7 @@ const router = createBrowserRouter([
           {
             path: "discipline_statistics",
             element: <PrescriptionOrders />,
-            children: [
-              {
-                path: "order-details",
-                element: <PrescriptionOrderDetails />,
-              },
-            ],
+            
           },
           // {
           //   path: "clients-support",
@@ -206,21 +195,21 @@ function AppProvider() {
     };
   }, [themeName]);
 
-  useLayoutEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDark]);
-  useEffect(() => {
-    instance.defaults.headers["Accept-Language"] = `${
-      locale === "en" ? "en-US" : "ar-SA"
-    }`;
-    instance.defaults.headers["X-Language"] = `${
-      locale === "en" ? "en-US" : "ar-SA"
-    }`;
-  }, [locale]);
+  // useLayoutEffect(() => {
+  //   if (isDark) {
+  //     document.documentElement.classList.add("light");
+  //   } else {
+  //     document.documentElement.classList.remove("dark");
+  //   }
+  // }, [isDark]);
+  // useEffect(() => {
+  //   instance.defaults.headers["Accept-Language"] = `${
+  //     locale === "en" ? "en-US" : "ar-SA"
+  //   }`;
+  //   instance.defaults.headers["X-Language"] = `${
+  //     locale === "en" ? "en-US" : "ar-SA"
+  //   }`;
+  // }, [locale]);
 
   // useEffect(()=>{
   // instance.interceptors.request.use((config) => {

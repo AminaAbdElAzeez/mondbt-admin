@@ -1,566 +1,305 @@
-import { useEffect, useState, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import axios from "utlis/library/helpers/axios";
-
-import { SearchOutlined } from "@ant-design/icons";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import toast from "react-hot-toast";
-import { AiOutlineContainer } from "react-icons/ai";
-import { FiEdit } from "react-icons/fi";
-import { useForm } from "antd/lib/form/Form";
-import type { InputRef, TableColumnsType, TableColumnType } from "antd";
+import React, { useState } from 'react';
+import { MdAccessAlarms } from 'react-icons/md';
+import { RiFileEditLine, RiUserFollowLine, RiUserUnfollowLine } from 'react-icons/ri';
 import {
-  Input,
-  Space,
-  Table,
-  Button,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
   Tooltip,
-  message,
-  Form,
-  Modal,
-  Image,
-  Select,
-} from "antd";
-import { useNavigate, Outlet, useParams, useLocation } from "react-router-dom";
-import RollerLoading from "components/loading/roller";
-import { FormattedMessage, useIntl } from "react-intl";
-import { FaLeaf, FaPrescriptionBottle } from "react-icons/fa";
-import { IoEyeOutline } from "react-icons/io5";
+  ResponsiveContainer,
+  Cell,
+} from 'recharts';
+import { Select, Button } from 'antd';
+import 'antd/dist/reset.css';
+import { IoSearch } from 'react-icons/io5';
+import { FaExclamation } from 'react-icons/fa';
 
-type prescription = {
-  id: number;
-  url: string;
+const { Option } = Select;
+
+type CircularProgressProps = {
+  percentage: number;
+  size?: number;
+  strokeWidth?: number;
+  color?: string;
+  bgColor?: string;
 };
 
-export interface DataType {
-  user_id: number;
-  user_name: string;
-  total_price: string;
-  status: number;
-  id: number;
-  prescriptions: prescription[];
-}
+ function CircularProgress({
+   percentage,
+   size = 200,
+   strokeWidth = 20,
+   color = '#07A869',
+   bgColor = '#D9D9D9', // gray-200
+ }: CircularProgressProps) {
+   const radius = (size - strokeWidth) / 2;
+   const circumference = 2 * Math.PI * radius;
+   const offset = circumference - (percentage / 100) * circumference;
 
-function PrescriptionOrders() {
-  /////states
+   return (
+     <div className="relative flex items-center justify-center">
+       <svg width={size} height={size}>
+         <circle
+           stroke={bgColor}
+           fill="transparent"
+           strokeWidth={strokeWidth}
+           r={radius}
+           cx={size / 2}
+           cy={size / 2}
+         />
+         <circle
+           stroke={color}
+           fill="transparent"
+           strokeWidth={strokeWidth}
+           r={radius}
+           cx={size / 2}
+           cy={size / 2}
+           strokeDasharray={circumference}
+           strokeDashoffset={(1 - percentage / 100) * circumference}
+           transform={`rotate(90 ${size / 2} ${size / 2})`}
+         />
+       </svg>
 
-  const [query, setQuery] = useState({} as any);
+       <span className="absolute text-3xl font-bold text-[#15445A]">%{percentage}</span>
+     </div>
+   );
+ }
 
-  const intel = useIntl();
-  const [pagination, setPagination] = useState({
-    pageSize: 10,
-    totalCount: 0,
-    currentPage: 0,
-  });
-  const [prescriptionModalOpen, setPrescriptionModalOpen] = useState(false);
-  const [editPrescriptionOpen, setEditPrescriptionOpen] = useState(false);
-  const [prescriptionStatus, setPrescriptionStatus] = useState(undefined);
-  const [newPrescriptionStatus, setNewPrescriptionStatus] = useState(undefined);
-  const [prescriptionId, setPrescriptionId] = useState(undefined);
-  const [prescriptions, setPrescriptions] = useState([]);
-  const location = useLocation();
-  const [userName, setUserName] = useState("");
-  const [searchClicked, setSearchClicked] = useState(false);
-  const [status, setStatus] = useState(undefined);
-  const [search, setSearch] = useState(undefined);
-  const navigate = useNavigate();
-  const [form] = useForm();
-  const pathname = location.pathname;
-  const statusArr = [
-    { value: 1, label: intel.formatMessage({ id: "pending" }) },
-    { value: 2, label: intel.formatMessage({ id: "accepted" }) },
-    { value: 3, label: intel.formatMessage({ id: "away" }) },
-    { value: 4, label: intel.formatMessage({ id: "completed" }) },
-    { value: 5, label: intel.formatMessage({ id: "canceled" }) },
-    { value: 6, label: intel.formatMessage({ id: "rejected" }) },
+
+
+const PrescriptionOrders: React.FC = () => {
+  const [selected, setSelected] = useState<'سنة' | 'شهر' | 'يوم'>('يوم');
+  const buttons: Array<'سنة' | 'شهر' | 'يوم'> = ['سنة', 'شهر', 'يوم'];
+
+  const [selectedAttend, setSelectedAttend] = useState<
+    'التأخير' | 'الأعذار' | 'المكأفات' | 'الغياب' | 'الحضور'
+  >('الحضور');
+
+  const buttonsAttend: Array<'التأخير' | 'الأعذار' | 'المكأفات' | 'الغياب' | 'الحضور'> = [
+    'التأخير',
+    'الأعذار',
+    'المكأفات',
+    'الغياب',
+    'الحضور',
   ];
-
-  const durationObj = {
-    day: <FormattedMessage id="day" />,
-    days: <FormattedMessage id="days" />,
-    hour: <FormattedMessage id="hour" />,
-    hours: <FormattedMessage id="hours" />,
-    min: <FormattedMessage id="min" />,
-    mins: <FormattedMessage id="mins" />,
-    secs: <FormattedMessage id="secs" />,
-    sec: <FormattedMessage id="sec" />,
-  };
-
-  const parseDuration = (duration: string | null | undefined) => {
-    if (!duration || typeof duration !== "string") {
-      return [];
-    }
-
-    const parts = duration.trim().split(/\s+/);
-    const result: { value: number; unit: string }[] = [];
-
-    for (let i = 0; i < parts.length; i += 2) {
-      const value = Number(parts[i]);
-      const unit = parts[i + 1];
-      if (!isNaN(value) && unit) {
-        result.push({ value, unit });
-      }
-    }
-
-    return result;
-  };
-
-  const renderDuration = (text?: string | null) => {
-    const parsed = parseDuration(text);
-
-    if (!parsed.length) {
-      return (
-        <span className="text-gray-300">
-          <FormattedMessage id="noData" />
-        </span>
-      );
-    }
-
-    return (
-      <>
-        {parsed.map(({ value, unit }, index) => (
-          <span key={index}>
-            {value} {durationObj[unit] ?? unit}
-            {index !== parsed.length - 1 && " "}
-          </span>
-        ))}
-      </>
-    );
-  };
-
-  // const searchQuery = () => {
-  //   let search = "";
-  //   if (Object.keys(query).length > 0) {
-  //     for (let x in query) {
-  //       search = `${search}` + `&${x}=${query[x]}`;
-  //     }
-  //   }
-  //   return search;
-  // };
-
-  const fetchOrdersFunc = async () => {
-    // dispatch(fetchUsersRequest());
-
-    const params: { [key: string]: string | number } = {};
-    if (typeof pagination.currentPage === "number") {
-      params.skip = pagination.currentPage * pagination.pageSize;
-      params.take = pagination.pageSize;
-    }
-    //const searchParams = searchQuery();
-    // params.query = query;
-    let x = "";
-    search && (x = x + `&filter[search]=${search}`);
-    const { data } = await axios.get(
-      `admin/prescription-orders?skip=${params?.skip}&take=${params?.take}${x}`
-    );
-    // console.log("coupons", data);
-
-    setPagination((current) => ({
-      ...current,
-      totalCount: data?.count,
-    }));
-    //  }
-    console.log(data?.data);
-    return data?.data;
-  };
-
-  const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [
-      "fetchPrescriptionOrders",
-      pagination?.currentPage,
-      pagination?.pageSize,
-      search,
-    ],
-    queryFn: fetchOrdersFunc,
-  });
-
-  ///edit prescription status mutation
-  const editStatusMutation = useMutation({
-    mutationFn: (values) =>
-      axios["post"](
-        `admin/prescription-orders/${prescriptionId}/change-status`,
-        values
-      ),
-    onSuccess: (res) => {
-      // const { data } = res?.data?.data;
-      const { message } = res?.data;
-      //  console.log(res?.data?.data);
-      setEditPrescriptionOpen(false);
-
-      refetch();
-      toast.success(message, {
-        position: "top-center",
-        duration: 3000,
-      });
-    },
-    onError: (err) => {
-      const {
-        status,
-        data: { message },
-      } = (err as any).response;
-      console.log(err, err.message);
-      // setIsAddContainerModalOpen(false);
-      toast.error(err.message, {
-        position: "top-center",
-        duration: 3000,
-      });
-    },
-  });
-
-  const editStatusFinish = (values: any) => {
-    editStatusMutation.mutate(values);
-  };
-
-  //// column search component
-  const columnSearch = (placeHolder, state, setState, columnName) => {
-    return (
-      <div style={{ padding: 8 }}>
-        <Input
-          placeholder={intel?.formatMessage({ id: placeHolder })}
-          value={state}
-          onChange={(e) => setState(e.target.value)}
-          style={{ marginBottom: 8, display: "block" }}
-        />
-        <Button
-          type="primary"
-          icon={<SearchOutlined />}
-          size="small"
-          // style={{ width: 90 }}
-          className="w-full"
-          onClick={() => {
-            setPagination((current) => ({
-              ...current,
-              currentPage: 0,
-            }));
-            // if (state) {
-            //   setQuery({ ...query, [columnName]: state });
-            // } else {
-            //   const obj = { ...query };
-
-            //   delete obj[columnName];
-
-            //   setQuery(obj);
-            // }
-            setSearch(state);
-          }}
-        >
-          <FormattedMessage id="search" />
-        </Button>
-      </div>
-    );
-  };
-
-  const columns: TableColumnsType<DataType> = [
+  const stats = [
     {
-      title: <FormattedMessage id="order-id" />,
-      dataIndex: "id",
-      key: "id",
-      width: "11%",
-      align: "center",
-      render: (text) =>
-        text || (
-          <p className="text-gray-300">{<FormattedMessage id="noData" />}</p>
-        ),
+      title: 'الغرامات',
+      value: '1,020,935',
+      suffix: 'ريال سعودي',
+      bg: 'bg-[#07A869]',
+      text: 'text-white',
+      icon: '/riyal.png',
     },
     {
-      title: <FormattedMessage id="user-name" />,
-      dataIndex: "user_name",
-      key: "user_name",
-      width: "17%",
-      render: (text) =>
-        text || (
-          <p className="text-gray-300">{<FormattedMessage id="noData" />}</p>
-        ),
-      filterDropdown: columnSearch(
-        "user-name",
-        userName,
-        setUserName,
-        "user_name"
-      ),
-      filterIcon: (
-        <SearchOutlined style={{ color: userName ? "#1890ff" : undefined }} />
-      ),
+      title: 'الاستئذان',
+      value: '12,650',
+      suffix: 'حالة استئذان',
+      bg: 'bg-white',
+      text: 'text-[#07A869]',
+      borderStyle: { border: '1px solid #C2C1C1', background: '#f9f9f9' },
     },
     {
-      title: <FormattedMessage id="status" />,
-      dataIndex: "status",
-      key: "status",
-      width: "10%",
-      align: "center",
-      render: (text) =>
-        statusArr.filter((item) => item.value === text)[0].label || (
-          <p className="text-gray-300">{<FormattedMessage id="noData" />}</p>
-        ),
-      // filterDropdown: columnSearch("status", status, setStatus, "status"),
-      // filterIcon: (
-      //   <SearchOutlined style={{ color: status ? "#1890ff" : undefined }} />
-      // ),
+      title: 'التأخير',
+      value: '1,180,935',
+      suffix: 'حالة تأخير',
+      bg: 'bg-[#07A869]',
+      text: 'text-white',
     },
     {
-      title: <FormattedMessage id="total-price" />,
-      dataIndex: "total_price",
-      key: "total_price",
-      width: "11%",
-      align: "center",
-      render: (text) =>
-        (+text === 0 || text) && text !== null ? (
-          text
-        ) : (
-          <p className="text-gray-300">{<FormattedMessage id="noData" />}</p>
-        ),
+      title: 'الغياب',
+      value: '314,919',
+      suffix: 'طالب وطالبة',
+      bg: 'bg-white',
+      text: 'text-[#07A869]',
+      borderStyle: { border: '1px solid #C2C1C1', background: '#f9f9f9' },
     },
     {
-      title: <FormattedMessage id="created-at" />,
-      dataIndex: "created_at",
-      key: "created_at",
-      width: "16%",
-      align: "center",
-      render: (text) =>
-        text ? (
-          text
-        ) : (
-          <p className="text-gray-300">{<FormattedMessage id="noData" />}</p>
-        ),
-    },
-    {
-      title: <FormattedMessage id="is_remote_shipping" />,
-      dataIndex: "is_remote_shipping",
-      key: "is_remote_shipping",
-      width: "13%",
-      align: "center",
-      render: (value: number) =>
-        value === 0 ? (
-          <span>
-            <FormattedMessage id="OutletPlus" />
-          </span>
-        ) : value === 1 ? (
-          <span>
-            <FormattedMessage id="SAMSA" />
-          </span>
-        ) : (
-          <p className="text-gray-300">
-            <FormattedMessage id="noData" />
-          </p>
-        ),
-    },
-    {
-      title: <FormattedMessage id="duration" />,
-      dataIndex: "duration",
-      key: "duration",
-      width: "12%",
-      align: "center",
-      render: (text: string) => renderDuration(text),
-    },
-    {
-      title: (
-        <div className="text-center">
-          <FormattedMessage id="actions" />
-        </div>
-      ),
-      width: "10%",
-      align: "center",
-      key: "actions",
-      fixed: "right",
-      render: (_, row) => (
-        <div className="flex justify-center items-center">
-          <Tooltip title={<FormattedMessage id="details" />} color="#1283ad">
-            <AiOutlineContainer
-              className="text-[#1283ad] cursor-pointer mx-[5px] text-xl"
-              onClick={() => {
-                navigate("order-details", { state: { orderId: row?.id } });
-              }}
-            />
-          </Tooltip>
-
-          <Tooltip
-            title={<FormattedMessage id="prescriptions" />}
-            color="#ecb53d"
-          >
-            <FaPrescriptionBottle
-              className="text-[#ecb53d] cursor-pointer mx-[5px] text-xl"
-              onClick={() => {
-                //console.log(row?.prescriptions)
-                setPrescriptions(row?.prescriptions);
-                setPrescriptionModalOpen(true);
-              }}
-            />
-          </Tooltip>
-          <Tooltip title={<FormattedMessage id="edit" />} color="#03b89e">
-            <FiEdit
-              className="text-primary cursor-pointer mx-[5px] text-xl"
-              onClick={() => {
-                setPrescriptionStatus(row?.status);
-                setPrescriptionId(row?.id);
-                setEditPrescriptionOpen(true);
-              }}
-            />
-          </Tooltip>
-        </div>
-      ),
+      title: 'الحضور',
+      value: '5,983,404',
+      suffix: 'طالب وطالبة',
+      bg: 'bg-[#07A869]',
+      text: 'text-white',
     },
   ];
 
-  //if (error) return <div>Error: {error}</div>;
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const data = [
+    { day: 15, value: 70, hijri: '21' },
+    { day: 16, value: 50, hijri: '20' },
+    { day: 17, value: 90, hijri: '19' },
+    { day: 18, value: 30, hijri: '18' },
+    { day: 19, value: 60, hijri: '17' },
+    { day: 20, value: 80, hijri: '16' },
+    { day: 21, value: 40, hijri: '15' },
+  ];
+
   return (
-    <>
-      {pathname.split("/")[pathname.split("/").length - 1] ===
-      "prescriptions" ? (
-        <div className="container mx-auto">
-          {isLoading ? (
-            <RollerLoading />
-          ) : (
-            <Table<DataType>
-              columns={columns}
-              dataSource={data}
-              scroll={{ x: 1250, y: 445 }}
-              pagination={{
-                total: pagination.totalCount,
-                current: pagination.currentPage + 1,
-                pageSize: pagination.pageSize,
-                onChange(page, pageSize) {
-                  setPagination((current) => ({
-                    ...current,
-                    pageSize,
-                    currentPage: page - 1,
-                  }));
-                },
-              }}
-            />
-          )}
+    <section dir="ltr" className="text-right px-2">
+      <div className=" mb-3 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start  gap-1 lg:gap-5">
+        <div
+          className="flex rounded-3xl h-9 w-max  overflow-hidden"
+          style={{ border: '1px solid #C2C1C1' }}
+        >
+          {buttons.map((btn) => {
+            const isSelected = selected === btn;
+            return (
+              <button
+                key={btn}
+                onClick={() => setSelected(btn)}
+                className={`
+              text-base h-8.5 w-[76px] sm:w-24 rounded-3xl transition-all duration-200 cursor-pointer
+              ${isSelected ? 'bg-[#07A869] text-white' : 'bg-transparent text-[#C2C1C1]'}
+              hover:${isSelected ? 'brightness-110' : 'bg-gray-100'}
+              outline-none border-none
+            `}
+              >
+                {btn}
+              </button>
+            );
+          })}
         </div>
-      ) : (
-        <Outlet />
-      )}
+        <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
+          احصائيات الانضباط
+        </h2>
+      </div>
 
-      {/****view prescriptions modal****/}
-      <Modal
-        title={
-          <p className="text-[18px]">
-            <FormattedMessage id="order-prescriptions" />
-          </p>
-        }
-        open={prescriptionModalOpen}
-        onOk={() => setPrescriptionModalOpen(false)}
-        onCancel={() => setPrescriptionModalOpen(false)}
-        footer={
-          <div className="flex justify-end items-center">
-            <button
-              className="cursor-pointer min-w-[60px] py-2 px-3 bg-primary text-white mx-2 rounded-md border-none"
-              onClick={() => setPrescriptionModalOpen(false)}
-            >
-              <FormattedMessage id="ok" />
-            </button>
-          </div>
-        }
-      >
-        <div className="p-4 flex flex-wrap justify-center items-center max-w-[90%] sm:max-w-[500px]">
-          {prescriptions?.map((item, index) => (
-            <div className="m-2 w-[120px]">
-              <Image
-                key={item?.id}
-                src={item?.url}
-                alt="prescription"
-                className="!w-[120px] !h-[100px] object-cover rounded-[5px]"
-                width={120}
-                height={100}
-                style={{ objectFit: "cover", borderRadius: 4 }}
-                preview={{
-                  mask: (
-                    <span className="flex items-center p-2 text-[14px]">
-                      <IoEyeOutline className="text-[16px] mx-1" />
-                      <FormattedMessage id="perview" />
-                    </span>
-                  ),
-                }}
-              />
-            </div>
-          ))}
-        </div>
-      </Modal>
-      {/****edit prescription status modal****/}
-      <Modal
-        title={
-          <p className="text-[18px]">
-            <FormattedMessage id="edit-prescription-status" />
-          </p>
-        }
-        open={editPrescriptionOpen}
-        onOk={() => setEditPrescriptionOpen(false)}
-        onCancel={() => setEditPrescriptionOpen(false)}
-        footer={null}
-      >
-        <div className="p-4 max-w-[90%] sm:max-w-[500px]">
-          <Form
-            layout="vertical"
-            form={form}
-            onFieldsChange={(changedFields, allFields) => {}}
-            onFinish={editStatusFinish}
-
-            // autoComplete="off"
+      <div className="flex justify-between items-center flex-wrap gap-5 py-2 mb-5 ">
+        {stats.map((item, index) => (
+          <div
+            key={index}
+            className={`rounded-xl shadow-md p-4 ${item.bg} transform transition duration-300 hover:scale-105 hover:shadow-xl flex-grow w-[160px] text-right`}
+            style={item.borderStyle || {}}
           >
-            <div
-              className="my-8 px-2 py-1 
-           
-            "
-            >
-              <Form.Item
-                label={<FormattedMessage id="status" />}
-                name="status"
-                rules={[
-                  {
-                    required: true,
-                    message: <FormattedMessage id="status-required" />,
-                  },
-                ]}
-              >
-                <Select
-                  //defaultValue={(statusArr.filter((item)=>item.value===prescriptionStatus)[0].label)||''}
-                  showSearch
-                  placeholder={<FormattedMessage id="select-status" />}
-                  optionFilterProp="label"
-                  // onChange={onChange}
-                  // onSearch={onSearch}
-                  options={[
-                    {
-                      value: 2,
-                      label: intel.formatMessage({ id: "accepted" }),
-                    },
-                    {
-                      value: 6,
-                      label: intel.formatMessage({ id: "rejected" }),
-                    },
-                  ]}
-                />
-              </Form.Item>
+            {/* Title */}
+            <h3 className={`${item.text} text-lg font-medium mb-1`}>{item.title}</h3>
+
+            {/* Value + Icon */}
+            <div className="flex items-center gap-2 justify-end">
+              {item.icon && <img src={item.icon} alt="icon" className="w-7 h-7" />}
+              <span className={`${item.text} text-2xl font-semibold`}>{item.value}</span>
             </div>
-            <Form.Item className="modals-btns update-user-modal-btns flex justify-end items-center sticky bottom-0 bg-white z-[1000] pt-4">
-              <Button
-                // type="primary"
 
-                size="large"
-                className="modals-cancel-btn min-w-[60px] me-1 text-black inline-block hover:text-black hover:border-black"
-                onClick={() => {
-                  setEditPrescriptionOpen(false);
-                }}
-              >
-                <FormattedMessage id="cancel" />
-              </Button>
-              <Button
-                // type="primary"
+            {/* Suffix */}
+            <p className={`${item.text} text-base my-1`}>{item.suffix}</p>
+          </div>
+        ))}
+      </div>
 
-                size="large"
-                className="modals-confirm-btn min-w-[60px] text-white ms-1 bg-primary hover:bg-primary inline-block"
-                htmlType="submit"
-                loading={editStatusMutation?.isPending}
-              >
-                <FormattedMessage id="edit" />
-              </Button>
-            </Form.Item>
-          </Form>
+      <div className="mb-6 mt-2 border border-[#C2C1C1] rounded-lg bg-white" dir="rtl">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-4">
+          <Select
+            placeholder="المنطقة"
+            className="w-full custom-select"
+            style={{
+              backgroundColor: '#F3F3F3',
+              borderColor: '#DDDDDD',
+              color: '#15445A',
+            }}
+            dropdownStyle={{ backgroundColor: '#F3F3F3', color: '#15445A' }}
+          >
+            <Option value="riyadh">الرياض</Option>
+            <Option value="jeddah">جدة</Option>
+          </Select>
+
+          <Select
+            placeholder="المدينة"
+            className="w-full custom-select"
+            style={{
+              backgroundColor: '#F3F3F3',
+              borderColor: '#DDDDDD',
+              color: '#15445A',
+            }}
+            dropdownStyle={{ backgroundColor: '#F3F3F3', color: '#15445A' }}
+          >
+            <Option value="malaz">مكة</Option>
+            <Option value="riyadh">الرياض</Option>
+          </Select>
+
+          <Select
+            placeholder="الرقم الوزاري"
+            className="w-full custom-select"
+            style={{
+              backgroundColor: '#F3F3F3',
+              borderColor: '#DDDDDD',
+              color: '#15445A',
+            }}
+            dropdownStyle={{ backgroundColor: '#F3F3F3', color: '#15445A' }}
+          >
+            <Option value="123">123</Option>
+            <Option value="456">456</Option>
+          </Select>
+
+          <Select
+            placeholder="النوع"
+            className="w-full custom-select"
+            style={{
+              backgroundColor: '#F3F3F3',
+              borderColor: '#DDDDDD',
+              color: '#15445A',
+            }}
+            dropdownStyle={{ backgroundColor: '#F3F3F3', color: '#15445A' }}
+          >
+            <Option value="boys">بنين</Option>
+            <Option value="girls">بنات</Option>
+          </Select>
+
+          <Select
+            placeholder="الجنس"
+            className="w-full custom-select"
+            style={{
+              backgroundColor: '#F3F3F3',
+              borderColor: '#DDDDDD',
+              color: '#15445A',
+            }}
+            dropdownStyle={{ backgroundColor: '#F3F3F3', color: '#15445A' }}
+          >
+            <Option value="male">ذكر</Option>
+            <Option value="female">أنثى</Option>
+          </Select>
+
+          <Select
+            placeholder="اسم المدرسة"
+            className="w-full custom-select"
+            style={{
+              backgroundColor: '#F3F3F3',
+              borderColor: '#DDDDDD',
+              color: '#15445A',
+            }}
+            dropdownStyle={{ backgroundColor: '#F3F3F3', color: '#15445A' }}
+          >
+            <Option value="school1">مدرسة 1</Option>
+            <Option value="school2">مدرسة 2</Option>
+          </Select>
+          <button className="flex justify-center items-center gap-1 transition-colors duration-500 rounded-md bg-[#07A869] border border-[#07A869] border-solid cursor-pointer  hover:bg-white hover:text-[#07A869] text-white py-1.5 ">
+            بحث
+            <IoSearch className=" text-lg" />
+          </button>
         </div>
-      </Modal>
-    </>
+      </div>
+
+      <div className="flex flex-col lg:flex-row justify-between items-stretch  gap-6">
+        <div style={{ border: '1px solid #C2C1C1' }} className="p-4 rounded-lg w-full lg:w-1/2">
+          <div className="px-6 flex justify-center items-center mb-2 lg:mb-0">
+            <img src="/map.png" alt="map" className="w-full max-w-[500px] " />
+          </div>
+        </div>
+
+        <div
+          style={{ border: '1px solid #C2C1C1' }}
+          className="p-4 rounded-lg w-full lg:w-1/2 flex flex-col justify-center items-center py-10"
+        >
+          <div className="w-16 h-16 bg-[#dce3e7] rounded-full flex justify-center items-center mb-4">
+            <FaExclamation className="text-3xl text-[#15445A]" />
+          </div>
+          <h4 className="text-[#15445A] text-2xl sm:text-3xl xl:text-4xl leading-tight font-medium text-center">
+            اختر أي من المناطق <br /> لإظهار النتائج
+          </h4>
+        </div>
+      </div>
+    </section>
   );
-}
+};
 
 export default PrescriptionOrders;

@@ -4,32 +4,32 @@ import { useEffect, useState } from "react";
 function RollerLoading() {
   // console.log("rendered RollerLoading");
 
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  // const [isDarkMode, setIsDarkMode] = useState(false);
 
-  useEffect(() => {
-    const checkDark = () => {
-      const isDark = document.documentElement.classList.contains("dark");
-      setIsDarkMode(isDark);
-    };
+  // useEffect(() => {
+  //   const checkDark = () => {
+  //     const isDark = document.documentElement.classList.contains("dark");
+  //     setIsDarkMode(isDark);
+  //   };
 
-    // Initial check
-    checkDark();
+  //   // Initial check
+  //   checkDark();
 
-    // Observer to watch for class changes
-    const observer = new MutationObserver(() => {
-      checkDark();
-    });
+  //   // Observer to watch for class changes
+  //   const observer = new MutationObserver(() => {
+  //     checkDark();
+  //   });
 
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
+  //   observer.observe(document.documentElement, {
+  //     attributes: true,
+  //     attributeFilter: ["class"],
+  //   });
 
-    // Clean up
-    return () => observer.disconnect();
-  }, []);
+  //   // Clean up
+  //   return () => observer.disconnect();
+  // }, []);
 
-  const logoSrc = isDarkMode ? "/White.png" : "/Green.png";
+  // const logoSrc = isDarkMode ? "/White.png" : "/Green.png";
 
   return (
     <div
@@ -42,7 +42,7 @@ function RollerLoading() {
           width={60}
           height={60}
           className="w-[180px] h-auto"
-          src={logoSrc}
+          src="/bg-logo.svg"
           alt="Outlet Call Center Admin"
         />
       </div>

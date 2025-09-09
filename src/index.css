@@ -69,11 +69,11 @@ ul {
   padding: 0;
 }
 html * {
-  font-family: Tahoma, Helvetica, sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 html[dir="rtl"] *,
 .ar-font {
-  font-family: "Almarai", sans-serif !important;
+  font-family: "Cairo", sans-serif !important;
 }
 
 .overlay {
@@ -152,7 +152,7 @@ html[dir="rtl"] :is(.ant-pagination-prev, .ant-pagination-next) {
 
 #landing {
   font-family: "Cairo", sans-serif;
-  font-family: "Lato", sans-serif;
+  font-family: "Cairo", sans-serif;
   scroll-behavior: smooth;
 }
 
@@ -538,4 +538,36 @@ html[dir="rtl"] .leaflet-control-geosearch button.reset {
 :where(.css-dev-only-do-not-override-dudko7).ant-menu-light.ant-menu-inline
   .ant-menu-item {
   margin-bottom: 8px !important;
+}
+
+/* switch in topbar */
+.big-switch {
+  transform: scale(1.2);
+}
+.big-switch .ant-switch-inner {
+  font-size: 16px;
+  position: relative;
+  top: -3px;
+}
+:where(.css-dev-only-do-not-override-uasp9o).ant-switch .ant-switch-handle {
+    top: 1px !important;
+}
+/* change select bg in discipline_statistics page */
+:where(.css-dev-only-do-not-override-uasp9o).ant-select-outlined:not(.ant-select-customize-input) .ant-select-selector,
+.custom-select .ant-select-selector {
+  background-color: #F3F3F3 !important;
+  border-color: #DDDDDD !important;
+  color: #15445A !important;
+}
+
+:where(.css-dev-only-do-not-override-uasp9o).ant-select-single .ant-select-selector .ant-select-selection-placeholder, .custom-select .ant-select-selection-placeholder,
+:where(.css-dev-only-do-not-override-uasp9o).ant-select-single .ant-select-selector:after ,
+:where(.css-dev-only-do-not-override-uasp9o).ant-select-single:not(.ant-select-customize-input) .ant-select-selector .ant-select-selection-search-input,
+.custom-select .ant-select-arrow {
+  color: #15445A !important;
+}
+.custom-select .ant-select-dropdown ,
+:where(.css-dev-only-do-not-override-uasp9o).ant-select-dropdown .ant-select-item-option{
+  background-color: #F3F3F3 !important;
+  color: #15445A !important;
 }

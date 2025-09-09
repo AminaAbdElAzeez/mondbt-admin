@@ -13,7 +13,7 @@ import {
 } from "antd";
 import { useState } from "react";
 import LangSwitcher from "containers/layout/Topbar/LangSwitcher";
-import ThemesSwitcher from "containers/layout/Topbar/ThemesSwitcher";
+// import ThemesSwitcher from "containers/layout/Topbar/ThemesSwitcher";
 import authAction from "store/auth/actions";
 import { useDispatch } from "react-redux";
 import middleware from "utlis/navigation/mw";
@@ -144,9 +144,9 @@ function Login() {
           <li className="isoUser flex">
             <LangSwitcher />
           </li>
-          <li className="isoUser">
+          {/* <li className="isoUser">
             <ThemesSwitcher />
-          </li>
+          </li> */}
         </ul>
       </div>
 

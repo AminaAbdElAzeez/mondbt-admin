@@ -3,7 +3,7 @@ import { Button, theme } from "antd";
 import SmallLogo from "components/LogoWraper/small-logo";
 // import Topbar from 'containers/layout/Topbar'
 import LangSwitcher from "containers/layout/Topbar/LangSwitcher";
-import ThemesSwitcher from "containers/layout/Topbar/ThemesSwitcher";
+// import ThemesSwitcher from "containers/layout/Topbar/ThemesSwitcher";
 import TopbarUser from "containers/layout/Topbar/TopbarUser";
 import { TargetAndTransition, VariantLabels } from "framer-motion";
 import React from "react";
@@ -43,7 +43,7 @@ function MainSide({ setCollapsed, collapsed, width }: IMainSide) {
     `}
       </style>
       <div
-        className={`border-solid sm:border-none border-0 border-t shadow-md dark:shadow-black main-side bottom-0 left-0 sm:left-[initial] justify-between sm:justify-start h-[60px]  sm:h-full box-border fixed flex-row sm:flex-col items-center py-2 sm:py-4 px-4 sm:px-0 flex  !bg-[#07A869]`}
+        className={`border-solid sm:border-none border-0 border-t !border-t-[#f8f8f8] shadow-md dark:shadow-black main-side bottom-0 left-0 sm:left-[initial] justify-between sm:justify-start h-[60px]  sm:h-full box-border fixed flex-row sm:flex-col items-center py-2 sm:py-4 px-4 sm:px-0 flex  !bg-[#07A869]`}
       >
         <div className="sm:py-2 hidden sm:block">
           <SmallLogo />
@@ -74,11 +74,11 @@ function MainSide({ setCollapsed, collapsed, width }: IMainSide) {
           </button>
         </div>
         <div className="flex sm:flex-col items-center justify-center gap-2">
-          <ThemesSwitcher />
+          {/* <ThemesSwitcher /> */}
           {/* <EditProfile /> */}
 
-          <LangSwitcher />
-          <TopbarUser />
+          {/* <LangSwitcher /> */}
+          {/* <TopbarUser /> */}
         </div>
       </div>
     </>

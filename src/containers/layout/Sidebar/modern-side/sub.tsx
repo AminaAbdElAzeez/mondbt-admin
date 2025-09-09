@@ -49,10 +49,10 @@ function SubSide({
         backgroundColor: token.colorBgContainer,
         width: width.sub,
       }}
-      className={` ltr:pl-16 rtl:pr-16  box-border inset-y-0  border-r-2 border-indigo-100 shadow-md  ltr:rounded-tr-3xl ltr:rounded-br-3xl rtl:rounded-tl-3xl rtl:rounded-bl-3xl  `}
+      className={` ltr:pl-16 rtl:pr-16  box-border inset-y-0  border-r-2 border-indigo-100 shadow-md  ltr:rounded-tr-3xl ltr:rounded-br-3xl rtl:rounded-tl-3xl rtl:rounded-bl-3xl  !bg-[#07A869] !rounded-md`}
     >
       <div className="flex items-center justify-center flex-shrink-0 pt-4 bg-[#07A869]">
-        <Link to={"/"} target="_blank">
+        <Link to={'/'} target="_blank">
           <img
             className="w-22 h-auto mt-2 mb-3"
             src={logoSrc}

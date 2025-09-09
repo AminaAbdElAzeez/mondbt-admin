@@ -1,18 +1,12 @@
-import { useState, Fragment, useEffect } from "react";
-import {
-  Link,
-  json,
-  useLoaderData,
-  useNavigate,
-  useNavigation,
-} from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
-import LangSwitcher from "containers/layout/Topbar/LangSwitcher";
-import ThemesSwitcher from "containers/layout/Topbar/ThemesSwitcher";
-import { Button, Card } from "antd";
-import { useSelector } from "react-redux";
-import SmallLogo from "components/LogoWraper/small-logo";
-import { FormattedMessage } from "react-intl";
+import { useState, Fragment, useEffect } from 'react';
+import { Link, json, useLoaderData, useNavigate, useNavigation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import LangSwitcher from 'containers/layout/Topbar/LangSwitcher';
+// import ThemesSwitcher from 'containers/layout/Topbar/ThemesSwitcher';
+import { Button, Card } from 'antd';
+import { useSelector } from 'react-redux';
+import SmallLogo from 'components/LogoWraper/small-logo';
+import { FormattedMessage } from 'react-intl';
 
 function Index() {
   const data = useLoaderData();
@@ -20,75 +14,71 @@ function Index() {
 
   const navigate = useNavigate();
 
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  // const [isDarkMode, setIsDarkMode] = useState(false);
 
-  useEffect(() => {
-    const checkDark = () => {
-      const isDark = document.documentElement.classList.contains("dark");
-      setIsDarkMode(isDark);
-    };
+  // useEffect(() => {
+  //   const checkDark = () => {
+  //     const isDark = document.documentElement.classList.contains('dark');
+  //     setIsDarkMode(isDark);
+  //   };
 
-    // Initial check
-    checkDark();
+  //   // Initial check
+  //   checkDark();
 
-    // Observer to watch for class changes
-    const observer = new MutationObserver(() => {
-      checkDark();
-    });
+  //   // Observer to watch for class changes
+  //   const observer = new MutationObserver(() => {
+  //     checkDark();
+  //   });
 
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
+  //   observer.observe(document.documentElement, {
+  //     attributes: true,
+  //     attributeFilter: ['class'],
+  //   });
 
-    // Clean up
-    return () => observer.disconnect();
-  }, []);
+  //   // Clean up
+  //   return () => observer.disconnect();
+  // }, []);
 
-  const logoSrc = isDarkMode ? "/White.png" : "/Green.png";
-
-
+  // const logoSrc = isDarkMode ? '/bg-logo.svg' : '/bg-logo.svg';
 
   return (
     <div className="bg-texture-light dark:bg-texture-dark">
       <div className="box-border min-w-screen min-h-screen  flex items-center container mx-auto justify-center px-2 py-5">
         <div className="box-border absolute inset-x-0 top-0 w-full flex items-center justify-between container mx-auto py-5 px-2">
-          <div className="brightness-90 flex items-center text-[#3730a3] no-underline hover:no-underline font-bold text-2xl lg:text-4xl">
-            <Link to={"/"}>
+          <div className="flex items-center text-[#3730a3] no-underline hover:no-underline font-bold text-2xl lg:text-4xl">
+            <Link to={'/'} className="p-3 rounded-md !bg-[#07A869]">
               <img
-                className=" h-auto"
-                src={logoSrc}
-                width={220}
+                className=" h-auto rounded-md"
+                src="/bg-logo.svg"
+                width={95}
                 // height={73}
-                alt="outlet plus admin"
+                alt="Mondbt Admin"
               />
             </Link>
           </div>
           <ul className="flex gap-3 items-center">
-            <li className="isoUser flex">
+            {/* <li className="isoUser flex">
               <LangSwitcher />
-            </li>
-            <li className="isoUser">
+            </li> */}
+            {/* <li className="isoUser">
               <ThemesSwitcher />
-            </li>
+            </li> */}
           </ul>
         </div>
         <motion.div
           initial={{ y: -150, opacity: 1 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 100 }}
+          transition={{ type: 'spring', stiffness: 100 }}
           className="w-full max-w-sm"
         >
-          <Card className="box-border  rounded-3xl shadow-lg  text-gray-600 sm:px-4 py-3">
+          <Card className="box-border bg-transparent  rounded-3xl shadow-lg  text-gray-600 sm:px-4 py-3 border border-[#DDDDDD]">
             <div className="overflow-hidden relative">
               <div className="overflow-hidden relative cursor-grab">
                 <div className="flex gap-2 flex-col sm:gap-4 justify-center items-center">
-                  <img
-                    className="h-auto mb-[-18px] "
-                    width={200}
-                    src={logoSrc}
-                    alt="outlet plus admin"
-                  />
+                  <div className="p-3 rounded-md !bg-[#07A869]">
+                    <img className="h-auto" width={95} src="/bg-logo.svg" alt="Mondbt Admin" />
+                  </div>
+
                   <AnimatePresence>
                     {visiable && (
                       <motion.div
@@ -101,10 +91,10 @@ function Index() {
                           onClick={() => {
                             setVisiable(false);
                             setTimeout(() => {
-                              navigate("/login");
+                              navigate('/login');
                             }, 600);
                           }}
-                          className="bg-primary text-white rounded-lg !h-auto w-auto whitespace-normal hover:!text-primary !border-primary"
+                          className="!bg-[#07A869] text-white rounded-lg !h-auto w-auto whitespace-normal hover:!text-[#07A869] !border-[#07A869] hover:!bg-[#fff] transition-colors duration-500"
                           size="large"
                           //type="primary"
                         >
@@ -136,12 +126,12 @@ function Index() {
 export default Index;
 
 export const loader = () => {
-  console.log("welcome from loader");
+  console.log('welcome from loader');
   return json(
     {
-      sorry: "You have been fired.",
-      hrEmail: "hr@bigco.com",
+      sorry: 'You have been fired.',
+      hrEmail: 'hr@bigco.com',
     },
-    { status: 401, statusText: "u are not authorized" }
+    { status: 401, statusText: 'u are not authorized' }
   );
 };

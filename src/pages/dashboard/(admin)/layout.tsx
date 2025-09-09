@@ -130,6 +130,7 @@ function DashboardLayout({ children }: { children?: any }) {
     <>
       <div className="flex h-[100dvh]">
         <Sider collapsed={collapsed} setCollapsed={setCollapsed} />
+        <TopBar collapsed={collapsed} />
 
         {/* <Layout hasSider> */}
         {/* <Sidebar
@@ -159,14 +160,9 @@ function DashboardLayout({ children }: { children?: any }) {
           autoHideTimeout={1000}
           autoHideDuration={200}
         >
-          <TopBar />
-
-          <Content
-            {...swipeHandlers}
-            style={{ margin: "5px 16px 0", overflow: "initial" }}
-          >
+          <Content {...swipeHandlers} style={{ margin: '85px 16px 0', overflow: 'initial' }}>
             <div
-              className={`py-1 box-border min-h-[calc(100dvh_-_24px_-_45px_-_60px)]  sm:min-h-[calc(100dvh_-_24px_-_45px)]`}
+              className={`py-1 pb-6 box-border min-h-[calc(100dvh_-_24px_-_45px_-_60px)]  sm:min-h-[calc(100dvh_-_24px_-_45px)]`}
             >
               {/* <motion.div
             key={breadcrumbItems.at(-1).key}
@@ -189,7 +185,7 @@ function DashboardLayout({ children }: { children?: any }) {
             </div>
           </Content>
 
-          <Footer />
+          {/* <Footer /> */}
         </ScrollerRenderView>
         {/* </Layout> */}
         {/* </Layout> */}

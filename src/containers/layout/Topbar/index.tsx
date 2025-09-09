@@ -1,12 +1,13 @@
 "use custom";
 import { Layout, Button, theme, Breadcrumb } from "antd";
+
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import TopbarUser from "./TopbarUser";
 import LangSwitcher from "./LangSwitcher";
 // import { Link, useLocation } from "react-router-dom";
 // import { ReactNode } from "react";
 // import { FormattedMessage } from "react-intl";
-import ThemesSwitcher from "./ThemesSwitcher";
+// import ThemesSwitcher from "./ThemesSwitcher";
 const { Header } = Layout;
 
 function Topbar({
@@ -53,7 +54,9 @@ function Topbar({
         // === "#000" ? "#00000099" : "#ffffff99",
       }}
     >
+        
       <div className="isoLeft flex items-center gap-4">
+
         <Button
           className="text-base w-9 h-9"
           type="text"
@@ -64,16 +67,16 @@ function Topbar({
       </div>
       <ul className="flex gap-1 items-center">
         <li className="isoUser">
-          {" "}
-          <ThemesSwitcher />{" "}
+          {' '}
+          {/* <ThemesSwitcher />{' '} */}
         </li>
         <li className="isoUser">
-          {" "}
-          <LangSwitcher />{" "}
+          {' '}
+          <LangSwitcher />{' '}
         </li>
         <li className="isoUser">
-          {" "}
-          <TopbarUser />{" "}
+          {' '}
+          <TopbarUser />{' '}
         </li>
       </ul>
     </Header>

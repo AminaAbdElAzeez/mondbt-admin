@@ -1,1001 +1,457 @@
-import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import axios from "utlis/library/helpers/axios";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { FormattedMessage, useIntl } from "react-intl";
-import { FaPlus } from "react-icons/fa";
-import { StarOutlined, StarFilled, SearchOutlined } from "@ant-design/icons";
-import { BsBoxSeam } from "react-icons/bs";
-
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import React, { useState } from 'react';
+import { MdAccessAlarms } from 'react-icons/md';
+import { RiFileEditLine, RiUserFollowLine, RiUserUnfollowLine } from 'react-icons/ri';
 import {
-  Table,
-  Button,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
   Tooltip,
-  message,
-  Input,
-  TableColumnsType,
-  Form,
-  Modal,
-  Image,
-  Upload,
-} from "antd";
-import { useForm } from "antd/lib/form/Form";
-import toast from "react-hot-toast";
-import {
-  fetchProductsFailure,
-  fetchProductsRequest,
-  fetchProductsSuccess,
-} from "store/products/actions";
-import RollerLoading from "components/loading/roller";
-import ConfirmationModal from "./modal";
-import { FiUpload } from "react-icons/fi";
-import { FiDownload } from "react-icons/fi";
-import FileSaver from "file-saver";
-import type { GetProp, UploadFile, UploadProps } from "antd";
-import { IoEyeOutline } from "react-icons/io5";
-import { useLocation, useNavigate, Outlet } from "react-router-dom";
+  ResponsiveContainer,
+  Cell,
+} from 'recharts';
+import { Select, Button, Skeleton } from 'antd';
+import 'antd/dist/reset.css';
+import { IoSearch } from 'react-icons/io5';
+import { FaExclamation } from 'react-icons/fa';
 
-import { Swiper, SwiperSlide } from "swiper/react";
-import { EffectCards } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/effect-cards";
-import "./swipper.css";
-import { IoMdImages } from "react-icons/io";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import { Navigation, Pagination } from "swiper/modules";
+const { Option } = Select;
 
-type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
-type image = {
-  id: number;
-  url: string;
-  images: string;
+type CircularProgressProps = {
+  percentage: number;
+  size?: number;
+  strokeWidth?: number;
+  color?: string;
+  bgColor?: string;
 };
-export interface DataType {
-  name_en: string;
-  name_ar: string;
-  // images: image[];
-  images: string[];
-  created_at: string;
-  id: number;
-  ascon_code: string;
-  barcode: string;
-  is_featured: boolean;
+
+function CircularProgress({
+  percentage,
+  size = 200,
+  strokeWidth = 20,
+  color = '#07A869',
+  bgColor = '#D9D9D9', // gray-200
+}: CircularProgressProps) {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (percentage / 100) * circumference;
+
+  return (
+    <div className="relative flex items-center justify-center">
+      <svg width={size} height={size}>
+        <circle
+          stroke={bgColor}
+          fill="transparent"
+          strokeWidth={strokeWidth}
+          r={radius}
+          cx={size / 2}
+          cy={size / 2}
+        />
+        <circle
+          stroke={color}
+          fill="transparent"
+          strokeWidth={strokeWidth}
+          r={radius}
+          cx={size / 2}
+          cy={size / 2}
+          strokeDasharray={circumference}
+          strokeDashoffset={(1 - percentage / 100) * circumference}
+          transform={`rotate(90 ${size / 2} ${size / 2})`}
+        />
+      </svg>
+
+      {/* <span className="absolute text-3xl font-bold text-[#15445A]">%{percentage}</span> */}
+    </div>
+  );
 }
 
-function Products() {
-  /////states
-  const dispatch = useDispatch();
-  const [query, setQuery] = useState({} as any);
-  const { products, loading, error } = useSelector(
-    (state: { Products: any }) => state.Products
-  );
+const Products: React.FC = () => {
+  const [selected, setSelected] = useState<'سنة' | 'شهر' | 'يوم'>('يوم');
+  const buttons: Array<'سنة' | 'شهر' | 'يوم'> = ['سنة', 'شهر', 'يوم'];
 
-  const [pagination, setPagination] = useState({
-    pageSize: 10,
-    totalCount: 0,
-    currentPage: 0,
-  });
+  const [selectedAttend, setSelectedAttend] = useState<'الاحصائيات' | 'التقارير'>('الاحصائيات');
+  const buttonsAttend: Array<'الاحصائيات' | 'التقارير'> = ['الاحصائيات', 'التقارير'];
 
-  const [nameArabic, setNameArabic] = useState("");
-  const [nameEnglish, setNameEnglish] = useState("");
-  const [addImageOpen, setAddImageOpen] = useState(false);
-  const [productId, setProductId] = useState(undefined);
+  const [selectedHr, setSelectedHr] = useState<'الطلاب' | 'المدراس'>('الطلاب');
+  const buttonsHr: Array<'الطلاب' | 'المدراس'> = ['الطلاب', 'المدراس'];
 
-  const [showModal, setShowModal] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState<DataType | null>(null);
-  const [form] = Form.useForm();
-  const intel = useIntl();
-  const [importExportLoading, setImportExportLoading] = useState(false);
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [uploading, setUploading] = useState(false); ////////
-  const [search, setSearch] = useState(undefined);
-  const [selectedProductId, setSelectedProductId] = useState<number | null>(
-    null
-  );
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-  const [viewImagesModalVisible, setViewImagesModalVisible] = useState(false);
-  const [viewImages, setViewImages] = useState<string[]>([]);
-  const swiperRef = useRef(null);
-  const { locale } = useIntl();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { pathname } = location;
-
-  useEffect(() => {
-    if (viewImagesModalVisible) {
-      setTimeout(() => {
-        swiperRef.current?.swiper?.update();
-      }, 100);
-    }
-  }, [viewImagesModalVisible, locale]);
-
-  ///// useEffects
-  useEffect(() => {
-    fetchProducts();
-  }, [pagination.currentPage, query, search, locale]);
-
-  //// Fetch products from API
-  const searchQuery = () => {
-    let searchVal = "";
-    // if (Object.keys(query).length > 0) {
-    //   for (let x in query) {
-    //     search = `${search}` + `&${x}=${query[x]}`;
-    //   }
-    // }
-    if (search) {
-      searchVal = `filter[search]=${search}`;
-    }
-    return searchVal;
-  };
-  const fetchProducts = async () => {
-    const params: { [key: string]: string | number | {} } = {};
-    if (typeof pagination.currentPage === "number") {
-      params.skip = pagination.currentPage * pagination.pageSize;
-      params.take = pagination.pageSize;
-    }
-    params.query = query;
-    const searchParams = searchQuery();
-    dispatch(fetchProductsRequest());
-    try {
-      const { data } = await axios.get(
-        `admin/products?skip=${params?.skip}&take=${params?.take}&${searchParams}`
-      );
-      setPagination((current) => ({
-        ...current,
-        totalCount: data?.count,
-      }));
-      dispatch(fetchProductsSuccess(data.data));
-      return data.data;
-    } catch (err: any) {
-      dispatch(fetchProductsFailure(err.message));
-      throw err;
-    }
-  };
-
-  const {
-    data,
-    isLoading,
-    error: queryError,
-    refetch,
-  } = useQuery({
-    queryKey: [
-      "fetchData",
-      pagination?.currentPage,
-      pagination?.pageSize,
-      query,
-      search,
-    ],
-    queryFn: fetchProducts,
-    // refetchInterval: 5000,
-  });
-
-  // add image
-  const handleImageUpload = async () => {
-    try {
-      const values = await form.validateFields();
-
-      if (!selectedProductId || !values.image || values.image.length === 0)
-        return;
-
-      const file = values.image[0].originFileObj;
-
-      const formData = new FormData();
-      formData.append("_method", "patch");
-      formData.append("images[]", file);
-
-      setIsUploading(true);
-
-      const response = await axios.post(
-        `admin/products/${selectedProductId}/upload-image`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      const successMessage = response?.data?.message;
-      message.success(successMessage);
-
-      refetch();
-      setIsUploadModalOpen(false);
-      form.resetFields();
-      setSelectedFiles([]);
-      refetch();
-    } catch (error: any) {
-      const errorMessage = error?.response?.data?.message;
-      if (errorMessage) {
-        message.error(errorMessage);
-      }
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  //// Toggle featured status
-  // const handleToggleFeatured = async (id: number, currentStatus: boolean) => {
-  //   try {
-  //     const response = await axios.patch(`admin/products/${id}/features`, {
-  //       is_featured: currentStatus ? 0 : 1,
-  //     });
-
-  //     if (response?.data?.data) {
-  //       dispatch(fetchProductsSuccess(response.data.data));
-  //       message.success(
-  //         currentStatus ? "Unfeatured successfully" : "Featured successfully"
-  //       );
-  //     }
-  //     fetchProducts();
-  //   } catch (error) {
-  //     message.error("Failed to update status");
-  //   }
-  // };
-
-  const handleToggleFeatured = async (id: number, currentStatus: boolean) => {
-    try {
-      const response = await axios.patch(`admin/products/${id}/features`, {
-        is_featured: currentStatus ? 0 : 1,
-      });
-
-      // console.log("Full response:", response.data);
-
-      if (response?.data?.message) {
-        dispatch(fetchProductsSuccess(response.data.message));
-        message.success(response.data.message);
-        console.log(response.data.message);
-      }
-      // fetchProducts();
-      refetch();
-    } catch (error: any) {
-      const backendMessage = error.message;
-      message.error(backendMessage);
-    }
-  };
-
-  // Handle modal confirm action
-  const handleModalConfirm = () => {
-    if (currentProduct) {
-      handleToggleFeatured(currentProduct.id, currentProduct.is_featured);
-    }
-    setShowModal(false);
-    setCurrentProduct(null);
-  };
-
-  //// add image logic
-  const addImageMutation = useMutation({
-    mutationFn: (values) =>
-      axios["post"](`admin/products/${productId}/images`, values),
-    onSuccess: (res) => {
-      // const { data } = res?.data?.data;
-      const { message } = res?.data;
-      console.log(res?.data?.data);
-      setAddImageOpen(false);
-      form.resetFields();
-      fetchProducts();
-      form.resetFields();
-      toast.success(message, {
-        position: "top-center",
-        duration: 3000,
-      });
-    },
-    onError: (err) => {
-      const {
-        status,
-        data: { message },
-      } = (err as any).response;
-      console.log(err, err.message);
-      // setIsAddContainerModalOpen(false);
-      toast.error(err.message, {
-        position: "top-center",
-        duration: 3000,
-      });
-    },
-  });
-
-  //// dynamicform data
-  const onFinish = (values: any) => {
-    values["_method"] = "patch";
-    console.log(values);
-    addImageMutation.mutate(values);
-  };
-  const formItemLayout = {
-    labelCol: {
-      xs: { span: 24 },
-      sm: { span: 4 },
-    },
-    wrapperCol: {
-      xs: { span: 24 },
-      sm: { span: 20 },
-    },
-  };
-
-  const formItemLayoutWithOutLabel = {
-    wrapperCol: {
-      xs: { span: 24, offset: 0 },
-      sm: { span: 20, offset: 4 },
-    },
-  };
-
-  ////export button
-  const exportBtnHandler = async () => {
-    // const searchParams = searchQuery()?.slice(1);
-    setImportExportLoading(true);
-    try {
-      const response = await axios.get(`admin/products/export`, {
-        responseType: "blob",
-      });
-
-      FileSaver.saveAs(response?.data, `Products`);
-    } catch (err) {
-      message.error(err?.message);
-    } finally {
-      setImportExportLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (fileList.length > 0) {
-      handleUpload();
-    }
-  }, [fileList]);
-  //// import button
-  const handleUpload = async () => {
-    const formData = new FormData();
-    fileList.forEach((file) => {
-      formData.append("file", file as FileType);
-    });
-    setUploading(true);
-
-    try {
-      const response = await axios.post("admin/products/import", formData);
-      setFileList([]);
-      message.success(response?.data?.message);
-    } catch (err: any) {
-      message.error(err.message);
-    } finally {
-      setUploading(false);
-    }
-  };
-  const props: UploadProps = {
-    onRemove: (file) => {
-      const index = fileList.indexOf(file);
-      const newFileList = fileList.slice();
-      newFileList.splice(index, 1);
-      setFileList(newFileList);
-    },
-    beforeUpload: (file) => {
-      setFileList([...fileList, file]);
-      return false;
-    },
-    fileList,
-  };
-  //// Column search component
-  const columnSearch = (placeHolder, state, setState, columnName) => {
-    return (
-      <div style={{ padding: 8 }}>
-        <Input
-          placeholder={placeHolder}
-          value={state}
-          onChange={(e) => setState(e.target.value)}
-          style={{ marginBottom: 8, display: "block" }}
-        />
-        <Button
-          type="primary"
-          icon={<SearchOutlined className="mr-[-2px]" />}
-          className="bg-[#03b89e] text-[#fff] w-full"
-          onClick={() => {
-            setPagination((current) => ({
-              ...current,
-              currentPage: 0,
-            }));
-            // if (state) {
-            //   setQuery({ ...query, [columnName]: state });
-            // } else {
-            //   const obj = { ...query };
-            //   delete obj[columnName];
-            //   setQuery(obj);
-            // }
-            setSearch(state);
-          }}
-        >
-          <FormattedMessage id="search" />
-        </Button>
-      </div>
-    );
-  };
-
-  // upload Images
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
-
-  const moduleName = location.pathname.split("/")[3];
-
-  const handleUploadImages = async () => {
-    try {
-      const values = await form.validateFields();
-
-      const files = values.images
-        ?.map((f: any) => f.originFileObj)
-        .filter(Boolean);
-      if (!files || files.length === 0) return;
-
-      setIsUploading(true);
-
-      const formData = new FormData();
-      formData.append("model_name", moduleName);
-
-      files.forEach((file: File, index: number) => {
-        const extension = file.name.split(".").pop();
-        const newFileName = `image_${index + 1}.${extension}`;
-        const renamedFile = new File([file], newFileName, { type: file.type });
-        formData.append("images[]", renamedFile);
-      });
-
-      const response = await axios.post("admin/upload-image", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      message.success(response.data.message);
-      setUploadedImages(response.data.images || []);
-      setIsModalOpen(false);
-      setSelectedFiles([]);
-      form.resetFields();
-      refetch();
-    } catch (error: any) {
-      if (error.errorFields) {
-        return;
-      }
-      const errMessage = error.message;
-      message.error(errMessage);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  //// Columns definition
-  const columns: TableColumnsType<DataType> = [
+  const stats = [
     {
-      title: <FormattedMessage id="nameAr" />,
-      dataIndex: "name_ar",
-      key: "name_ar",
-      width: "20%",
-      filterDropdown: columnSearch(
-        // "nameAr",
-        intel.formatMessage({ id: "nameAr" }),
-        nameArabic,
-        setNameArabic,
-        "name_ar"
-      ),
-      filterIcon: (
-        <SearchOutlined style={{ color: nameArabic ? "#03b89e" : undefined }} />
-      ),
+      title: 'الغرامات',
+      value: '1,020,935',
+      suffix: 'ريال سعودي',
+      bg: 'bg-[#07A869]',
+      text: 'text-white',
+      icon: '/riyal.png',
     },
     {
-      title: <FormattedMessage id="nameEn" />,
-      dataIndex: "name_en",
-      key: "name_en",
-      width: "20%",
-      filterDropdown: columnSearch(
-        // "nameEn",
-        intel.formatMessage({ id: "nameEn" }),
-        nameEnglish,
-        setNameEnglish,
-        "name_en"
-      ),
-      filterIcon: (
-        <SearchOutlined
-          style={{ color: nameEnglish ? "#03b89e" : undefined }}
-        />
-      ),
+      title: 'الاستئذان',
+      value: '12,650',
+      suffix: 'حالة استئذان',
+      bg: 'bg-white',
+      text: 'text-[#07A869]',
+      borderStyle: { border: '1px solid #C2C1C1', background: '#f9f9f9' },
     },
     {
-      title: (
-        <div className="text-center">
-          <FormattedMessage id="price" />
-        </div>
-      ),
-      dataIndex: "price",
-      key: "price",
-      width: "10%",
-      align: "center",
+      title: 'التأخير',
+      value: '1,180,935',
+      suffix: 'حالة تأخير',
+      bg: 'bg-[#07A869]',
+      text: 'text-white',
     },
     {
-      title: (
-        <div className="text-center">
-          <FormattedMessage id="ascon-code" />
-        </div>
-      ),
-      dataIndex: "ascon_code",
-      key: "ascon_code",
-      width: "11%",
-      align: "center",
+      title: 'الغياب',
+      value: '314,919',
+      suffix: 'طالب وطالبة',
+      bg: 'bg-white',
+      text: 'text-[#07A869]',
+      borderStyle: { border: '1px solid #C2C1C1', background: '#f9f9f9' },
     },
     {
-      title: (
-        <div className="text-center">
-          <FormattedMessage id="barcode" />
-        </div>
-      ),
-      dataIndex: "barcode",
-      key: "barcode",
-      width: "11%",
-      align: "center",
-    },
-    {
-      title: (
-        <div className="text-center">
-          <FormattedMessage id="image" />
-        </div>
-      ),
-      dataIndex: "images",
-      key: "images",
-      width: "12%",
-      render: (images: string[]) => {
-        if (!images || images.length === 0) {
-          return (
-            <p className="text-gray-300">
-              <FormattedMessage id="no-img" />
-            </p>
-          );
-        }
-
-        if (images.length === 1) {
-          return (
-            <div className="flex justify-center items-center">
-              <Image
-                src={images[0]}
-                className="!w-20 !h-16 object-contain"
-                alt="single"
-                preview={{
-                  toolbarRender: () => null,
-                  mask: (
-                    <span className="flex items-center p-2 text-[14px]">
-                      <IoEyeOutline className="text-[16px] mx-1" />
-                      <FormattedMessage id="perview" />
-                    </span>
-                  ),
-                }}
-              />
-            </div>
-          );
-        }
-
-        return (
-          <div className="flex justify-center items-center">
-            <Tooltip
-              title={<FormattedMessage id="showImage" />}
-              color="#03b89e"
-            >
-              <Button
-                className="text-[#03b89e] cursor-pointer text-xl"
-                onClick={() => {
-                  setViewImages(images);
-                  setViewImagesModalVisible(true);
-                }}
-              >
-                <IoMdImages className="text-[#03b89e] cursor-pointer text-2xl" />
-              </Button>
-            </Tooltip>
-          </div>
-        );
-      },
-    },
-    {
-      title: (
-        <div className="text-center">
-          <FormattedMessage id="is-featured" />
-        </div>
-      ),
-      dataIndex: "is_featured",
-      key: "is_featured",
-      width: "10%",
-      render: (text: number, record: DataType) => (
-        <div className="flex justify-center items-center">
-          <span
-            key={`star-${record.id}`}
-            style={{
-              fontSize: "20px",
-              color: text === 1 ? "#FFD700" : "#D3D3D3",
-              cursor: "pointer",
-            }}
-            onClick={() => {
-              setCurrentProduct(record);
-              setShowModal(true);
-            }}
-          >
-            {text === 1 ? (
-              <StarFilled style={{ color: "#FFD700" }} />
-            ) : (
-              <StarOutlined style={{ color: "#D3D3D3" }} />
-            )}
-          </span>
-        </div>
-      ),
-    },
-    {
-      title: (
-        <div className="text-center">
-          <FormattedMessage id="actions" />
-        </div>
-      ),
-      key: "actions",
-      width: "12%",
-      fixed: "right",
-      render: (_, row) => (
-        <div className="flex gap-1 justify-center items-center">
-          <Tooltip title={<FormattedMessage id="add-image" />} color="#209163">
-            <FaPlus
-              className="text-primary cursor-pointer mx-3 text-xl"
-              onClick={() => {
-                // setProductId(row.id);
-                // setAddImageOpen(true);
-                setSelectedProductId(row.id);
-                setIsUploadModalOpen(true);
-              }}
-            />
-          </Tooltip>
-          <Tooltip
-            title={<FormattedMessage id="product-branch-availability" />}
-            color="#209163"
-          >
-            <BsBoxSeam
-              className="text-primary cursor-pointer mx-3 !w-[25px] text-xl"
-              onClick={() => {
-                navigate("product-branchs", { state: { branchId: row?.id } });
-              }}
-            />
-          </Tooltip>
-        </div>
-      ),
+      title: 'الحضور',
+      value: '5,983,404',
+      suffix: 'طالب وطالبة',
+      bg: 'bg-[#07A869]',
+      text: 'text-white',
     },
   ];
 
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const data = [
+    { day: 15, value: 70, hijri: '21' },
+    { day: 16, value: 50, hijri: '20' },
+    { day: 17, value: 90, hijri: '19' },
+    { day: 18, value: 30, hijri: '18' },
+    { day: 19, value: 60, hijri: '17' },
+    { day: 20, value: 80, hijri: '16' },
+    { day: 21, value: 40, hijri: '15' },
+  ];
+
+  const [loading, setLoading] = useState(true);
+  const onChange = (checked) => {
+    setLoading(!checked);
+  };
+
   return (
-    <>
-      {pathname.split("/")[pathname.split("/").length - 1] === "departure" ? (
-        <div className="container mx-auto">
-          {loading ? (
-            <RollerLoading />
-          ) : (
-            <>
-              <div className="flex items-center py-4">
-                <Button
-                  loading={importExportLoading}
-                  className="!shadow-none !px-[10px] !py-[8px] !rounded-[8px] !outline-none !bg-white !border-primary me-2 !text-primary hover:!bg-primary hover:!text-white  flex justify-center items-center"
-                  onClick={exportBtnHandler}
-                >
-                  <FiDownload className=" text-[20px]" />
-                  {<FormattedMessage id="export" />}
-                </Button>
-                {/* <Button className="!outline-none !bg-primary !border-primary hover:!bg-white ms-2 !text-white hover:!text-primary  flex justify-center items-center">
-                  <FiUpload className="me-1 text-[20px]" />
-                  {<FormattedMessage id="import" />}
-                </Button> */}
-                <Upload {...props}>
-                  <Button
-                    loading={uploading}
-                    className="!shadow-none !px-[10px] !py-[8px] !rounded-[8px] !outline-none !bg-primary !border-primary hover:!bg-white ms-2 !text-white hover:!text-primary  flex justify-center items-center"
-                  >
-                    <FiUpload className=" text-[20px]" />
-                    <FormattedMessage id="import" />
-                  </Button>
-                </Upload>
-                <Button
-                  className="!shadow-none !px-[10px] !py-[8px] !rounded-[8px] !outline-none !bg-primary !border-primary hover:!bg-white ms-2 !text-white hover:!text-primary  flex justify-center items-center"
-                  onClick={() => {
-                    setSelectedFiles([]);
-                    setIsModalOpen(true);
-                  }}
-                >
-                  <FormattedMessage id="uploadImages" />
-                </Button>
-              </div>
-              <Table<DataType>
-                columns={columns}
-                // dataSource={products}
-                dataSource={data ?? []}
-                rowKey="id"
-                // bordered
-                scroll={{ x: 1400, y: 380 }}
-                pagination={{
-                  total: pagination.totalCount,
-                  current: pagination.currentPage + 1,
-                  pageSize: pagination.pageSize,
-                  onChange(page, pageSize) {
-                    setPagination((current) => ({
-                      ...current,
-                      pageSize,
-                      currentPage: page - 1,
-                    }));
-                  },
-                }}
-              />
-            </>
-          )}
+    <section dir="ltr" className="text-right px-2">
+      <div className=" mb-3 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start  gap-1 lg:gap-5">
+        <div
+          className="flex rounded-3xl h-9 w-max  overflow-hidden"
+          style={{ border: '1px solid #C2C1C1' }}
+        >
+          {buttons.map((btn) => {
+            const isSelected = selected === btn;
+            return (
+              <button
+                key={btn}
+                onClick={() => setSelected(btn)}
+                className={`
+              text-base h-8.5 w-[76px] sm:w-24 rounded-3xl transition-all duration-200 cursor-pointer
+              ${isSelected ? 'bg-[#07A869] text-white' : 'bg-transparent text-[#C2C1C1]'}
+              hover:${isSelected ? 'brightness-110' : 'bg-gray-100'}
+              outline-none border-none
+            `}
+              >
+                {btn}
+              </button>
+            );
+          })}
         </div>
-      ) : (
-        <Outlet />
-      )}
-      <ConfirmationModal
-        open={showModal}
-        onCancel={() => setShowModal(false)}
-        onConfirm={handleModalConfirm}
-        isFeatured={currentProduct?.is_featured || false}
-      />
-      {/**** add image modal****/}
-      <Modal
-        title={
-          <p className="text-[18px]">
-            <FormattedMessage id="add-image" />
-          </p>
-        }
-        open={addImageOpen}
-        onCancel={() => {
-          setAddImageOpen(false);
-          form.resetFields(); // Reset the form fields here
-        }}
-        footer={null}
-      >
-        <Form
-          form={form}
-          name="dynamic_form_item"
-          {...formItemLayoutWithOutLabel}
-          onFinish={onFinish}
-          style={{ maxWidth: 600 }}
-        >
-          <Form.List
-            name="images"
-            rules={[
-              {
-                validator: async (_, names) => {
-                  if (!names || names.length < 1) {
-                    return Promise.reject(
-                      new Error(intel.formatMessage({ id: "at-least-one-url" }))
-                    );
-                  }
-                },
-              },
-            ]}
+        <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
+          احصائيات الانضباط
+        </h2>
+      </div>
+
+      <div className="flex justify-between items-center flex-wrap gap-5 py-2 mb-5 ">
+        {stats.map((item, index) => (
+          <div
+            key={index}
+            className={`rounded-xl shadow-md p-4 ${item.bg} transform transition duration-300 hover:scale-105 hover:shadow-xl flex-grow w-[160px] text-right`}
+            style={item.borderStyle || {}}
           >
-            {(fields, { add, remove }, { errors }) => (
-              <>
-                {fields.map((field, index) => (
-                  <Form.Item
-                    {...(index === 0
-                      ? formItemLayout
-                      : formItemLayoutWithOutLabel)}
-                    label={
-                      index === 0 ? intel.formatMessage({ id: "urls" }) : ""
-                    }
-                    required={false}
-                    key={field.key}
-                    style={{ marginTop: "30px" }}
-                  >
-                    <Form.Item
-                      {...field}
-                      validateTrigger={["onChange", "onBlur"]}
-                      rules={[
-                        {
-                          required: true,
-                          message: <FormattedMessage id="image-required" />,
-                        },
-                        {
-                          pattern:
-                            /^(https?:\/\/)?([^\s:@]+(:[^\s:@]*)?@)?([^\s:@]+)?(\.[^\s:@]+)+(:\d+)?(\/[^\s]*)?$/,
-                          message: <FormattedMessage id="invalid-url" />,
-                        },
-                      ]}
-                      noStyle
-                    >
-                      <Input
-                        placeholder={intel.formatMessage({
-                          id: "enter-image-url",
-                        })}
-                        style={{ width: "80%", margin: "0px 5px 0px" }}
-                      />
-                    </Form.Item>
-                    {fields.length > 1 ? (
-                      <MinusCircleOutlined
-                        className="dynamic-delete-button"
-                        onClick={() => remove(field.name)}
-                      />
-                    ) : null}
-                  </Form.Item>
-                ))}
-                <Form.Item>
-                  <Button
-                    type="dashed"
-                    onClick={() => add()}
-                    style={{ width: "80%", margin: "0px 5px 0px" }}
-                    icon={<PlusOutlined />}
-                  >
-                    <FormattedMessage id="add-url" />
-                  </Button>
+            {/* Title */}
+            <h3 className={`${item.text} text-lg font-medium mb-1`}>{item.title}</h3>
 
-                  <Form.ErrorList errors={errors} />
-                </Form.Item>
-              </>
-            )}
-          </Form.List>
-          {/* <Form.Item>
-        <Button type="primary" htmlType="submit">
-          Submit
-        </Button>
-      </Form.Item> */}
-          <Form.Item className="modals-btns update-user-modal-btns me-4 flex justify-end items-center sticky bottom-0 bg-white z-[1000] pt-4">
-            <Button
-              // type="primary"
+            {/* Value + Icon */}
+            <div className="flex items-center gap-2 justify-end">
+              {item.icon && <img src={item.icon} alt="icon" className="w-7 h-7" />}
+              <span className={`${item.text} text-2xl font-semibold`}>{item.value}</span>
+            </div>
 
-              size="large"
-              className="modals-cancel-btn min-w-[60px] me-1 text-black inline-block hover:text-black hover:border-black"
-              onClick={() => {
-                setAddImageOpen(false);
-                form.resetFields();
-              }}
-            >
-              <FormattedMessage id="cancel" />
-            </Button>
-            <Button
-              // type="primary"
+            {/* Suffix */}
+            <p className={`${item.text} text-base my-1`}>{item.suffix}</p>
+          </div>
+        ))}
+      </div>
 
-              size="large"
-              className="modals-confirm-btn min-w-[60px] text-white ms-1 bg-primary hover:bg-primary inline-block"
-              htmlType="submit"
-              loading={addImageMutation?.isPending}
-            >
-              <FormattedMessage id="add" />
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* upload images */}
-      <Modal
-        open={isModalOpen}
-        onCancel={() => {
-          setIsModalOpen(false);
-          form.resetFields();
-          setSelectedFiles([]);
-        }}
-        onOk={handleUploadImages}
-        confirmLoading={isUploading}
-        title={intel.formatMessage({ id: "uploadImages" })}
-        okText={intel.formatMessage({ id: "upload" })}
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item
-            name="images"
-            valuePropName="fileList"
-            getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-            rules={[
-              {
-                required: true,
-                message: intel.formatMessage({ id: "image-required" }),
-              },
-            ]}
+      <div className="mb-6 mt-2 border border-[#C2C1C1] rounded-lg bg-white" dir="rtl">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-4">
+          <Select
+            placeholder="المنطقة"
+            className="w-full custom-select"
+            style={{
+              backgroundColor: '#F3F3F3',
+              borderColor: '#DDDDDD',
+              color: '#15445A',
+            }}
+            dropdownStyle={{ backgroundColor: '#F3F3F3', color: '#15445A' }}
           >
-            <Upload
-              className="custom-upload-border"
-              listType="picture-card"
-              multiple
-              beforeUpload={() => false}
-              onChange={(info) =>
-                setSelectedFiles(info.fileList.map((f) => f.originFileObj))
-              }
-              accept="image/*"
-              showUploadList={{
-                showPreviewIcon: false,
-                showRemoveIcon: true,
-              }}
-            >
-              <div>
-                <PlusOutlined />
-                <div style={{ marginTop: 8 }}>
-                  <FormattedMessage id="selectImg" />
+            <Option value="riyadh">الرياض</Option>
+            <Option value="jeddah">جدة</Option>
+          </Select>
+
+          <Select
+            placeholder="المدينة"
+            className="w-full custom-select"
+            style={{
+              backgroundColor: '#F3F3F3',
+              borderColor: '#DDDDDD',
+              color: '#15445A',
+            }}
+            dropdownStyle={{ backgroundColor: '#F3F3F3', color: '#15445A' }}
+          >
+            <Option value="malaz">مكة</Option>
+            <Option value="riyadh">الرياض</Option>
+          </Select>
+
+          <Select
+            placeholder="الرقم الوزاري"
+            className="w-full custom-select"
+            style={{
+              backgroundColor: '#F3F3F3',
+              borderColor: '#DDDDDD',
+              color: '#15445A',
+            }}
+            dropdownStyle={{ backgroundColor: '#F3F3F3', color: '#15445A' }}
+          >
+            <Option value="123">123</Option>
+            <Option value="456">456</Option>
+          </Select>
+
+          <Select
+            placeholder="النوع"
+            className="w-full custom-select"
+            style={{
+              backgroundColor: '#F3F3F3',
+              borderColor: '#DDDDDD',
+              color: '#15445A',
+            }}
+            dropdownStyle={{ backgroundColor: '#F3F3F3', color: '#15445A' }}
+          >
+            <Option value="boys">بنين</Option>
+            <Option value="girls">بنات</Option>
+          </Select>
+
+          <Select
+            placeholder="الجنس"
+            className="w-full custom-select"
+            style={{
+              backgroundColor: '#F3F3F3',
+              borderColor: '#DDDDDD',
+              color: '#15445A',
+            }}
+            dropdownStyle={{ backgroundColor: '#F3F3F3', color: '#15445A' }}
+          >
+            <Option value="male">ذكر</Option>
+            <Option value="female">أنثى</Option>
+          </Select>
+
+          <Select
+            placeholder="اسم المدرسة"
+            className="w-full custom-select"
+            style={{
+              backgroundColor: '#F3F3F3',
+              borderColor: '#DDDDDD',
+              color: '#15445A',
+            }}
+            dropdownStyle={{ backgroundColor: '#F3F3F3', color: '#15445A' }}
+          >
+            <Option value="school1">مدرسة 1</Option>
+            <Option value="school2">مدرسة 2</Option>
+          </Select>
+          <button className="flex justify-center items-center gap-1 transition-colors duration-500 rounded-md bg-[#07A869] border border-[#07A869] border-solid cursor-pointer  hover:bg-white hover:text-[#07A869] text-white py-1.5 ">
+            بحث
+            <IoSearch className=" text-lg" />
+          </button>
+        </div>
+      </div>
+
+      <div className="flex flex-col lg:flex-row justify-between items-stretch  gap-6">
+        <div style={{ border: '1px solid #C2C1C1' }} className="p-4 rounded-lg w-full lg:w-1/2">
+          <div className="px-6 flex justify-center items-center mb-2 lg:mb-0">
+            <img src="/map.png" alt="map" className="w-full max-w-[500px] " />
+          </div>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-6 w-full lg:w-1/2">
+          <div
+            className="flex-1 rounded-lg border border-[#C2C1C1] flex flex-col gap-4 w-1/2"
+            style={{ border: '1px solid #C2C1C1' }}
+          >
+            <div className="flex gap-2 w-full px-4 pt-3 pb-0">
+              {buttonsHr.map((btn) => {
+                const isSelected = selectedHr === btn;
+                return (
+                  <button
+                    key={btn}
+                    onClick={() => setSelectedHr(btn)}
+                    className={`flex-1 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 border border-[#07A869] border-solid  cursor-pointer
+              ${isSelected ? 'bg-[#07A869] text-white' : 'bg-gray-100 text-[#15445A]'}
+            `}
+                  >
+                    {btn}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="w-full h-px bg-gray-300 " />
+
+            <div className="flex items-center gap-4 px-4 bg-white rounded-lg border border-[#C2C1C1] w-full">
+              <div className="flex-1 flex flex-col gap-2 w-full">
+                <div className="w-3/5">
+                  <Skeleton.Input
+                    active
+                    size="small"
+                    className="!bg-[#C2C1C1] rounded-[4px]"
+                    style={{ height: '14px', width: '100%' }}
+                  />
+                </div>
+
+                <div className="w-2/5">
+                  <Skeleton.Input
+                    active
+                    size="small"
+                    className="!bg-[#C2C1C1] rounded-[4px]"
+                    style={{ height: '7px', width: '100%' }}
+                  />
                 </div>
               </div>
-            </Upload>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* add image one only */}
-      <Modal
-        open={isUploadModalOpen}
-        onCancel={() => {
-          setIsUploadModalOpen(false);
-          form.resetFields();
-          setSelectedFiles([]);
-        }}
-        onOk={handleImageUpload}
-        confirmLoading={isUploading}
-        title={intel.formatMessage({ id: "add-image" })}
-        okText={intel.formatMessage({ id: "add" })}
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item
-            name="image"
-            valuePropName="fileList"
-            getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-            rules={[
-              {
-                required: true,
-                message: intel.formatMessage({ id: "image-required" }),
-              },
-            ]}
-          >
-            <Upload
-              listType="picture-card"
-              maxCount={1}
-              beforeUpload={() => false}
-              onChange={(info) =>
-                setSelectedFiles(info.fileList.map((f) => f.originFileObj))
-              }
-              accept="image/*"
-              showUploadList={{ showPreviewIcon: false, showRemoveIcon: true }}
-              className={selectedFiles.length > 0 ? "image-selected" : ""}
-            >
-              <div>
-                <PlusOutlined />
-                <div style={{ marginTop: 8 }}>
-                  <FormattedMessage id="selectImg" />
-                </div>
-              </div>
-            </Upload>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      <Modal
-        open={viewImagesModalVisible}
-        footer={null}
-        onCancel={() => setViewImagesModalVisible(false)}
-        width={600}
-        destroyOnClose={false}
-        forceRender={true}
-        className="sliderModal"
-      >
-        <Swiper
-          dir={locale === "ar" ? "ltr" : "ltr"}
-          observer={true}
-          observeParents={true}
-          ref={swiperRef}
-          effect={"cards"}
-          grabCursor={true}
-          // modules={[EffectCards]}
-          className="mySwiper"
-          spaceBetween={20}
-          slidesPerView={1}
-          navigation={true}
-          pagination={{ clickable: true }}
-          modules={[EffectCards, Navigation, Pagination]}
-          // style={{ width: "100%", height: 400 }}
-        >
-          {viewImages.map((src, idx) => (
-            <SwiperSlide key={idx}>
-              <img
-                src={src}
-                // alt={`slide-${idx}`}
-                alt={intel.formatMessage(
-                  { id: "slideAlt" },
-                  { index: idx + 1 }
-                )}
-                style={{ maxWidth: "100%", borderRadius: 4 }}
-                loading="lazy"
+              <Skeleton.Avatar
+                active
+                size={64}
+                shape="circle"
+                style={{ backgroundColor: '#C2C1C1' }}
               />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </Modal>
-    </>
+            </div>
+            <div className="flex items-center gap-3 px-4 bg-white rounded-lg border border-[#C2C1C1] w-full">
+              <div className="flex-1 flex flex-col gap-2 w-full">
+                <div className="w-3/5">
+                  <Skeleton.Input
+                    active
+                    size="small"
+                    className="!bg-[#C2C1C1] rounded-[4px]"
+                    style={{ height: '14px', width: '100%' }}
+                  />
+                </div>
+
+                <div className="w-2/5">
+                  <Skeleton.Input
+                    active
+                    size="small"
+                    className="!bg-[#C2C1C1] rounded-[4px]"
+                    style={{ height: '7px', width: '100%' }}
+                  />
+                </div>
+              </div>
+              <Skeleton.Avatar
+                active
+                size={64}
+                shape="circle"
+                style={{ backgroundColor: '#C2C1C1' }}
+              />
+            </div>
+            <div className="flex items-center gap-4 p-4 bg-white rounded-lg border border-[#C2C1C1] w-full">
+              <div className="flex-1 flex flex-col gap-2 w-full">
+                <div className="w-3/5">
+                  <Skeleton.Input
+                    active
+                    size="small"
+                    className="!bg-[#C2C1C1] rounded-[4px]"
+                    style={{ height: '14px', width: '100%' }}
+                  />
+                </div>
+
+                <div className="w-2/5">
+                  <Skeleton.Input
+                    active
+                    size="small"
+                    className="!bg-[#C2C1C1] rounded-[4px]"
+                    style={{ height: '7px', width: '100%' }}
+                  />
+                </div>
+              </div>
+              <Skeleton.Avatar
+                active
+                size={64}
+                shape="circle"
+                style={{ backgroundColor: '#C2C1C1' }}
+              />
+            </div>
+          </div>
+
+          <div
+            style={{ border: '1px solid #C2C1C1' }}
+            className="flex-1  rounded-lg border border-[#C2C1C1] flex flex-col gap-4 w-1/2"
+          >
+            <div className="flex gap-2 w-full px-4 pt-3 pb-0">
+              {buttonsAttend.map((btn) => {
+                const isSelected = selectedAttend === btn;
+                return (
+                  <button
+                    key={btn}
+                    onClick={() => setSelectedAttend(btn)}
+                    className={`flex-1 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 border border-[#07A869] border-solid  cursor-pointer
+              ${isSelected ? 'bg-[#07A869] text-white' : 'bg-gray-100 text-[#15445A]'}
+            `}
+                  >
+                    {btn}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="w-full h-px bg-gray-300 " />
+            <div className="flex items-center gap-4 justify-between px-4 mb-5">
+              <CircularProgress
+                percentage={80}
+                size={70}
+                strokeWidth={10}
+                color="#07A869"
+                bgColor="#E5E7EB"
+              />
+              <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
+                الحضور
+              </span>
+            </div>
+            <div className="flex items-center gap-4 justify-between px-4 mb-5">
+              <CircularProgress
+                percentage={80}
+                size={70}
+                strokeWidth={10}
+                color="#07A869"
+                bgColor="#E5E7EB"
+              />
+              <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
+                الغياب
+              </span>
+            </div>
+            <div className="flex items-center gap-4 justify-between px-4 mb-5">
+              <CircularProgress
+                percentage={80}
+                size={70}
+                strokeWidth={10}
+                color="#07A869"
+                bgColor="#E5E7EB"
+              />
+              <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
+                المكافئات
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
-}
+};
 
 export default Products;
