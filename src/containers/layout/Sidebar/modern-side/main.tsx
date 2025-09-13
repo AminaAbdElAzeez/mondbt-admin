@@ -78,7 +78,7 @@ function MainSide({ setCollapsed, collapsed, width }: IMainSide) {
           {/* <EditProfile /> */}
 
           {/* <LangSwitcher /> */}
-          {/* <TopbarUser /> */}
+          <TopbarUser />
         </div>
       </div>
     </>

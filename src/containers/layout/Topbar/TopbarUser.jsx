@@ -17,7 +17,7 @@ export default function TopbarUser() {
 
   const content = (
     <div className="min-w-[10rem] flex flex-col gap-[2px]">
-      <Button
+      {/* <Button
         className="w-full text-start"
         type="text"
         onClick={() => {
@@ -25,7 +25,7 @@ export default function TopbarUser() {
         }}
       >
         <FormattedMessage id="Profile" />
-      </Button>
+      </Button> */}
 
       <Button
         className="w-full text-start"
@@ -34,8 +34,8 @@ export default function TopbarUser() {
           dispatch(logout());
           dispatch(removeProfileData());
         }}
-      >
-        <FormattedMessage id="logout" />
+      >تسجيل الخروج
+        {/* <FormattedMessage id="logout" /> */}
       </Button>
     </div>
   );

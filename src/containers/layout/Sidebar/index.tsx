@@ -16,10 +16,7 @@ function Sidebar({
   width: number;
   setCollapsed: any;
 }) {
-  const { locale } = useSelector(
-    ({ LanguageSwitcher }: { LanguageSwitcher: ILanguageSwitcher }) =>
-      LanguageSwitcher.language
-  );
+const dir = document.documentElement.dir || "rtl";
   // const {theme:currentTheme , isDark} = useSelector(
   //   ({ ThemeSwitcher }: { ThemeSwitcher: ISelectedTheme }) =>
   //     ThemeSwitcher
@@ -38,7 +35,7 @@ function Sidebar({
       style={{
         position: "fixed",
         top: 0,
-        [locale === "ar" ? "right" : "left"]: 0,
+        right:0,
         bottom: 0,
         transition: "all .5s linear",
         animationIterationCount: "infinite",

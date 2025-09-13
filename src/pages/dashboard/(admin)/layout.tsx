@@ -5,7 +5,7 @@ import Sidebar from "containers/layout/Sidebar";
 import Topbar from "containers/layout/Topbar";
 import TranslateLayoutAnimation from "components/AnimationLayout/Translate";
 import middleware from "utlis/navigation/mw";
-import { PrivatePages } from "middlewares";
+import  PrivateRoute  from "middlewares"; 
 import ScrollerRenderView from "components/scroller-render-view";
 // import bg from "../../assets/dashboard/cool-background.webp";
 import { Link, Outlet, useLocation } from "react-router-dom";
@@ -23,14 +23,14 @@ import { useNavigation, useNavigate } from "react-router-dom";
 import NProgress from "nprogress";
 import { ExpirationTokenGuard } from "middlewares/Expiration.mw";
 import RollerLoading from "components/loading/roller";
-import profileActions from "store/profile/actions";
 import TopBar from "components/TopBar";
+import profileActions from "store/profile/actions";
 
 const { Content } = Layout;
 
 const { fetchProfileDataSuccess } = profileActions;
 
-function DashboardLayout({ children }: { children?: any }) {
+function AdminDashboardLayout({ children }: { children?: any }) {
   const navigation = useNavigation();
   const navigate = useNavigate();
   // const profile = useSelector(({ profile }) => profile.data);
@@ -48,10 +48,10 @@ function DashboardLayout({ children }: { children?: any }) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const dispatch = useDispatch();
-  const { dir } = useSelector(
-    ({ LanguageSwitcher }: { LanguageSwitcher: ILanguageSwitcher }) =>
-      LanguageSwitcher.language
-  );
+  // const { dir } = useSelector(
+  //   ({ LanguageSwitcher }: { LanguageSwitcher: ILanguageSwitcher }) =>
+  //     LanguageSwitcher.language
+  // );
 
   const { idToken } = useSelector((state: any) => state.Auth);
 
@@ -120,10 +120,10 @@ function DashboardLayout({ children }: { children?: any }) {
   ].concat(extraBreadcrumbItems);
   const swipeHandlers = useSwiper({
     onSwipedLeft() {
-      setCollapsed(dir === "ltr" ? false : true);
+      setCollapsed(true);
     },
     onSwipedRight() {
-      setCollapsed(dir === "ltr" ? true : false);
+      // setCollapsed(dir === "ltr" ? true : false);
     },
   });
   return (
@@ -194,5 +194,5 @@ function DashboardLayout({ children }: { children?: any }) {
   );
 }
 
-export default middleware(DashboardLayout, [PrivatePages]);
+export default AdminDashboardLayout;
 //export default DashboardLayout;

@@ -15,6 +15,8 @@ import { Select, Button, Skeleton } from 'antd';
 import 'antd/dist/reset.css';
 import { IoSearch } from 'react-icons/io5';
 import { FaExclamation } from 'react-icons/fa';
+import { FiEye } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 
 const { Option } = Select;
 
@@ -277,16 +279,75 @@ const Products: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row justify-between items-stretch  gap-6">
-        <div style={{ border: '1px solid #C2C1C1' }} className="p-4 rounded-lg w-full lg:w-1/2">
+      <div className="flex flex-col xl:flex-row justify-between items-stretch  gap-6">
+        <div style={{ border: '1px solid #C2C1C1' }} className="p-4 rounded-lg w-full xl:w-1/2">
           <div className="px-6 flex justify-center items-center mb-2 lg:mb-0">
             <img src="/map.png" alt="map" className="w-full max-w-[500px] " />
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-6 w-full lg:w-1/2">
+        <div className="flex flex-col md:flex-row gap-6 w-full xl:w-1/2">
           <div
-            className="flex-1 rounded-lg border border-[#C2C1C1] flex flex-col gap-4 w-1/2"
+            style={{ border: '1px solid #C2C1C1' }}
+            className="flex-1  rounded-lg border border-[#C2C1C1] flex flex-col gap-4 w-full md:w-1/2"
+          >
+            <div className="flex gap-2 w-full px-4 pt-3 pb-0">
+              {buttonsAttend.map((btn) => {
+                const isSelected = selectedAttend === btn;
+                return (
+                  <button
+                    key={btn}
+                    onClick={() => setSelectedAttend(btn)}
+                    className={`flex-1 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 border border-[#07A869] border-solid  cursor-pointer
+              ${isSelected ? 'bg-[#07A869] text-white' : 'bg-gray-100 text-[#15445A]'}
+            `}
+                  >
+                    {btn}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="w-full h-px bg-gray-300 " />
+            <div className="flex items-center gap-4 justify-between px-4 mb-8">
+              <CircularProgress
+                percentage={80}
+                size={70}
+                strokeWidth={10}
+                color="#07A869"
+                bgColor="#E5E7EB"
+              />
+              <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
+                الحضور
+              </span>
+            </div>
+            <div className="flex items-center gap-4 justify-between px-4 mb-8">
+              <CircularProgress
+                percentage={80}
+                size={70}
+                strokeWidth={10}
+                color="#07A869"
+                bgColor="#E5E7EB"
+              />
+              <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
+                الغياب
+              </span>
+            </div>
+            <div className="flex items-center gap-4 justify-between px-4 mb-8">
+              <CircularProgress
+                percentage={80}
+                size={70}
+                strokeWidth={10}
+                color="#07A869"
+                bgColor="#E5E7EB"
+              />
+              <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
+                المكافئات
+              </span>
+            </div>
+          </div>
+
+          <div
+            className="flex-1 rounded-lg border border-[#C2C1C1] flex flex-col gap-4 w-full md:w-1/2"
             style={{ border: '1px solid #C2C1C1' }}
           >
             <div className="flex gap-2 w-full px-4 pt-3 pb-0">
@@ -307,145 +368,125 @@ const Products: React.FC = () => {
             </div>
             <div className="w-full h-px bg-gray-300 " />
 
-            <div className="flex items-center gap-4 px-4 bg-white rounded-lg border border-[#C2C1C1] w-full">
-              <div className="flex-1 flex flex-col gap-2 w-full">
-                <div className="w-3/5">
-                  <Skeleton.Input
-                    active
-                    size="small"
-                    className="!bg-[#C2C1C1] rounded-[4px]"
-                    style={{ height: '14px', width: '100%' }}
-                  />
+            <div className="flex justify-between items-center px-4 bg-white rounded-lg border border-[#C2C1C1] w-full mb-1">
+              <Link
+                to="/admin/departure/excuse-status"
+                className="text-2xl text-[#15445A] cursor-pointer"
+              >
+                <FiEye />
+              </Link>
+
+              <div className="flex items-center gap-3 w-[80%]">
+                <div className="flex-1 flex flex-col gap-2 justify-end items-end">
+                  <div className="w-full h-2.5 bg-[#C2C1C1] rounded-md"></div>
+                  <div className="w-[70%] h-2.5 bg-[#C2C1C1] rounded-md"></div>
                 </div>
 
-                <div className="w-2/5">
-                  <Skeleton.Input
-                    active
-                    size="small"
-                    className="!bg-[#C2C1C1] rounded-[4px]"
-                    style={{ height: '7px', width: '100%' }}
-                  />
-                </div>
+                <div className="w-10 h-10 bg-[#C2C1C1] rounded-full flex-shrink-0"></div>
               </div>
-              <Skeleton.Avatar
-                active
-                size={64}
-                shape="circle"
-                style={{ backgroundColor: '#C2C1C1' }}
-              />
             </div>
-            <div className="flex items-center gap-3 px-4 bg-white rounded-lg border border-[#C2C1C1] w-full">
-              <div className="flex-1 flex flex-col gap-2 w-full">
-                <div className="w-3/5">
-                  <Skeleton.Input
-                    active
-                    size="small"
-                    className="!bg-[#C2C1C1] rounded-[4px]"
-                    style={{ height: '14px', width: '100%' }}
-                  />
+
+            <div className="flex justify-between items-center px-4 bg-white rounded-lg border border-[#C2C1C1] w-full mb-1">
+              <Link
+                to="/admin/departure/excuse-status"
+                className="text-2xl text-[#15445A] cursor-pointer"
+              >
+                <FiEye />
+              </Link>
+
+              <div className="flex items-center gap-3 w-[80%]">
+                <div className="flex-1 flex flex-col gap-2 justify-end items-end">
+                  <div className="w-full h-2.5 bg-[#C2C1C1] rounded-md"></div>
+                  <div className="w-[70%] h-2.5 bg-[#C2C1C1] rounded-md"></div>
                 </div>
 
-                <div className="w-2/5">
-                  <Skeleton.Input
-                    active
-                    size="small"
-                    className="!bg-[#C2C1C1] rounded-[4px]"
-                    style={{ height: '7px', width: '100%' }}
-                  />
-                </div>
+                <div className="w-10 h-10 bg-[#C2C1C1] rounded-full flex-shrink-0"></div>
               </div>
-              <Skeleton.Avatar
-                active
-                size={64}
-                shape="circle"
-                style={{ backgroundColor: '#C2C1C1' }}
-              />
             </div>
-            <div className="flex items-center gap-4 p-4 bg-white rounded-lg border border-[#C2C1C1] w-full">
-              <div className="flex-1 flex flex-col gap-2 w-full">
-                <div className="w-3/5">
-                  <Skeleton.Input
-                    active
-                    size="small"
-                    className="!bg-[#C2C1C1] rounded-[4px]"
-                    style={{ height: '14px', width: '100%' }}
-                  />
+            <div className="flex justify-between items-center px-4 bg-white rounded-lg border border-[#C2C1C1] w-full mb-1">
+              <Link
+                to="/admin/departure/excuse-status"
+                className="text-2xl text-[#15445A] cursor-pointer"
+              >
+                <FiEye />
+              </Link>
+
+              <div className="flex items-center gap-3 w-[80%]">
+                <div className="flex-1 flex flex-col gap-2 justify-end items-end">
+                  <div className="w-full h-2.5 bg-[#C2C1C1] rounded-md"></div>
+                  <div className="w-[70%] h-2.5 bg-[#C2C1C1] rounded-md"></div>
                 </div>
 
-                <div className="w-2/5">
-                  <Skeleton.Input
-                    active
-                    size="small"
-                    className="!bg-[#C2C1C1] rounded-[4px]"
-                    style={{ height: '7px', width: '100%' }}
-                  />
-                </div>
+                <div className="w-10 h-10 bg-[#C2C1C1] rounded-full flex-shrink-0"></div>
               </div>
-              <Skeleton.Avatar
-                active
-                size={64}
-                shape="circle"
-                style={{ backgroundColor: '#C2C1C1' }}
-              />
             </div>
-          </div>
+            <div className="flex justify-between items-center px-4 bg-white rounded-lg border border-[#C2C1C1] w-full mb-1">
+              <Link
+                to="/admin/departure/excuse-status"
+                className="text-2xl text-[#15445A] cursor-pointer"
+              >
+                <FiEye />
+              </Link>
 
-          <div
-            style={{ border: '1px solid #C2C1C1' }}
-            className="flex-1  rounded-lg border border-[#C2C1C1] flex flex-col gap-4 w-1/2"
-          >
-            <div className="flex gap-2 w-full px-4 pt-3 pb-0">
-              {buttonsAttend.map((btn) => {
-                const isSelected = selectedAttend === btn;
-                return (
-                  <button
-                    key={btn}
-                    onClick={() => setSelectedAttend(btn)}
-                    className={`flex-1 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 border border-[#07A869] border-solid  cursor-pointer
-              ${isSelected ? 'bg-[#07A869] text-white' : 'bg-gray-100 text-[#15445A]'}
-            `}
-                  >
-                    {btn}
-                  </button>
-                );
-              })}
+              <div className="flex items-center gap-3 w-[80%]">
+                <div className="flex-1 flex flex-col gap-2 justify-end items-end">
+                  <div className="w-full h-2.5 bg-[#C2C1C1] rounded-md"></div>
+                  <div className="w-[70%] h-2.5 bg-[#C2C1C1] rounded-md"></div>
+                </div>
+
+                <div className="w-10 h-10 bg-[#C2C1C1] rounded-full flex-shrink-0"></div>
+              </div>
             </div>
-            <div className="w-full h-px bg-gray-300 " />
-            <div className="flex items-center gap-4 justify-between px-4 mb-5">
-              <CircularProgress
-                percentage={80}
-                size={70}
-                strokeWidth={10}
-                color="#07A869"
-                bgColor="#E5E7EB"
-              />
-              <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
-                الحضور
-              </span>
+            <div className="flex justify-between items-center px-4 bg-white rounded-lg border border-[#C2C1C1] w-full mb-1">
+              <Link
+                to="/admin/departure/excuse-status"
+                className="text-2xl text-[#15445A] cursor-pointer"
+              >
+                <FiEye />
+              </Link>
+
+              <div className="flex items-center gap-3 w-[80%]">
+                <div className="flex-1 flex flex-col gap-2 justify-end items-end">
+                  <div className="w-full h-2.5 bg-[#C2C1C1] rounded-md"></div>
+                  <div className="w-[70%] h-2.5 bg-[#C2C1C1] rounded-md"></div>
+                </div>
+
+                <div className="w-10 h-10 bg-[#C2C1C1] rounded-full flex-shrink-0"></div>
+              </div>
             </div>
-            <div className="flex items-center gap-4 justify-between px-4 mb-5">
-              <CircularProgress
-                percentage={80}
-                size={70}
-                strokeWidth={10}
-                color="#07A869"
-                bgColor="#E5E7EB"
-              />
-              <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
-                الغياب
-              </span>
+            <div className="flex justify-between items-center px-4 bg-white rounded-lg border border-[#C2C1C1] w-full mb-1">
+              <Link
+                to="/admin/departure/excuse-status"
+                className="text-2xl text-[#15445A] cursor-pointer"
+              >
+                <FiEye />
+              </Link>
+
+              <div className="flex items-center gap-3 w-[80%]">
+                <div className="flex-1 flex flex-col gap-2 justify-end items-end">
+                  <div className="w-full h-2.5 bg-[#C2C1C1] rounded-md"></div>
+                  <div className="w-[70%] h-2.5 bg-[#C2C1C1] rounded-md"></div>
+                </div>
+
+                <div className="w-10 h-10 bg-[#C2C1C1] rounded-full flex-shrink-0"></div>
+              </div>
             </div>
-            <div className="flex items-center gap-4 justify-between px-4 mb-5">
-              <CircularProgress
-                percentage={80}
-                size={70}
-                strokeWidth={10}
-                color="#07A869"
-                bgColor="#E5E7EB"
-              />
-              <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
-                المكافئات
-              </span>
+            <div className="flex justify-between items-center px-4 bg-white rounded-lg border border-[#C2C1C1] w-full mb-6">
+              <Link
+                to="/admin/departure/excuse-status"
+                className="text-2xl text-[#15445A] cursor-pointer"
+              >
+                <FiEye />
+              </Link>
+
+              <div className="flex items-center gap-3 w-[80%]">
+                <div className="flex-1 flex flex-col gap-2 justify-end items-end">
+                  <div className="w-full h-2.5 bg-[#C2C1C1] rounded-md"></div>
+                  <div className="w-[70%] h-2.5 bg-[#C2C1C1] rounded-md"></div>
+                </div>
+
+                <div className="w-10 h-10 bg-[#C2C1C1] rounded-full flex-shrink-0"></div>
+              </div>
             </div>
           </div>
         </div>

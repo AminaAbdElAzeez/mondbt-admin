@@ -7,28 +7,28 @@ function SmallLogo() {
   const isFetching = useIsFetching();
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  useEffect(() => {
-    const checkDark = () => {
-      const isDark = document.documentElement.classList.contains("dark");
-      setIsDarkMode(isDark);
-    };
+  // useEffect(() => {
+  //   const checkDark = () => {
+  //     const isDark = document.documentElement.classList.contains("dark");
+  //     setIsDarkMode(isDark);
+  //   };
 
-    // Initial check
-    checkDark();
+  //   // Initial check
+  //   checkDark();
 
-    // Observer to watch for class changes
-    const observer = new MutationObserver(() => {
-      checkDark();
-    });
+  //   // Observer to watch for class changes
+  //   const observer = new MutationObserver(() => {
+  //     checkDark();
+  //   });
 
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
+  //   observer.observe(document.documentElement, {
+  //     attributes: true,
+  //     attributeFilter: ["class"],
+  //   });
 
-    // Clean up
-    return () => observer.disconnect();
-  }, []);
+  //   // Clean up
+  //   return () => observer.disconnect();
+  // }, []);
 
   const logoSrc = isDarkMode ? "/logo.svg" : "/logo.svg";
 
@@ -41,7 +41,7 @@ function SmallLogo() {
         width={52}
         height={37}
         transition={{ delay: 0.3, type: "spring", stiffness: 60 }}
-        src={logoSrc}
+        src="/logo.svg"
         alt="logo"
       />
     </Link>

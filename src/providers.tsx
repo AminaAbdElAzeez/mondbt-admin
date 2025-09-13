@@ -1,254 +1,168 @@
-import ErrorBoundaryProvider from "utlis/library/helpers/error-handler/ErrorBoundaryProvider";
-import FallBackUI from "components/fallback-ui";
-import { ConfigProvider, theme as antdTheme } from "antd";
-import { Provider, useDispatch, useSelector } from "react-redux";
-import { store } from "store/store";
-import AppLocale from "utlis/config/translation";
-import { IntlProvider } from "react-intl";
-import { useEffect, useLayoutEffect } from "react";
-import ToastProvider from "components/ToastProvider/index";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import ErrorBoundaryProvider from 'utlis/library/helpers/error-handler/ErrorBoundaryProvider';
+import FallBackUI from 'components/fallback-ui';
+import { ConfigProvider, theme as antdTheme } from 'antd';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import { store } from 'store/store';
+import AppLocale from 'utlis/config/translation';
+import { IntlProvider } from 'react-intl';
+import { useEffect, useLayoutEffect } from 'react';
+import ToastProvider from 'components/ToastProvider/index';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 //import axios from "axios"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import themeSwitcherActions from "store/themeSwitcher/actions";
-import instance from "utlis/library/helpers/axios";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Layout from "./pages/layout";
-import Index from "./pages/page";
-import Login from "./pages/login/page";
-import DashboardLayout from "./pages/dashboard/(admin)/layout";
-import Users from "./pages/dashboard/(admin)/users/page";
-import Orders from "./pages/dashboard/(admin)/orders/page";
-import OrderDetails from "./pages/dashboard/(admin)/orders/order";
-import PrescriptionOrders from "./pages/dashboard/(admin)/prescription-orders/page";
-import AddOrder from "./pages/dashboard/(admin)/orders/add-order";
-import Statistics from "./pages/dashboard/(admin)/statistics/page";
-import Products from "./pages/dashboard/(admin)/products/page";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import instance from 'utlis/library/helpers/axios';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import Layout from './pages/layout';
+import Index from './pages/page';
+import Login from './pages/login/page';
+import AdminDashboardLayout from './pages/dashboard/(admin)/layout';
+import MinisterAttendance from './pages/dashboard/(minister)/minister-attendance/page';
+import ParentHome from './pages/dashboard/(parent)/parent-home/page';
+import DisciplineStatistics from './pages/dashboard/(admin)/admin-home/page';
+import MinisterHome from './pages/dashboard/(minister)/minister-home/page';
+import Departure from './pages/dashboard/(admin)/departure/page';
+import ExcuseStatus from './pages/dashboard/(parent)/excuse-status/excuse-status';
+import PayFines from './pages/dashboard/(parent)/pay-fines/pay-fines';
+import Students from './pages/dashboard/(parent)/student/page';
+import NewExcuse from './pages/dashboard/(parent)/new-excuse/page';
+import actions from 'store/auth/actions';
+import ProtectedRoute from 'components/protected-route/ProtectedRoute';
+import AdminHome from './pages/dashboard/(admin)/admin-home/page';
+import Unauthorized from './pages/dashboard/unauthorized/page';
+import PrivateRoute from 'components/PrivateRoute/PrivateRoute';
+import ParentDashboardLayout from './pages/dashboard/(parent)/layout';
+import MinisterDashboardLayout from './pages/dashboard/(minister)/layout';
+import MinisterAbsent from './pages/dashboard/(minister)/minister-absent/page';
+import MinisterExcuse from './pages/dashboard/(minister)/excuse';
+import MinisterLate from './pages/dashboard/(minister)/late/page';
+import AdminAttendance from './pages/dashboard/(admin)/admin-attendance/page';
+import AdminAbsent from './pages/dashboard/(admin)/admin-absent/page';
+import AdminExcuse from './pages/dashboard/(admin)/excuse';
+import AdminLate from './pages/dashboard/(admin)/late/page';
+import ManagerHome from './pages/dashboard/(manager)/manager-home/page';
+import ManagerDashboardLayout from './pages/dashboard/(manager)/layout';
+import ManagerStudents from './pages/dashboard/(manager)/student/page';
 
 const router = createBrowserRouter([
+  { path: '/login', element: <Login /> },
+
   {
-    path: "",
-    element: <Layout />,
+    path: '/',
+    element: (
+      <PrivateRoute>
+        <Layout />
+      </PrivateRoute>
+    ),
     children: [
+      { path: '', element: <Index /> },
+
       {
-        path: "",
-        element: <Index />,
-      },
-      {
-        path: "login",
-        element: <Login />,
-      },
-      {
-        path: "admin",
-        element: <DashboardLayout />,
+        path: 'admin',
+        element: <ProtectedRoute allowedRoles={[1]} />,
         children: [
           {
-            path: "home",
-            element: <Statistics />,
-          },
-          // {
-          //   path: "coupons",
-          //   element: <Coupons />,
-          // },
-          // {
-          //   path: "master-data",
-          //   children: [
-          //     {
-          //       path: "categories",
-          //       element: <Categories />,
-          //       children: [
-          //         { path: "sub-categories", element: <SubCategories /> },
-          //         { path: "upload-image", element: <CategoryUpload /> },
-          //       ],
-          //     },
-          {
-            path: "departure",
-            element: <Products />,
-            
-          },
-          //     {
-          //       path: "branches",
-          //       element: <Branches />,
-          //     },
-          //     {
-          //       path: "brands",
-          //       element: <Brands />,
-          //     },
-          //     {
-          //       path: "governorate",
-          //       element: <Governorate />,
-          //     },
-          //     {
-          //       path: "cities",
-          //       element: <City />,
-          //     },
-          //   ],
-          // },
-
-          // {
-          //   path: "settings",
-          //   element: <Settings />,
-          // },
-
-          {
-            path: "attendance",
-            element: <Users />,
-          },
-
-          // {
-          //   path: "banners",
-          //   element: <Banners />,
-          //   children: [
-          //     { path: "add-banner", element: <AddBanner /> },
-          //     { path: "edit-banner", element: <AddBanner /> },
-          //   ],
-          // },
-          // {
-          //   path: "faq",
-          //   element: <Faqs />,
-          // },
-          // {
-          //   path: "rates",
-          //   element: <Rates />,
-          // },
-
-          // {
-          //   path: "offers",
-          //   element: <Offers />,
-          // },
-          {
-            path: "permission",
-            element: <Orders />,
+            element: <AdminDashboardLayout />,
             children: [
-              {
-                path: "order-details",
-                element: <OrderDetails />,
-              },
-              {
-                path: "add-order",
-                element: <AddOrder />,
-              },
+              { path: 'home', element: <AdminHome /> },
+              { path: 'attendance', element: <AdminAttendance /> },
+              { path: 'absent', element: <AdminAbsent /> },
+              { path: 'excuse', element: <AdminExcuse /> },
+              { path: 'late', element: <AdminLate /> },
             ],
           },
+        ],
+      },
+
+      {
+        path: 'minister',
+        element: <ProtectedRoute allowedRoles={[2]} />,
+        children: [
           {
-            path: "discipline_statistics",
-            element: <PrescriptionOrders />,
-            
+            element: <MinisterDashboardLayout />,
+            children: [
+              { path: 'home', element: <MinisterHome /> },
+              { path: 'attendance', element: <MinisterAttendance /> },
+              { path: 'absent', element: <MinisterAbsent /> },
+              { path: 'excuse', element: <MinisterExcuse /> },
+              { path: 'late', element: <MinisterLate /> },
+            ],
           },
-          // {
-          //   path: "clients-support",
-          //   element: <ContactUs />,
-          // },
-          // {
-          //   path: "problems",
-          //   element: <Problems />,
-          // },
-          // {
-          //   path: "profile",
-          //   element: <Profile />,
-          // },
+        ],
+      },
+
+      {
+        path: 'manager',
+        element: <ProtectedRoute allowedRoles={[3]} />,
+        children: [
+          {
+            element: <ManagerDashboardLayout />,
+            children: [
+              { path: 'home', element: <ManagerHome /> },
+              { path: 'student/:id', element: <ManagerStudents /> },
+            ],
+          },
+        ],
+      },
+
+      {
+        path: 'parent',
+        element: <ProtectedRoute allowedRoles={[4]} />,
+        children: [
+          {
+            element: <ParentDashboardLayout />,
+            children: [
+              { path: 'home', element: <ParentHome /> },
+              { path: 'student/:id', element: <Students /> },
+              { path: 'student/:id/excuses/:id', element: <ExcuseStatus /> },
+              { path: 'pay-fines', element: <PayFines /> },
+              { path: 'new-excuse', element: <NewExcuse /> },
+            ],
+          },
         ],
       },
     ],
   },
 ]);
 
-const { changeTheme } = themeSwitcherActions;
 type Locale = keyof typeof AppLocale;
 const queryClient = new QueryClient();
 
 function AppProvider() {
   const dispatch = useDispatch();
-  const { locale } = useSelector(
-    ({ LanguageSwitcher }: { LanguageSwitcher: ILanguageSwitcher }) =>
-      LanguageSwitcher.language
-  );
-  const { themeName, isDark } = useSelector(
-    ({ ThemeSwitcher }: { ThemeSwitcher: ISelectedTheme }) => ThemeSwitcher
-  );
+  const dir = 'rtl';
 
-  const reChangeTheme = () => {
-    dispatch(changeTheme("system"));
-  };
-
-  const dir = locale === "ar" ? "rtl" : "ltr";
-  const currentAppLocale = AppLocale[locale as Locale];
-  useLayoutEffect(() => {
-    document.documentElement.dir = dir;
-    document.documentElement.lang = locale;
-    instance.defaults.headers.common["Accept-Language"] =
-      locale === "ar" ? "ar-EG" : "en-US";
-    instance.defaults.headers.common["X-Language"] =
-      locale === "ar" ? "ar" : "en";
-  }, [locale, dir]);
+  const { login } = actions;
   useEffect(() => {
-    const darkModePreference = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    );
-    if (themeName === "system") {
-      darkModePreference.addEventListener("change", reChangeTheme);
+    const token = localStorage.getItem('token');
+    if (token) {
+      dispatch(login(token, null as any));
     }
-    return () => {
-      if (themeName === "system") {
-        darkModePreference.removeEventListener("change", reChangeTheme);
-      }
-    };
-  }, [themeName]);
-
-  // useLayoutEffect(() => {
-  //   if (isDark) {
-  //     document.documentElement.classList.add("light");
-  //   } else {
-  //     document.documentElement.classList.remove("dark");
-  //   }
-  // }, [isDark]);
-  // useEffect(() => {
-  //   instance.defaults.headers["Accept-Language"] = `${
-  //     locale === "en" ? "en-US" : "ar-SA"
-  //   }`;
-  //   instance.defaults.headers["X-Language"] = `${
-  //     locale === "en" ? "en-US" : "ar-SA"
-  //   }`;
-  // }, [locale]);
-
-  // useEffect(()=>{
-  // instance.interceptors.request.use((config) => {
-  //   config.headers['Accept-Language'] = `${locale === "en"?"en-US":"ar-SA"}`;
-  //   console.log("Intercepted request config:",locale, config);
-  //   return config;
-  // });
-  //  },[locale])
+  }, [dispatch]);
 
   return (
     <ErrorBoundaryProvider fallBackUIComponent={<FallBackUI />}>
-      <IntlProvider
-        locale={currentAppLocale.locale}
-        messages={currentAppLocale.messages}
+      <ConfigProvider
+        direction="rtl"
+        theme={{
+          // algorithm: antdTheme[isDark ? 'darkAlgorithm' : 'defaultAlgorithm'],
+          token: {
+            colorPrimary: '#209163',
+            // colorPrimaryBg: "#3730a3",
+            // colorBorder: "#3730a3",
+
+            colorLink: '#209163',
+            colorInfo: '#209163',
+          },
+        }}
       >
-        <ConfigProvider
-          locale={currentAppLocale.antd}
-          direction={dir}
-          theme={{
-            algorithm: antdTheme[isDark ? "darkAlgorithm" : "defaultAlgorithm"],
-            token: {
-              colorPrimary: "#209163",
-              // colorPrimaryBg: "#3730a3",
-              // colorBorder: "#3730a3",
+        {/* <RoutersProvider /> */}
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
 
-              colorLink: "#209163",
-              colorInfo: "#209163",
-            },
-          }}
-        >
-          {/* <RoutersProvider /> */}
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-
-            <ReactQueryDevtools initialIsOpen={false} />
-          </QueryClientProvider>
-          <ToastProvider />
-        </ConfigProvider>
-      </IntlProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+        <ToastProvider />
+      </ConfigProvider>
     </ErrorBoundaryProvider>
   );
 }

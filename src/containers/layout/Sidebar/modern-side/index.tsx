@@ -34,17 +34,17 @@ return {
   }}
 }
 function Sider({collapsed  , setCollapsed}) {
-  return (<>
+  return (<div className=''>
     <motion.div
     variants={variantsSideContainer(collapsed)}
     initial="initial"
     animate="animate"
-    className={`side-container flex flex-shrink-0 -ms-16 sm:ms-0 fixed sm:static z-50 `}>
+    className={`side-container flex flex-shrink-0 -ms-16 sm:ms-0 fixed sm:static z-50 h-[100vh] `}>
     <SubSide  collapsed={collapsed} variantsSubSide={variantsSubSide(collapsed )} width={SIDE_WIDTH}  />
      <MainSide width={SIDE_WIDTH} setCollapsed={setCollapsed} collapsed={collapsed} />
      <div onClick={()=>{setCollapsed(false)}}  className={`fixed inset-0 bg-[#000000bb] -z-10 ${!collapsed?"hidden":""} sm:hidden `}></div>
        </motion.div>
-  </>
+  </div>
  
   )
 }

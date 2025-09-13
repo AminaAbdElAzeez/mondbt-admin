@@ -1,7 +1,7 @@
 import Scrollbars from 'react-custom-scrollbars-2'
 import { useSelector } from 'react-redux';
 function ScrollerRenderView({children , ...rest}:any) {
-    const {locale} = useSelector(({LanguageSwitcher}:{LanguageSwitcher:ILanguageSwitcher}) => LanguageSwitcher.language);
+    const locale = "ar";
 
   return (
     <Scrollbars

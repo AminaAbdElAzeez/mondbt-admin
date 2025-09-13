@@ -45,7 +45,7 @@ function Index() {
     <div className="bg-texture-light dark:bg-texture-dark">
       <div className="box-border min-w-screen min-h-screen  flex items-center container mx-auto justify-center px-2 py-5">
         <div className="box-border absolute inset-x-0 top-0 w-full flex items-center justify-between container mx-auto py-5 px-2">
-          <div className="flex items-center text-[#3730a3] no-underline hover:no-underline font-bold text-2xl lg:text-4xl">
+          <div className="flex items-center w-full text-[#3730a3] no-underline hover:no-underline font-bold text-2xl lg:text-4xl">
             <Link to={'/'} className="p-3 rounded-md !bg-[#07A869]">
               <img
                 className=" h-auto rounded-md"
@@ -98,7 +98,8 @@ function Index() {
                           size="large"
                           //type="primary"
                         >
-                          <FormattedMessage id="open-administrator" />
+                          لوحة التحكم
+                          {/* <FormattedMessage id="open-administrator" /> */}
                         </Button>
                       </motion.div>
                     )}

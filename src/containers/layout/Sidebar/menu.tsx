@@ -1,11 +1,25 @@
 import { Menu } from "antd";
-import getMenuItems from "./options";
+// import getMenuItems from "./options";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
+import getMenuItems from "./menu-items"; 
+
 
 const MyMenu = ({ collapsed }) => {
   const location = useLocation();
-  const pathname = location.pathname.substring(1).split("/");
+const pathname = location.pathname.split("/").filter(Boolean);
+const selectedKey = pathname[pathname.length - 1] || "home";
+
+
+const role = Number(localStorage.getItem("role")) || 0;
+const name = localStorage.getItem("name") || "Guest";
+
+console.log("Role:", role);
+console.log("Name:", name);
+console.log("Current role:", role , name);
+
+
 
   const transformMenuItems = (items) =>
     items.map(
@@ -32,7 +46,7 @@ const MyMenu = ({ collapsed }) => {
       }
     );
 
-  const menuItems = transformMenuItems(getMenuItems());
+const menuItems = transformMenuItems(getMenuItems(role || 0));
 
   return (
     <motion.div
@@ -55,6 +69,7 @@ const MyMenu = ({ collapsed }) => {
         defaultSelectedKeys={[""]}
         items={menuItems}
       />
+
     </motion.div>
   );
 };

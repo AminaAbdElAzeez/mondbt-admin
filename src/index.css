@@ -1,4 +1,4 @@
-@import "/node_modules/leaflet/dist/leaflet.css";
+@import '/node_modules/leaflet/dist/leaflet.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -69,11 +69,11 @@ ul {
   padding: 0;
 }
 html * {
-  font-family: "Cairo", sans-serif;
+  font-family: 'Cairo', sans-serif;
 }
-html[dir="rtl"] *,
+html[dir='rtl'] *,
 .ar-font {
-  font-family: "Cairo", sans-serif !important;
+  font-family: 'Cairo', sans-serif !important;
 }
 
 .overlay {
@@ -88,7 +88,7 @@ html[dir="rtl"] *,
   margin: 0 10px;
 }
 .overlay:before {
-  content: "";
+  content: '';
   position: absolute;
   background: inherit;
   z-index: -1;
@@ -110,15 +110,14 @@ html[dir="rtl"] *,
 .ant-popover .ant-popover-content {
   margin: 0 0.5rem;
 }
-html[dir="rtl"] :is(.ant-pagination-prev, .ant-pagination-next) {
+html[dir='rtl'] :is(.ant-pagination-prev, .ant-pagination-next) {
   /* transform: rotate(180deg); */
 }
 .ant-popover .ant-popover-inner {
   padding: 0.25rem;
 }
 .ant-menu-item {
-  transition: border-color 0.3s, background 0.3s,
-    padding 0s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
+  transition: border-color 0.3s, background 0.3s, padding 0s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
   -webkit-transition: border-color 0.3s, background 0.3s;
   -moz-transition: border-color 0.3s, background 0.3s;
   -ms-transition: border-color 0.3s, background 0.3s;
@@ -151,8 +150,8 @@ html[dir="rtl"] :is(.ant-pagination-prev, .ant-pagination-next) {
 }
 
 #landing {
-  font-family: "Cairo", sans-serif;
-  font-family: "Cairo", sans-serif;
+  font-family: 'Cairo', sans-serif;
+  font-family: 'Cairo', sans-serif;
   scroll-behavior: smooth;
 }
 
@@ -209,9 +208,7 @@ html[dir="rtl"] :is(.ant-pagination-prev, .ant-pagination-next) {
   background-color: rgb(222 184 135);
 }
 
-.dark
-  .react-international-phone-input-container
-  .react-international-phone-input {
+.dark .react-international-phone-input-container .react-international-phone-input {
   color: #fff;
   border: 1px solid #292e3d;
   background-color: transparent;
@@ -223,9 +220,7 @@ html[dir="rtl"] :is(.ant-pagination-prev, .ant-pagination-next) {
   border: 1px solid #292e3d;
   background-color: transparent;
 }
-html[dir="rtl"]
-  .react-international-phone-input-container
-  .react-international-phone-input {
+html[dir='rtl'] .react-international-phone-input-container .react-international-phone-input {
   border-radius: var(--react-international-phone-border-radius, 4px);
   border-bottom-right-radius: 0;
   border-top-right-radius: 0;
@@ -236,7 +231,7 @@ html[dir="rtl"]
   -ms-border-radius: var(--react-international-phone-border-radius, 4px);
   -o-border-radius: var(--react-international-phone-border-radius, 4px);
 }
-html[dir="rtl"]
+html[dir='rtl']
   .react-international-phone-input-container
   .react-international-phone-country-selector-button {
   border-radius: var(--react-international-phone-border-radius, 4px);
@@ -247,8 +242,7 @@ html[dir="rtl"]
   -ms-border-radius: var(--react-international-phone-border-radius, 4px);
   -o-border-radius: var(--react-international-phone-border-radius, 4px);
 }
-html[dir="rtl"]
-  .react-international-phone-country-selector-button__dropdown-arrow {
+html[dir='rtl'] .react-international-phone-country-selector-button__dropdown-arrow {
   margin-right: 0;
   margin-left: 4px;
 }
@@ -309,7 +303,7 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-input[type="number"] {
+input[type='number'] {
   -moz-appearance: textfield;
 }
 .add-coupon-modal .ant-select {
@@ -325,13 +319,8 @@ input[type="number"] {
   .ant-picker-content
   th,
 :where(.css-dudko7).ant-picker-dropdown .ant-picker-content th,
-:where(.css-dev-only-do-not-override-dudko7).ant-picker-dropdown
-  .ant-picker-content
-  th,
-:where(.css-dudko7).ant-picker-dropdown
-  .ant-picker-date-panel
-  .ant-picker-content
-  th {
+:where(.css-dev-only-do-not-override-dudko7).ant-picker-dropdown .ant-picker-content th,
+:where(.css-dudko7).ant-picker-dropdown .ant-picker-date-panel .ant-picker-content th {
   font-size: 10px !important;
 }
 
@@ -383,7 +372,7 @@ input[type="number"] {
 .ProseMirror:focus {
   outline: none !important;
 }
-.ProseMirror [contenteditable="false"] {
+.ProseMirror [contenteditable='false'] {
   display: none !important; /* to remove divider */
 }
 /* dash before subTitile in any details page */
@@ -482,12 +471,8 @@ input[type="number"] {
   animation-play-state: running !important;
 }
 
-:where(
-    .css-dev-only-do-not-override-uasp9o
-  ).ant-ribbon.ant-ribbon-placement-end,
-:where(
-    .css-dev-only-do-not-override-dudko7
-  ).ant-ribbon.ant-ribbon-placement-end {
+:where(.css-dev-only-do-not-override-uasp9o).ant-ribbon.ant-ribbon-placement-end,
+:where(.css-dev-only-do-not-override-dudko7).ant-ribbon.ant-ribbon-placement-end {
   inset-inline-end: 24px !important;
   padding: 5px 10px !important;
 }
@@ -495,17 +480,13 @@ input[type="number"] {
 :where(.css-uasp9o).ant-ribbon.ant-ribbon-placement-end,
 :where(.css-dudko7).ant-ribbon.ant-ribbon-placement-end,
 :where(.css-uasp9o).ant-ribbon.ant-ribbon-placement-end,
-:where(
-    .css-dev-only-do-not-override-uasp9o
-  ).ant-ribbon.ant-ribbon-placement-end,
-:where(
-    .css-dev-only-do-not-override-dudko7
-  ).ant-ribbon.ant-ribbon-placement-end {
+:where(.css-dev-only-do-not-override-uasp9o).ant-ribbon.ant-ribbon-placement-end,
+:where(.css-dev-only-do-not-override-dudko7).ant-ribbon.ant-ribbon-placement-end {
   inset-inline-end: 24px !important;
   padding: 5px 10px !important;
 }
 
-html[dir="rtl"] .leaflet-control-geosearch button.reset {
+html[dir='rtl'] .leaflet-control-geosearch button.reset {
   right: auto !important;
   left: 0 !important;
 }
@@ -520,54 +501,151 @@ html[dir="rtl"] .leaflet-control-geosearch button.reset {
   font-weight: 600 !important;
 }
 .ant-menu-item-selected,
-:where(.css-dev-only-do-not-override-dudko7).ant-menu-light:not(
-    .ant-menu-horizontal
-  )
+:where(.css-dev-only-do-not-override-dudko7).ant-menu-light:not(.ant-menu-horizontal)
   .ant-menu-item:not(.ant-menu-item-selected):hover,
 :where(.css-dev-only-do-not-override-dudko7).ant-menu-light
   > .ant-menu:not(.ant-menu-horizontal)
   .ant-menu-item:not(.ant-menu-item-selected):hover,
-:where(.css-dev-only-do-not-override-dudko7).ant-menu-light.ant-menu-inline
-  .ant-menu-item {
+:where(.css-dev-only-do-not-override-dudko7).ant-menu-light.ant-menu-inline .ant-menu-item {
   border-radius: 20px !important;
   -webkit-border-radius: 20px !important;
   -moz-border-radius: 20px !important;
   -ms-border-radius: 20px !important;
   -o-border-radius: 20px !important;
 }
-:where(.css-dev-only-do-not-override-dudko7).ant-menu-light.ant-menu-inline
-  .ant-menu-item {
+:where(.css-dev-only-do-not-override-dudko7).ant-menu-light.ant-menu-inline .ant-menu-item {
   margin-bottom: 8px !important;
 }
 
 /* switch in topbar */
+:where(.css-dev-only-do-not-override-dudko7).ant-switch .ant-switch-handle {
+  width: 15px !important;
+  height: 15px !important;
+  
+}
 .big-switch {
   transform: scale(1.2);
+  -webkit-transform: scale(1.2);
+  -moz-transform: scale(1.2);
+  -ms-transform: scale(1.2);
+  -o-transform: scale(1.2);
 }
 .big-switch .ant-switch-inner {
-  font-size: 16px;
+  font-size: 16px !important;
   position: relative;
   top: -3px;
 }
 :where(.css-dev-only-do-not-override-uasp9o).ant-switch .ant-switch-handle {
-    top: 1px !important;
+  top: 1px !important;
 }
 /* change select bg in discipline_statistics page */
-:where(.css-dev-only-do-not-override-uasp9o).ant-select-outlined:not(.ant-select-customize-input) .ant-select-selector,
+:where(.css-dev-only-do-not-override-uasp9o).ant-select-outlined:not(.ant-select-customize-input)
+  .ant-select-selector,
 .custom-select .ant-select-selector {
-  background-color: #F3F3F3 !important;
-  border-color: #DDDDDD !important;
-  color: #15445A !important;
+  background-color: #f3f3f3 !important;
+  border-color: #dddddd !important;
+  color: #15445a !important;
 }
 
-:where(.css-dev-only-do-not-override-uasp9o).ant-select-single .ant-select-selector .ant-select-selection-placeholder, .custom-select .ant-select-selection-placeholder,
-:where(.css-dev-only-do-not-override-uasp9o).ant-select-single .ant-select-selector:after ,
-:where(.css-dev-only-do-not-override-uasp9o).ant-select-single:not(.ant-select-customize-input) .ant-select-selector .ant-select-selection-search-input,
+:where(.css-dev-only-do-not-override-uasp9o).ant-select-single
+  .ant-select-selector
+  .ant-select-selection-placeholder,
+.custom-select .ant-select-selection-placeholder,
+:where(.css-dev-only-do-not-override-uasp9o).ant-select-single .ant-select-selector:after,
+:where(.css-dev-only-do-not-override-uasp9o).ant-select-single:not(.ant-select-customize-input)
+  .ant-select-selector
+  .ant-select-selection-search-input,
 .custom-select .ant-select-arrow {
-  color: #15445A !important;
+  color: #15445a !important;
 }
-.custom-select .ant-select-dropdown ,
-:where(.css-dev-only-do-not-override-uasp9o).ant-select-dropdown .ant-select-item-option{
-  background-color: #F3F3F3 !important;
-  color: #15445A !important;
+.custom-select .ant-select-dropdown,
+:where(.css-dev-only-do-not-override-uasp9o).ant-select-dropdown .ant-select-item-option {
+  background-color: #f3f3f3 !important;
+  color: #15445a !important;
+}
+
+/* table */
+.custom-table .ant-table {
+  background-color: #fff !important;
+}
+.custom-table .ant-table-thead > tr > th {
+  background: #f5f5f5 !important;
+  color: #07a869 !important;
+  font-weight: 600;
+  text-align: center;
+  font-size: 18px;
+}
+.custom-table .ant-table-tbody > tr > td {
+  text-align: center;
+  color: #15445a;
+  font-weight: 500;
+  font-size: 15px !important;
+}
+
+.custom-table .ant-table-tbody > tr:hover > td {
+  background: #f9f9f9 !important;
+}
+.custom-table .ant-table-cell {
+  border-color: #e5e5e5 !important;
+}
+:where(.css-dev-only-do-not-override-uasp9o).ant-table-wrapper
+  .ant-table.ant-table-bordered
+  > .ant-table-container {
+  border-inline-start: 0 !important;
+  border-top: none !important;
+}
+:where(.css-dev-only-do-not-override-uasp9o).ant-table-wrapper
+  .ant-table-cell-scrollbar:not([rowspan]) {
+  box-shadow: 0 !important;
+}
+:where(.css-dev-only-do-not-override-uasp9o).ant-table-wrapper .ant-table-cell-fix-left,
+:where(.css-dev-only-do-not-override-uasp9o).ant-table-wrapper .ant-table-cell-fix-right {
+  background: #f5f5f5 !important;
+}
+:where(.css-dev-only-do-not-override-uasp9o).ant-tag.ant-tag-green {
+  color: #15445a;
+  background: transparent;
+  border-color: transparent;
+  font-size: 15px !important;
+}
+:where(.css-dev-only-do-not-override-uasp9o).ant-table-wrapper
+  .ant-table.ant-table-bordered
+  > .ant-table-footer {
+  border: 1px solid #d9d9d9;
+  border-top: 0;
+  background: transparent;
+  border-radius: 0 0 8px 8px !important;
+  -webkit-border-radius: 0 0 8px 8px !important;
+  -moz-border-radius: 0 0 8px 8px !important;
+  -ms-border-radius: 0 0 8px 8px !important;
+  -o-border-radius: 0 0 8px 8px !important;
+}
+:where(.css-dev-only-do-not-override-uasp9o).ant-table-wrapper .ant-table-footer {
+  padding: 12px;
+}
+
+/* select antd in new Excuse page */
+.file :where(.css-dev-only-do-not-override-dudko7).ant-upload-wrapper .ant-upload-select {
+  display: block;
+}
+
+/* moved sidebar in home manager page   */
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  direction: rtl;
+  position: relative;
+}
+.marquee-content {
+  display: flex;
+  gap: 2rem;
+  animation: marquee 15s linear infinite;
+}
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }

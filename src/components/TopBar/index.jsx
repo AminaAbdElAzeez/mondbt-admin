@@ -2,10 +2,17 @@ import React, { useState } from 'react';
 import { Switch } from 'antd';
 import 'antd/dist/reset.css';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useDispatch } from 'react-redux';
+import profileActions from 'store/profile/actions';
+import { useNavigate } from 'react-router-dom';
 
 
 function TopBar({ collapsed }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const name = localStorage.getItem('name') || 'المستخدم';
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
 
   return (
     <section
@@ -22,7 +29,8 @@ function TopBar({ collapsed }) {
       {/* mobile */}
       <div className="flex lg:hidden items-center justify-between w-full">
         <h5 className="text-[#15445A] text-base hover:text-[#07A869] transition-colors p-0 m-0">
-          اهلا معالي الوزير
+          {/* اهلا معالي الوزير */}
+          <bdi> اهلا {name}</bdi>
         </h5>
 
         <button
@@ -69,7 +77,15 @@ function TopBar({ collapsed }) {
                 }}
                 className="big-switch mb-4"
               />
-              <button className="cursor-pointer border border-[#C2C1C1] border-t-[#C2C1C1] border-b-[#C2C1C1] border-l-[#C2C1C1] border-r-[#C2C1C1] border-solid rounded-3xl py-2 px-4 text-[#C2C1C1] font-[500] text-sm bg-[#fff] hover:text-[#07A869] transition-colors duration-500 hover:border-[#07A869] mb-3">
+              <button
+                onClick={() => {
+                  localStorage.removeItem('token');
+                  localStorage.removeItem('role');
+
+                  navigate('/login');
+                }}
+                className="cursor-pointer border border-[#C2C1C1] border-t-[#C2C1C1] border-b-[#C2C1C1] border-l-[#C2C1C1] border-r-[#C2C1C1] border-solid rounded-3xl py-2 px-4 text-[#C2C1C1] font-[500] text-sm bg-[#fff] hover:text-[#07A869] transition-colors duration-500 hover:border-[#07A869] mb-3"
+              >
                 تسجيل الخروج
               </button>
 
@@ -88,7 +104,8 @@ function TopBar({ collapsed }) {
       <div className="hidden lg:flex flex-row-reverse justify-between items-center w-full">
         <div className="flex items-center gap-5">
           <h5 className="text-[#15445A] text-base hover:text-[#07A869] transition-colors duration-500 p-0 m-0">
-            اهلا معالي الوزير
+            {/* اهلا معالي الوزير */}
+            <bdi> اهلا {name}</bdi>
           </h5>
           <Switch
             checkedChildren="م"
@@ -100,7 +117,15 @@ function TopBar({ collapsed }) {
             }}
             className="big-switch"
           />
-          <button className="cursor-pointer border border-[#C2C1C1] border-t-[#C2C1C1] border-b-[#C2C1C1] border-l-[#C2C1C1] border-r-[#C2C1C1] border-solid rounded-3xl py-2 px-4 text-[#C2C1C1] font-[500] text-sm bg-[#fff] hover:text-[#07A869] transition-colors duration-500 hover:border-[#07A869]">
+          <button
+            onClick={() => {
+              localStorage.removeItem('token');
+              localStorage.removeItem('role');
+
+              navigate('/login');
+            }}
+            className="cursor-pointer border border-[#C2C1C1] border-t-[#C2C1C1] border-b-[#C2C1C1] border-l-[#C2C1C1] border-r-[#C2C1C1] border-solid rounded-3xl py-2 px-4 text-[#C2C1C1] font-[500] text-sm bg-[#fff] hover:text-[#07A869] transition-colors duration-500 hover:border-[#07A869]"
+          >
             تسجيل الخروج
           </button>
         </div>

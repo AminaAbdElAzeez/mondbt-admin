@@ -20,14 +20,6 @@ const persistConfig = {
   whitelist: [
     "Auth",
     "Profile",
-    "MapReducer",
-    "ThemeSwitcher",
-    "LanguageSwitcher",
-    "Users",
-    "Containers",
-    "Tickets",
-    "Faqs",
-    "Problems",
   ], // which reducer want to store
 };
 const pReducer = persistReducer(persistConfig, rootReducer as any);

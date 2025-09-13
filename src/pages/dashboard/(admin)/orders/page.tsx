@@ -1,739 +1,333 @@
-import { useEffect, useState, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import axios from "utlis/library/helpers/axios";
-import { SearchOutlined } from "@ant-design/icons";
-import { AiOutlineContainer } from "react-icons/ai";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import React, { useState } from 'react';
+import { BsThreeDotsVertical } from 'react-icons/bs';
+import { MdAccessAlarms } from 'react-icons/md';
+import { RiFileEditLine, RiUserFollowLine, RiUserUnfollowLine } from 'react-icons/ri';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell } from 'recharts';
+import { Table, TableColumnsType, Tag } from 'antd';
+import { FiEye } from 'react-icons/fi';
+import { Tooltip } from 'antd';
+import { Link } from 'react-router-dom';
 
-import type { InputRef, TableColumnsType, TableColumnType } from "antd";
-import {
-  Input,
-  Space,
-  Table,
-  Button,
-  Tooltip,
-  message,
-  Form,
-  Select,
-  Modal,
-} from "antd";
-import { useNavigate, Outlet, useParams, useLocation } from "react-router-dom";
-import RollerLoading from "components/loading/roller";
-import { FormattedMessage, useIntl } from "react-intl";
-import { FaCheckSquare, FaPlus } from "react-icons/fa";
-import { CgCloseR } from "react-icons/cg";
-
-export interface DataType {
-  user_id: number;
-  user_name: string;
-  total_price: string;
-  status: number;
-  id: number;
-
-  payment_status: number;
-  payment_method: number;
-  delivery_method: number;
-  created_at: string;
+interface Excuse {
+  key: string;
+  description: string;
+  date: string;
+  son: string;
+  status: string;
 }
 
-function Orders() {
-  /////states
+const dataTable: Excuse[] = [
+  {
+    key: '1',
+    description: 'مرض الطالب/ أحمد علي',
+    date: '1447/03/22',
+    son: 'أحمد',
+    status: 'مقبول',
+  },
+  {
+    key: '2',
+    description: 'وفاة قريبة من الدرجو الاولي',
+    date: '1447/03/23',
+    son: 'محمد',
+    status: 'مقبول',
+  },
+  {
+    key: '3',
+    description: 'موعد طبي للطالبة/ زهرة علي',
+    date: '1447/03/24',
+    son: 'زهرة',
+    status: 'مقبول',
+  },
+  {
+    key: '4',
+    description: 'مرض الطالب/ أحمد علي',
+    date: '1447/03/22',
+    son: 'أحمد',
+    status: 'مقبول',
+  },
+  {
+    key: '5',
+    description: 'وفاة قريبة من الدرجو الاولي',
+    date: '1447/03/23',
+    son: 'محمد',
+    status: 'مقبول',
+  },
+  {
+    key: '6',
+    description: 'موعد طبي للطالبة/ زهرة علي',
+    date: '1447/03/24',
+    son: 'زهرة',
+    status: 'مقبول',
+  },
+];
 
-  const [query, setQuery] = useState({} as any);
-  const [form] = Form.useForm();
+type CircularProgressProps = {
+  percentage: number;
+  size?: number;
+  strokeWidth?: number;
+  color?: string;
+  bgColor?: string;
+};
 
-  const intl = useIntl();
-  const [pagination, setPagination] = useState({
-    pageSize: 10,
-    totalCount: 0,
-    currentPage: 0,
-  });
+function CircularProgress({
+  percentage,
+  size = 200,
+  strokeWidth = 20,
+  color = '#07A869',
+  bgColor = '#D9D9D9', // gray-200
+}: CircularProgressProps) {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (percentage / 100) * circumference;
 
-  const location = useLocation();
-  const [userName, setUserName] = useState("");
-  const [searchClicked, setSearchClicked] = useState(false);
-  const [status, setStatus] = useState<any>(undefined);
-  const [deliveryMethod, setDeliveryMethod] = useState<any>(undefined);
-  const [paymentMethod, setPaymentMethod] = useState<any>(undefined);
-  const [paymentStatus, setPaymentStatus] = useState<any>(undefined);
-  const [addFaqOpen, setAddFaqOpen] = useState(false);
-  const [search, setSearch] = useState(undefined);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [actionType, setActionType] = useState<"complete" | "cancel" | null>(
-    null
-  );
-  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
-  const [cancelReasons, setCancelReasons] = useState<any[]>([]);
-  const [selectedCancelReason, setSelectedCancelReason] = useState<
-    number | null
-  >(null);
-
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const pathname = location.pathname;
-  const statusObj = {
-    1: <FormattedMessage id="pending" />,
-    2: <FormattedMessage id="accepted" />,
-    3: <FormattedMessage id="away" />,
-    4: <FormattedMessage id="completed" />,
-    5: <FormattedMessage id="canceled" />,
-    6: <FormattedMessage id="rejected" />,
-    7: <FormattedMessage id="refunded" />,
-  };
-  const deliveryMethodObj = {
-    1: <FormattedMessage id="pharmacy-pickup" />,
-    2: <FormattedMessage id="home-delivery" />,
-  };
-  const paymentMethodObj = {
-    1: <FormattedMessage id="credit" />,
-    2: <FormattedMessage id="mada" />,
-    3: <FormattedMessage id="cash" />,
-  };
-  const paymentStatusObj = {
-    1: <FormattedMessage id="pending" />,
-    2: <FormattedMessage id="done" />,
-    3: <FormattedMessage id="Cancelled" />,
-  };
-
-  const durationObj = {
-    day: <FormattedMessage id="day" />,
-    days: <FormattedMessage id="days" />,
-    hour: <FormattedMessage id="hour" />,
-    hours: <FormattedMessage id="hours" />,
-    min: <FormattedMessage id="min" />,
-    mins: <FormattedMessage id="mins" />,
-    secs: <FormattedMessage id="secs" />,
-    sec: <FormattedMessage id="sec" />,
-  };
-
-  const parseDuration = (duration: string | null | undefined) => {
-    if (!duration || typeof duration !== "string") {
-      return [];
-    }
-
-    const parts = duration.trim().split(/\s+/);
-    const result: { value: number; unit: string }[] = [];
-
-    for (let i = 0; i < parts.length; i += 2) {
-      const value = Number(parts[i]);
-      const unit = parts[i + 1];
-      if (!isNaN(value) && unit) {
-        result.push({ value, unit });
-      }
-    }
-
-    return result;
-  };
-
-  const renderDuration = (text?: string | null) => {
-    const parsed = parseDuration(text);
-
-    if (!parsed.length) {
-      return (
-        <span className="text-gray-300">
-          <FormattedMessage id="noData" />
-        </span>
-      );
-    }
-
-    return (
-      <>
-        {parsed.map(({ value, unit }, index) => (
-          <span key={index}>
-            {value} {durationObj[unit] ?? unit}
-            {index !== parsed.length - 1 && " "}
-          </span>
-        ))}
-      </>
-    );
-  };
-  // const searchQuery = () => {
-  //   let search = "";
-  //   if (Object.keys(query).length > 0) {
-  //     for (let x in query) {
-  //       search = `${search}` + `&${x}=${query[x]}`;
-  //     }
-  //   }
-  //   return search;
-  // };
-
-  const fetchOrdersFunc = async () => {
-    // dispatch(fetchUsersRequest());
-
-    const params: { [key: string]: string | number } = {};
-    if (typeof pagination.currentPage === "number") {
-      params.skip = pagination.currentPage * pagination.pageSize;
-      params.take = pagination.pageSize;
-    }
-    // const searchParams = searchQuery();
-    // params.query = query;
-    let x = "";
-    search && (x = x + `&filter[search]=${search}`);
-    status && (x = x + `&filter[status]=${status}`);
-    // paymentMethod && (x = x + `&filter[payment_method]=${paymentMethod}`);
-    if (paymentMethod === 1) {
-      x = x + `&filter[payment_method]=3`;
-    } else if (paymentMethod === 2) {
-      x = x + `&filter[payment_method]=1,2`;
-    }
-
-    paymentStatus && (x = x + `&filter[payment_status]=${paymentStatus}`);
-    deliveryMethod && (x = x + `&filter[delivery_method]=${deliveryMethod}`);
-    const { data } = await axios.get(
-      `admin/orders?skip=${params?.skip}&take=${params?.take}${x}`
-    );
-    // console.log("coupons", data);
-
-    setPagination((current) => ({
-      ...current,
-      totalCount: data?.count,
-    }));
-    //  }
-
-    return data?.data;
-  };
-
-  const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [
-      "fetchOrders",
-      pagination?.currentPage,
-      pagination?.pageSize,
-      search,
-      status,
-      paymentMethod,
-      deliveryMethod,
-      paymentStatus,
-    ],
-    queryFn: fetchOrdersFunc,
-  });
-
-  const handleOpenModal = (type: "complete" | "cancel", orderId: number) => {
-    setActionType(type);
-    setSelectedOrderId(orderId);
-    setModalVisible(true);
-  };
-
-  useEffect(() => {
-    if (modalVisible && actionType === "cancel") {
-      fetchCancelReasons();
-    }
-  }, [modalVisible, actionType]);
-
-  const fetchCancelReasons = async () => {
-    try {
-      const response = await axios.get("admin/cancel-reasons");
-      setCancelReasons(response.data.data);
-    } catch (error) {
-      console.error("Error fetching cancel reasons", error);
-    }
-  };
-
-  const handleConfirmAction = async () => {
-    if (!actionType || !selectedOrderId) return;
-    setLoading(true);
-
-    try {
-      let responseMessage = "";
-      if (actionType === "complete") {
-        const response = await axios.post(
-          `admin/orders/${selectedOrderId}/complete`
-        );
-        responseMessage = response.data.message;
-        message.success(responseMessage);
-        refetch();
-      } else if (actionType === "cancel") {
-        const selectedReason = cancelReasons.find(
-          (reason) => reason.id === selectedCancelReason
-        );
-        const response = await axios.post("admin/orders/cancel", {
-          _method: "patch",
-          order_id: selectedOrderId,
-          reason_id: selectedReason?.id,
-          reason: selectedReason?.title,
-        });
-        responseMessage = response.data.message;
-        message.success(responseMessage);
-        refetch();
-      }
-
-      setModalVisible(false);
-    } catch (err) {
-      const errorMessage = err.data.message;
-      message.error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-  //// column search component
-  const columnSearch = (placeHolder, state, setState, columnName) => {
-    return (
-      <div style={{ padding: 8 }}>
-        <Input
-          placeholder={intl?.formatMessage({ id: placeHolder })}
-          value={state}
-          onChange={(e) => setState(e.target.value)}
-          style={{ marginBottom: 8, display: "block" }}
+  return (
+    <div className="relative flex items-center justify-center">
+      <svg width={size} height={size}>
+        <circle
+          stroke={bgColor}
+          fill="transparent"
+          strokeWidth={strokeWidth}
+          r={radius}
+          cx={size / 2}
+          cy={size / 2}
         />
-        <Button
-          type="primary"
-          icon={<SearchOutlined />}
-          size="small"
-          style={{ width: 90 }}
-          onClick={() => {
-            setPagination((current) => ({
-              ...current,
-              currentPage: 0,
-            }));
-            setSearch(state);
-          }}
-        >
-          <FormattedMessage id="search" />
-        </Button>
-      </div>
-    );
-  };
+        <circle
+          stroke={color}
+          fill="transparent"
+          strokeWidth={strokeWidth}
+          r={radius}
+          cx={size / 2}
+          cy={size / 2}
+          strokeDasharray={circumference}
+          strokeDashoffset={(1 - percentage / 100) * circumference}
+          transform={`rotate(90 ${size / 2} ${size / 2})`}
+        />
+      </svg>
 
-  const columns: TableColumnsType<DataType> = [
+      <span className="absolute text-3xl font-bold text-[#15445A]">%{percentage}</span>
+    </div>
+  );
+}
+
+const Orders: React.FC = () => {
+  const [selected, setSelected] = useState<'سنة' | 'شهر' | 'يوم'>('يوم');
+  const buttons: Array<'سنة' | 'شهر' | 'يوم'> = ['سنة', 'شهر', 'يوم'];
+
+  const [selectedAttend, setSelectedAttend] = useState<
+    'التأخير' | 'الأعذار' | 'المكأفات' | 'الغياب' | 'الحضور'
+  >('الحضور');
+
+  const buttonsAttend: Array<'التأخير' | 'الأعذار' | 'المكأفات' | 'الغياب' | 'الحضور'> = [
+    'التأخير',
+    'الأعذار',
+    'المكأفات',
+    'الغياب',
+    'الحضور',
+  ];
+  const stats = [
     {
-      title: <FormattedMessage id="order-id" />,
-      dataIndex: "id",
-      key: "id",
-      width: "8%",
-      align: "center",
-      render: (text) =>
-        text || (
-          <p className="text-gray-300">{<FormattedMessage id="noData" />}</p>
-        ),
+      title: 'الغرامات',
+      value: '1,020,935',
+      suffix: 'ريال سعودي',
+      bg: 'bg-[#07A869]',
+      text: 'text-white',
+      icon: '/riyal.png',
     },
     {
-      title: <FormattedMessage id="user-name" />,
-      dataIndex: "user_name",
-      key: "user_name",
-      width: "11%",
-      render: (text) =>
-        text || (
-          <p className="text-gray-300">{<FormattedMessage id="noData" />}</p>
-        ),
-      filterDropdown: columnSearch(
-        "user-name",
-        userName,
-        setUserName,
-        "user_name"
-      ),
-      filterIcon: (
-        <SearchOutlined style={{ color: userName ? "#1890ff" : undefined }} />
-      ),
+      title: 'الاستئذان',
+      value: '12,650',
+      suffix: 'حالة استئذان',
+      bg: 'bg-white',
+      text: 'text-[#07A869]',
+      borderStyle: { border: '1px solid #C2C1C1', background: '#f9f9f9' },
     },
     {
-      title: <FormattedMessage id="status" />,
-      dataIndex: "status",
-      key: "status",
-      width: "8%",
-      align: "center",
-      render: (text) =>
-        statusObj[text] || (
-          <p className="text-gray-300">{<FormattedMessage id="noData" />}</p>
-        ),
-      // filterDropdown: columnSearch(
-      //   "status",
-      //   status,
-      //   setStatus,
-      //   "status"
-      // ),
-      // filterIcon: (
-      //   <SearchOutlined style={{ color: status ? "#1890ff" : undefined }} />
-      // ),
+      title: 'التأخير',
+      value: '1,180,935',
+      suffix: 'حالة تأخير',
+      bg: 'bg-[#07A869]',
+      text: 'text-white',
     },
     {
-      title: <FormattedMessage id="delivery-method" />,
-      dataIndex: "delivery_method",
-      key: "delivery_method",
-      align: "center",
-      width: "11%",
-      render: (text) =>
-        deliveryMethodObj[text] || (
-          <p className="text-gray-300">{<FormattedMessage id="noData" />}</p>
-        ),
-      // filterDropdown: columnSearch(
-      //   "delivery-method",
-      //   deliveryMethod,
-      //   setDeliveryMethod,
-      //   "delivery_method"
-      // ),
-      // filterIcon: (
-      //   <SearchOutlined style={{ color: deliveryMethod ? "#1890ff" : undefined }} />
-      // ),
+      title: 'الغياب',
+      value: '314,919',
+      suffix: 'طالب وطالبة',
+      bg: 'bg-white',
+      text: 'text-[#07A869]',
+      borderStyle: { border: '1px solid #C2C1C1', background: '#f9f9f9' },
     },
     {
-      title: <FormattedMessage id="payment-method" />,
-      dataIndex: "payment_method",
-      key: "payment_method",
-      align: "center",
-      width: "11%",
-      render: (text) =>
-        paymentMethodObj[text] || (
-          <p className="text-gray-300">{<FormattedMessage id="noData" />}</p>
-        ),
-      // filterDropdown: columnSearch(
-      //   "payment-method",
-      //   paymentMethod,
-      //   setPaymentMethod,
-      //   "payment_method"
-      // ),
-      // filterIcon: (
-      //   <SearchOutlined style={{ color: paymentMethod ? "#1890ff" : undefined }} />
-      // ),
+      title: 'الحضور',
+      value: '5,983,404',
+      suffix: 'طالب وطالبة',
+      bg: 'bg-[#07A869]',
+      text: 'text-white',
     },
+  ];
+
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const data = [
+    { day: 15, value: 70, hijri: '21' },
+    { day: 16, value: 50, hijri: '20' },
+    { day: 17, value: 90, hijri: '19' },
+    { day: 18, value: 30, hijri: '18' },
+    { day: 19, value: 60, hijri: '17' },
+    { day: 20, value: 80, hijri: '16' },
+    { day: 21, value: 40, hijri: '15' },
+  ];
+
+  const cardsData = [
+    { name: 'احمد', grade: 'الثالث', school: 'ابتدائية المنصورة - الرياض' },
+    { name: 'محمد', grade: 'السادس', school: 'ابتدائية يزيد الشيباني' },
+    { name: 'لبني', grade: 'الثاني', school: 'ابتدائية المنصورة - الرياض' },
+    { name: 'احمد', grade: 'الثالث', school: 'ابتدائية المنصورة - الرياض' },
+  ];
+
+  const columns: TableColumnsType<Excuse> = [
     {
-      title: <FormattedMessage id="payment-status" />,
-      dataIndex: "payment_status",
-      key: "payment_status",
-      align: "center",
-      width: "10%",
-      render: (_, row) =>
-        row?.status === 6 ? (
-          <FormattedMessage id="Cancelled" />
-        ) : (
-          paymentStatusObj[row?.payment_status] || (
-            <p className="text-gray-300">
-              <FormattedMessage id="noData" />
-            </p>
-          )
-        ),
+      title: 'الوصف',
+      dataIndex: 'description',
+      key: 'description',
+      width: '31%',
+      align: 'center',
       // render: (text) =>
-      //   paymentStatusObj[text] || (
+      //   text || (
       //     <p className="text-gray-300">{<FormattedMessage id="noData" />}</p>
       //   ),
-      // filterDropdown: columnSearch(
-      //   "payment-status",
-      //   paymentStatus,
-      //   setPaymentStatus,
-      //   "payment_status"
-      // ),
-      // filterIcon: (
-      //   <SearchOutlined style={{ color: paymentStatus ? "#1890ff" : undefined }} />
-      // ),
     },
     {
-      title: <FormattedMessage id="total-price" />,
-      dataIndex: "total_price",
-      key: "total_price",
-      align: "center",
-      width: "8%",
-      render: (text) =>
-        (+text === 0 || text) && text !== null ? (
-          text
-        ) : (
-          <p className="text-gray-300">{<FormattedMessage id="noData" />}</p>
-        ),
+      title: 'التاريخ',
+      dataIndex: 'date',
+      key: 'date',
+      width: '23%',
+      align: 'center',
     },
     {
-      title: <FormattedMessage id="created-at" />,
-      dataIndex: "created_at",
-      key: "created_at",
-      width: "11%",
-      align: "center",
-      render: (text) =>
-        text ? (
-          text
-        ) : (
-          <p className="text-gray-300">{<FormattedMessage id="noData" />}</p>
-        ),
+      title: 'الابن',
+      dataIndex: 'son',
+      key: 'son',
+      width: '19%',
+      align: 'center',
     },
     {
-      title: <FormattedMessage id="is_remote_shipping" />,
-      dataIndex: "is_remote_shipping",
-      key: "is_remote_shipping",
-      width: "9%",
-      align: "center",
-      render: (value: number) =>
-        value === 0 ? (
-          <span>
-            <FormattedMessage id="OutletPlus" />
-          </span>
-        ) : value === 1 ? (
-          <span>
-            <FormattedMessage id="SAMSA" />
-          </span>
-        ) : (
-          <p className="text-gray-300">
-            <FormattedMessage id="noData" />
-          </p>
-        ),
-    },
-    {
-      title: <FormattedMessage id="duration" />,
-      dataIndex: "duration",
-      key: "duration",
-      width: "7%",
-      align: "center",
-      render: (text: string) => renderDuration(text),
-    },
-    {
-      title: (
-        <div className="text-center">
-          <FormattedMessage id="actions" />
-        </div>
-      ),
-      width: "6%",
-      key: "actions",
-      align: "center",
-      fixed: "right",
-      render: (_, row) => (
-        <div className="flex justify-center items-center gap-2">
-          <Tooltip title={<FormattedMessage id="view" />} color="#1283ad">
-            <AiOutlineContainer
-              className="text-[#1283ad] cursor-pointer text-xl"
-              onClick={() => {
-                navigate("order-details", { state: { orderId: row?.id } });
-              }}
-            />
-          </Tooltip>
+      title: 'الحالة',
+      dataIndex: 'status',
+      key: 'status',
+      width: '19%',
+      align: 'center',
 
-          {row.delivery_method === 1 &&
-            row.status !== 3 &&
-            row.status !== 4 &&
-            row.status !== 5 &&
-            row.status !== 6 &&
-            row.status !== 7 && (
-              <div className="flex justify-center items-center gap-2">
-                <Tooltip
-                  title={<FormattedMessage id="completeOrder" />}
-                  color="#03b89e"
-                >
-                  <FaCheckSquare
-                    className="text-[#03b89e] cursor-pointer text-xl"
-                    onClick={() => handleOpenModal("complete", row.id)}
-                  />
-                </Tooltip>
+      render: (status: string) => <span className="!m-0">{status}</span>,
+    },
 
-                <Tooltip
-                  title={<FormattedMessage id="cancelOrder" />}
-                  color="rgb(185 28 28)"
-                >
-                  <CgCloseR
-                    className="text-red-700 cursor-pointer text-xl"
-                    onClick={() => handleOpenModal("cancel", row.id)}
-                  />
-                </Tooltip>
-              </div>
-            )}
-        </div>
+    {
+      title: '',
+      dataIndex: 'action',
+      key: 'action',
+      fixed: 'right',
+      width: '8%',
+      render: () => (
+        <Tooltip title="عرض التفاصيل" color="#07A869">
+          <a href="permission/details">
+            <FiEye className="text-[#15445A] text-xl cursor-pointer" />
+          </a>
+        </Tooltip>
       ),
     },
   ];
 
-  //if (error) return <div>Error: {error}</div>;
   return (
-    <>
-      {pathname.split("/")[pathname.split("/").length - 1] === "permission" ? (
-        <div className="container mx-auto ">
-          {isLoading ? (
-            <RollerLoading />
-          ) : (
-            <>
-              <div className="py-4 flex justify-center sm:justify-end items-center flex-wrap">
-                <Select
-                  className="w-[150px] mx-1 my-2 dark:[&_.ant-select-arrow]:!text-[#e7e5e5]"
-                  //defaultValue={(statusArr.filter((item)=>item.value===prescriptionStatus)[0].label)||''}
-                  showSearch
-                  value={status}
-                  placeholder={
-                    <span className=" dark:text-[#e7e5e5] dark:!border-[#fff]">
-                      <FormattedMessage id="status" />
-                    </span>
-                  }
-                  optionFilterProp="label"
-                  onChange={(value) => setStatus(value)}
-                  // onSearch={onSearch}
-                  options={[
-                    {
-                      value: 1,
-                      label: intl.formatMessage({ id: "pending" }),
-                    },
-                    {
-                      value: 2,
-                      label: intl.formatMessage({ id: "accepted" }),
-                    },
-                    {
-                      value: 3,
-                      label: intl.formatMessage({ id: "away" }),
-                    },
-                    {
-                      value: 4,
-                      label: intl.formatMessage({ id: "completed" }),
-                    },
-                    {
-                      value: 5,
-                      label: intl.formatMessage({ id: "canceled" }),
-                    },
-                    {
-                      value: 6,
-                      label: intl.formatMessage({ id: "rejected" }),
-                    },
-                  ]}
-                />
-                <Select
-                  className="w-[150px] mx-1 my-2 dark:[&_.ant-select-arrow]:!text-[#e7e5e5]"
-                  //defaultValue={(statusArr.filter((item)=>item.value===prescriptionStatus)[0].label)||''}
-                  showSearch
-                  value={deliveryMethod}
-                  placeholder={
-                    <span className=" dark:text-[#e7e5e5] dark:!border-[#fff]">
-                      <FormattedMessage id="delivery-method" />
-                    </span>
-                  }
-                  optionFilterProp="label"
-                  onChange={(value) => setDeliveryMethod(value)}
-                  // onSearch={onSearch}
-                  options={[
-                    {
-                      value: 1,
-                      label: intl.formatMessage({ id: "pharmacy-pickup" }),
-                    },
-                    {
-                      value: 2,
-                      label: intl.formatMessage({ id: "home-delivery" }),
-                    },
-                  ]}
-                />
-                <Select
-                  className="w-[150px] mx-1 my-2 dark:[&_.ant-select-arrow]:!text-[#e7e5e5]"
-                  //defaultValue={(statusArr.filter((item)=>item.value===prescriptionStatus)[0].label)||''}
-                  showSearch
-                  value={paymentMethod}
-                  placeholder={
-                    <span className=" dark:text-[#e7e5e5] dark:!border-[#fff]">
-                      <FormattedMessage id="payment-method" />
-                    </span>
-                  }
-                  optionFilterProp="label"
-                  onChange={(value) => setPaymentMethod(value)}
-                  // onSearch={onSearch}
-                  options={[
-                    {
-                      value: 1,
-                      label: intl.formatMessage({ id: "cash" }),
-                    },
-                    {
-                      value: 2,
-                      label: intl.formatMessage({ id: "online" }),
-                    },
-                  ]}
-                />
-                <Select
-                  className="w-[150px] mx-1 my-2 dark:[&_.ant-select-arrow]:!text-[#e7e5e5]"
-                  //defaultValue={(statusArr.filter((item)=>item.value===prescriptionStatus)[0].label)||''}
-                  showSearch
-                  value={paymentStatus}
-                  placeholder={
-                    <span className=" dark:text-[#e7e5e5] dark:!border-[#fff]">
-                      <FormattedMessage id="payment-status" />
-                    </span>
-                  }
-                  optionFilterProp="label"
-                  onChange={(value) => setPaymentStatus(value)}
-                  // onSearch={onSearch}
-                  options={[
-                    {
-                      value: 1,
-                      label: intl.formatMessage({ id: "pending" }),
-                    },
-                    {
-                      value: 2,
-                      label: intl.formatMessage({ id: "done" }),
-                    },
-                    {
-                      value: 3,
-                      label: intl.formatMessage({ id: "Cancelled" }),
-                    },
-                  ]}
-                />
+    <section dir="ltr" className="text-right px-2">
+      <div className=" mb-1 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start  gap-1 lg:gap-5">
+        <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
+          أبنائي
+        </h2>
+      </div>
+      <div className="flex justify-between items-center flex-wrap gap-5 py-2 mb-5" dir="rtl">
+        {cardsData.map((card, index) => (
+          <div
+            key={index}
+            className="rounded-xl shadow-md p-4 transform transition duration-300 hover:scale-105 hover:shadow-xl flex-grow w-[230px] text-right"
+            style={{ border: '1px solid #07A86940' }}
+          >
+            <div className="flex justify-between items-start mb-4">
+              <div className="w-max flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#D9D9D9]"></div>
+                <span className="text-[#07A869] text-xl font-semibold">{card.name}</span>
               </div>
-              <Table<DataType>
-                title={() => (
-                  <Tooltip
-                    title={<FormattedMessage id="add" />}
-                    color="#03b89e"
-                  >
-                    <Button
-                      type="primary"
-                      className="shadow-none"
-                      icon={<FaPlus />}
-                      shape="circle"
-                      // loading={loading}
-                      onClick={() => {
-                        navigate("add-order");
-                        //form.resetFields();
-                      }}
-                    />
-                  </Tooltip>
-                )}
-                columns={columns}
-                dataSource={data}
-                scroll={{ x: 1800, y: 310 }}
-                pagination={{
-                  total: pagination.totalCount,
-                  current: pagination.currentPage + 1,
-                  pageSize: pagination.pageSize,
-                  onChange(page, pageSize) {
-                    setPagination((current) => ({
-                      ...current,
-                      pageSize,
-                      currentPage: page - 1,
-                    }));
-                  },
-                }}
-              />
-            </>
-          )}
-        </div>
-      ) : (
-        <Outlet />
-      )}
+              <BsThreeDotsVertical className="text-2xl w-auto text-[#15445A] cursor-pointer hover:text-[#07A869] transition-colors duration-500 " />
+            </div>
+            <div className="flex flex-col  items-start gap-2">
+              <div className="flex  items-center gap-2 text-right group text-sm">
+                <strong className="text-[#07A869] w-[50px] group-hover:text-[#07A869] transition-colors duration-500">
+                  <bdi>الصف:</bdi>
+                </strong>
+                <strong className="text-[#15445A] group-hover:text-[#07A869] transition-colors duration-500">
+                  {card.grade}
+                </strong>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-right group mb-2">
+                <strong className="text-[#07A869] w-[50]px] group-hover:text-[#07A869] transition-colors duration-500">
+                  <bdi>المدرسة:</bdi>
+                </strong>
+                <strong className="text-[#15445A] group-hover:text-[#07A869] transition-colors duration-500 text-[13px]">
+                  {card.school}
+                </strong>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
 
-      <Modal
-        open={modalVisible}
-        confirmLoading={loading}
-        onCancel={() => setModalVisible(false)}
-        onOk={handleConfirmAction}
-        title={
-          actionType === "complete" ? (
-            <FormattedMessage id="completeOrder" />
-          ) : (
-            <FormattedMessage id="cancelOrder" />
-          )
-        }
-        okText={<FormattedMessage id="Confirm" />}
-        cancelText={<FormattedMessage id="Cancel" />}
+      <div className=" mb-1 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start  gap-1 lg:gap-5">
+        <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
+          قائمة الأعذار
+        </h2>
+      </div>
+      <Table<Excuse>
+        bordered
+        dataSource={dataTable}
+        columns={columns}
+        pagination={false}
+        scroll={{ x: 800 }}
+        className="custom-table rounded-lg"
+        style={{ border: '1px solid #D9D9D9' }}
+        footer={() => (
+          <div className="flex justify-end">
+            <button className="bg-[#07A869] text-[#fff] text-sm sm:text-base font-semibold px-8 py-2 rounded-3xl outline-none border border-[#07A869] border-solid cursor-pointer hover:text-[#07A869] hover:bg-[#fff] transition-colors duration-500 ">
+              عرض الكل
+            </button>
+          </div>
+        )}
+      />
+      <div
+        className={`rounded-xl shadow-md p-4 transform transition duration-300  mt-5`}
+        style={{ border: '1px solid #D9D9D9' }}
       >
-        {actionType === "cancel" && (
-          <>
-            <p>
-              <FormattedMessage id="cancelMsg" />
-            </p>
-            <Select
-              value={selectedCancelReason}
-              onChange={setSelectedCancelReason}
-              placeholder={<FormattedMessage id="selectCancelReason" />}
-              style={{ width: "100%", margin: "10px 0" }}
-            >
-              {cancelReasons.map((reason) => (
-                <Select.Option key={reason.id} value={reason.id}>
-                  {reason.title}
-                </Select.Option>
-              ))}
-            </Select>
-          </>
-        )}
-        {actionType === "complete" && (
-          <p>
-            <FormattedMessage id="completeMsg" />
-          </p>
-        )}
-      </Modal>
-    </>
+        <div className="flex flex-col md:flex-row justify-center md:justify-between items-center md:items-start mb-1.5 gap-1">
+          <div className="flex items-center gap-2 justify-end text-[#07A869]">
+            <img src="/green-riyal.png" alt="icon" className="w-7 md:w-9 h-auto" />
+            <span className="text-[#07A869]  text-2xl font-semibold">1,020,935</span>
+          </div>
+          <h3 className="text-[#07A869] hover:text-[#15445A] transition-colors duration-500  text-xl sm:text-2xl font-semibold">
+            <bdi>مجموع الغرامات:</bdi>
+          </h3>
+        </div>
+
+        <div className="flex justify-center md:justify-start mb-1.5">
+          <Link
+            to="details/pay-fines"
+            className="bg-[#07A869] text-[#fff] text-sm sm:text-base font-semibold px-8 py-2 rounded-3xl outline-none border border-[#07A869] border-solid cursor-pointer hover:text-[#07A869] hover:bg-[#fff] transition-colors duration-500 "
+          >
+            دفع الغرامات
+          </Link>
+        </div>
+      </div>
+    </section>
   );
-}
+};
 
 export default Orders;
+
+// {isLoading ? (
+//             <RollerLoading />
+//           ) : (

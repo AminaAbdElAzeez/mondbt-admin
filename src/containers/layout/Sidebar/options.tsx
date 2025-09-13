@@ -23,7 +23,7 @@ import { MdStarRate } from "react-icons/md";
 import { AiFillProduct } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
 import { GrUserExpert } from "react-icons/gr";
-import { LuPenLine } from "react-icons/lu";
+import { LuAlarmClock, LuPenLine } from "react-icons/lu";
 import { FaFilePen } from "react-icons/fa6";
 import { BsBarChart } from "react-icons/bs";
 
@@ -122,8 +122,8 @@ const getMenuItems: () => MenuItem[] = () => {
       disabled: false,
     },
     {
-      key: "departure",
-      to: "departure",
+      key: "absent",
+      to: "absent",
       label: <FormattedMessage id="departure" />,
       icon: <RiUserUnfollowLine className="!text-xl" />,
 
@@ -131,23 +131,32 @@ const getMenuItems: () => MenuItem[] = () => {
       //hidden: false,
     },
     {
-      key: "permission",
-      to: "permission",
+      key: "late",
+      to: "late",
+      label: <FormattedMessage id="late" />,
+      icon: <LuAlarmClock  className="!text-xl" />,
+
+      disabled: false,
+      //hidden: false,
+    },
+    {
+      key: "excuse",
+      to: "excuse",
       label: <FormattedMessage id="permission" />,
       icon: <RiFileEditLine className="!text-xl" />,
 
       disabled: false,
       //hidden: false,
     },
-    {
-      key: "discipline_statistics",
-      to: "discipline_statistics",
-      label: <FormattedMessage id="discipline_statistics" />,
-      icon: <BsBarChart className="!text-xl" />,
+    // {
+    //   key: "discipline_statistics",
+    //   to: "discipline_statistics",
+    //   label: <FormattedMessage id="discipline_statistics" />,
+    //   icon: <BsBarChart className="!text-xl" />,
 
-      disabled: false,
-      //hidden: false,
-    },
+    //   disabled: false,
+    //   //hidden: false,
+    // },
     // {
     //   key: "offers",
     //   to: "offers",

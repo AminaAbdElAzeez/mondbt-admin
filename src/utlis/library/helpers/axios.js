@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 const { setTokenAsExpired } = authAction;
 
 // import { store } from "../../redux/store";
-export const URL = "https://backend.outletplus.sa"; // ==> dev
+export const URL = "https://ajjil.appssquare.com/mondbt/public"; // ==> dev
 const { idToken } = store.getState().Auth;
 // console.log(store.getState())
 //const { idToken } =  useSelector((state) => state.Auth);

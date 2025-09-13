@@ -4,17 +4,22 @@ import authAction from "store/auth/actions";
 const { logout } = authAction;
 
 export function ExpirationTokenGuard(Comp: any, next: any) {
+  return function Wrapped(props: any) {
     const { status } = useSelector((state: { Auth: IAuth }) => state.Auth);
-    
-    
 
     if (status !== "EXPIRED") {
-        return next(Comp)
+      return next(<Comp {...props} />);
     }
 
-    return next(()=><Comp><ExpireHandling/> </Comp>)
-    // return next(Comp)
+    return next(
+      <Comp {...props}>
+        <ExpireHandling />
+      </Comp>
+    );
+  };
 }
+
+
 function ExpireHandling(props){
 
     const dispatch = useDispatch()
