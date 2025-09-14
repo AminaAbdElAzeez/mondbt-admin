@@ -1,18 +1,20 @@
-import React, { useState } from 'react';
-import { Switch } from 'antd';
-import 'antd/dist/reset.css';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useDispatch } from 'react-redux';
-import profileActions from 'store/profile/actions';
-import { useNavigate } from 'react-router-dom';
-
+import React, { useState } from "react";
+import { Switch } from "antd";
+import "antd/dist/reset.css";
+import { AnimatePresence, motion } from "framer-motion";
+import { useDispatch } from "react-redux";
+import profileActions from "store/profile/actions";
+import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
+import "dayjs/locale/ar";
+import hijri from "dayjs-hijri";
+dayjs.extend(hijri);
 
 function TopBar({ collapsed }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const name = localStorage.getItem('name') || 'المستخدم';
+  const name = localStorage.getItem("name") || "المستخدم";
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
 
   return (
     <section
@@ -21,8 +23,8 @@ function TopBar({ collapsed }) {
         transition-all duration-500
         ${
           collapsed
-            ? 'right-0 sm:right-80 w-full sm:w-[calc(100%-320px)]'
-            : 'right-0 sm:right-16 w-full sm:w-[calc(100%-64px)]'
+            ? "right-0 sm:right-80 w-full sm:w-[calc(100%-320px)]"
+            : "right-0 sm:right-16 w-full sm:w-[calc(100%-64px)]"
         }
       `}
     >
@@ -61,13 +63,13 @@ function TopBar({ collapsed }) {
         {menuOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
+            animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.4, ease: 'easeInOut' }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
             className="overflow-hidden lg:hidden"
           >
             <div className="flex flex-col items-center mt-3">
-              <Switch
+              {/* <Switch
                 checkedChildren="م"
                 unCheckedChildren="هـ"
                 defaultChecked
@@ -76,13 +78,13 @@ function TopBar({ collapsed }) {
                   border: '1px solid #07A869',
                 }}
                 className="big-switch mb-4"
-              />
+              /> */}
               <button
                 onClick={() => {
-                  localStorage.removeItem('token');
-                  localStorage.removeItem('role');
+                  localStorage.removeItem("token");
+                  localStorage.removeItem("role");
 
-                  navigate('/login');
+                  navigate("/login");
                 }}
                 className="cursor-pointer border border-[#C2C1C1] border-t-[#C2C1C1] border-b-[#C2C1C1] border-l-[#C2C1C1] border-r-[#C2C1C1] border-solid rounded-3xl py-2 px-4 text-[#C2C1C1] font-[500] text-sm bg-[#fff] hover:text-[#07A869] transition-colors duration-500 hover:border-[#07A869] mb-3"
               >
@@ -90,10 +92,12 @@ function TopBar({ collapsed }) {
               </button>
 
               <p className="text-[#15445A] text-sm p-0 mb-2">
-                <strong className="text-[#07A869] mx-1">الموافق:</strong> 2025/10/05
+                <strong className="text-[#07A869] mx-1">الموافق:</strong>{" "}
+                2025/10/05
               </p>
               <p className="text-[#15445A] text-sm p-0 mb-3">
-                <strong className="text-[#07A869] mx-1">الموافق:</strong> الاربعاء 1447/03/27
+                <strong className="text-[#07A869] mx-1">الموافق:</strong>{" "}
+                الاربعاء 1447/03/27
               </p>
             </div>
           </motion.div>
@@ -107,7 +111,7 @@ function TopBar({ collapsed }) {
             {/* اهلا معالي الوزير */}
             <bdi> اهلا {name}</bdi>
           </h5>
-          <Switch
+          {/* <Switch
             checkedChildren="م"
             unCheckedChildren="هـ"
             defaultChecked
@@ -116,13 +120,13 @@ function TopBar({ collapsed }) {
               border: '1px solid #07A869',
             }}
             className="big-switch"
-          />
+          /> */}
           <button
             onClick={() => {
-              localStorage.removeItem('token');
-              localStorage.removeItem('role');
+              localStorage.removeItem("token");
+              localStorage.removeItem("role");
 
-              navigate('/login');
+              navigate("/login");
             }}
             className="cursor-pointer border border-[#C2C1C1] border-t-[#C2C1C1] border-b-[#C2C1C1] border-l-[#C2C1C1] border-r-[#C2C1C1] border-solid rounded-3xl py-2 px-4 text-[#C2C1C1] font-[500] text-sm bg-[#fff] hover:text-[#07A869] transition-colors duration-500 hover:border-[#07A869]"
           >

@@ -5865,10 +5865,15 @@ date-fns@^4.1.0:
   dependencies:
     "@babel/runtime" "^7.21.0"
 
-dayjs@^1.11.11, "dayjs@>= 1.x", dayjs@1.x:
-  version "1.11.13"
-  resolved "https://registry.npmjs.org/dayjs/-/dayjs-1.11.13.tgz"
-  integrity sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==
+dayjs-hijri@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/dayjs-hijri/-/dayjs-hijri-1.0.1.tgz"
+  integrity sha512-xq1sQVEcxxuEVBVHYGjgurORQtv9iRaZTCIiyZ3Cmo+PvuLjTWGHVB6xlAQKeyw+ZkZHgnsAh1PolbwA3DFwqg==
+
+dayjs@^1.11.11, dayjs@^1.11.18, "dayjs@>= 1.x", dayjs@1.x:
+  version "1.11.18"
+  resolved "https://registry.npmjs.org/dayjs/-/dayjs-1.11.18.tgz"
+  integrity sha512-zFBQ7WFRvVRhKcWoUh+ZA1g2HVgUbsZm9sbddh8EC5iv93sui8DVVz1Npvz+r6meo9VKfa8NyLWBsQK1VvIKPA==
 
 debug@^2.2.0:
   version "2.6.9"

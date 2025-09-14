@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'utlis/library/helpers/axios';
-import { MdAccessAlarms } from 'react-icons/md';
-import { RiFileEditLine, RiUserFollowLine, RiUserUnfollowLine } from 'react-icons/ri';
+import React, { useEffect, useState } from "react";
+import axios from "utlis/library/helpers/axios";
+import { MdAccessAlarms } from "react-icons/md";
+import {
+  RiFileEditLine,
+  RiUserFollowLine,
+  RiUserUnfollowLine,
+} from "react-icons/ri";
 import {
   BarChart,
   Bar,
@@ -11,14 +15,14 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
-} from 'recharts';
-import { Select, Button } from 'antd';
-import 'antd/dist/reset.css';
-import { IoSearch } from 'react-icons/io5';
-import { FaExclamation } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
-import { FiEye } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+} from "recharts";
+import { Select, Button } from "antd";
+import "antd/dist/reset.css";
+import { IoSearch } from "react-icons/io5";
+import { FaExclamation } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { FiEye } from "react-icons/fi";
+import { Link } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -34,8 +38,8 @@ function CircularProgress({
   percentage,
   size = 200,
   strokeWidth = 20,
-  color = '#07A869',
-  bgColor = '#D9D9D9', // gray-200
+  color = "#07A869",
+  bgColor = "#D9D9D9", // gray-200
 }: CircularProgressProps) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -65,21 +69,25 @@ function CircularProgress({
         />
       </svg>
 
-      <span className="absolute text-lg font-bold text-[#15445A]">%{percentage}</span>
+      <span className="absolute text-lg font-bold text-[#15445A]">
+        %{percentage}
+      </span>
     </div>
   );
 }
 
 const AdminHome: React.FC = () => {
-  const [regions, setRegions] = useState<Array<{ id: number; name: string }>>([]);
-  const [cities, setCities] = useState<Array<{ id: number; name: string; region: { id: number } }>>(
+  const [regions, setRegions] = useState<Array<{ id: number; name: string }>>(
     []
   );
+  const [cities, setCities] = useState<
+    Array<{ id: number; name: string; region: { id: number } }>
+  >([]);
   const [schools, setSchools] = useState<Array<any>>([]);
 
   const [selectedRegion, setSelectedRegion] = useState<number | null>(null);
   const [selectedCity, setSelectedCity] = useState<number | null>(null);
-  const [ministryNumber, setMinistryNumber] = useState<string>('');
+  const [ministryNumber, setMinistryNumber] = useState<string>("");
   const [selectedType, setSelectedType] = useState<number | null>(null);
   const [selectedGender, setSelectedGender] = useState<number | null>(null);
   const [selectedSchool, setSelectedSchool] = useState<number | null>(null);
@@ -90,20 +98,26 @@ const AdminHome: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const [selected, setSelected] = useState<'سنة' | 'شهر' | 'يوم'>('يوم');
-  const buttons: Array<'سنة' | 'شهر' | 'يوم'> = ['سنة', 'شهر', 'يوم'];
+  const [selected, setSelected] = useState<"سنة" | "شهر" | "يوم">("يوم");
+  const buttons: Array<"سنة" | "شهر" | "يوم"> = ["سنة", "شهر", "يوم"];
   const [filteredData, setFilteredData] = useState<{
     school: any[];
     student: any[];
   }>({ school: [], student: [] });
+  const [statsLoading, setStatsLoading] = useState(false);
 
-  const [region, setRegion] = useState<string>('1'); // اختار قيمة المنطقة
+  const [region, setRegion] = useState<string>("1"); // اختار قيمة المنطقة
 
-  const [selectedAttend, setSelectedAttend] = useState<'الاحصائيات' | 'التقارير'>('الاحصائيات');
-  const buttonsAttend: Array<'الاحصائيات' | 'التقارير'> = ['الاحصائيات', 'التقارير'];
+  const [selectedAttend, setSelectedAttend] = useState<
+    "الاحصائيات" | "التقارير"
+  >("الاحصائيات");
+  const buttonsAttend: Array<"الاحصائيات" | "التقارير"> = [
+    "الاحصائيات",
+    "التقارير",
+  ];
 
-  const [selectedHr, setSelectedHr] = useState<'الطلاب' | 'المدراس'>('المدراس');
-  const buttonsHr: Array<'الطلاب' | 'المدراس'> = ['الطلاب', 'المدراس'];
+  const [selectedHr, setSelectedHr] = useState<"الطلاب" | "المدراس">("المدراس");
+  const buttonsHr: Array<"الطلاب" | "المدراس"> = ["الطلاب", "المدراس"];
   const [studentStats, setStudentStats] = useState<{
     present: number;
     absent: number;
@@ -116,54 +130,54 @@ const AdminHome: React.FC = () => {
 
   const stats = [
     {
-      title: 'الغرامات',
-      value: '1,020,935',
-      suffix: 'ريال سعودي',
-      bg: 'bg-[#07A869]',
-      text: 'text-white',
-      icon: '/riyal.png',
+      title: "الغرامات",
+      value: "1,020,935",
+      suffix: "ريال سعودي",
+      bg: "bg-[#07A869]",
+      text: "text-white",
+      icon: "/riyal.png",
     },
     {
-      title: 'الاستئذان',
-      value: '12,650',
-      suffix: 'حالة استئذان',
-      bg: 'bg-white',
-      text: 'text-[#07A869]',
-      borderStyle: { border: '1px solid #C2C1C1', background: '#f9f9f9' },
+      title: "الاستئذان",
+      value: "12,650",
+      suffix: "حالة استئذان",
+      bg: "bg-white",
+      text: "text-[#07A869]",
+      borderStyle: { border: "1px solid #C2C1C1", background: "#f9f9f9" },
     },
     {
-      title: 'التأخير',
-      value: '1,180,935',
-      suffix: 'حالة تأخير',
-      bg: 'bg-[#07A869]',
-      text: 'text-white',
+      title: "التأخير",
+      value: "1,180,935",
+      suffix: "حالة تأخير",
+      bg: "bg-[#07A869]",
+      text: "text-white",
     },
     {
-      title: 'الغياب',
-      value: '314,919',
-      suffix: 'طالب وطالبة',
-      bg: 'bg-white',
-      text: 'text-[#07A869]',
-      borderStyle: { border: '1px solid #C2C1C1', background: '#f9f9f9' },
+      title: "الغياب",
+      value: "314,919",
+      suffix: "طالب وطالبة",
+      bg: "bg-white",
+      text: "text-[#07A869]",
+      borderStyle: { border: "1px solid #C2C1C1", background: "#f9f9f9" },
     },
     {
-      title: 'الحضور',
-      value: '5,983,404',
-      suffix: 'طالب وطالبة',
-      bg: 'bg-[#07A869]',
-      text: 'text-white',
+      title: "الحضور",
+      value: "5,983,404",
+      suffix: "طالب وطالبة",
+      bg: "bg-[#07A869]",
+      text: "text-white",
     },
   ];
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const data = [
-    { day: 15, value: 70, hijri: '21' },
-    { day: 16, value: 50, hijri: '20' },
-    { day: 17, value: 90, hijri: '19' },
-    { day: 18, value: 30, hijri: '18' },
-    { day: 19, value: 60, hijri: '17' },
-    { day: 20, value: 80, hijri: '16' },
-    { day: 21, value: 40, hijri: '15' },
+    { day: 15, value: 70, hijri: "21" },
+    { day: 16, value: 50, hijri: "20" },
+    { day: 17, value: 90, hijri: "19" },
+    { day: 18, value: 30, hijri: "18" },
+    { day: 19, value: 60, hijri: "17" },
+    { day: 20, value: 80, hijri: "16" },
+    { day: 21, value: 40, hijri: "15" },
   ];
 
   const [statsData, setStatsData] = useState<
@@ -178,7 +192,7 @@ const AdminHome: React.FC = () => {
     }>
   >([]);
 
-  const filterTypeMapping: Record<'سنة' | 'شهر' | 'يوم', number> = {
+  const filterTypeMapping: Record<"سنة" | "شهر" | "يوم", number> = {
     سنة: 3,
     شهر: 2,
     يوم: 1,
@@ -188,62 +202,74 @@ const AdminHome: React.FC = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const type = filterTypeMapping[selected]; // 1 يوم، 2 شهر، 3 سنة
-        const res = await axios.get(`admin/home/statistics?filter[type]=${type}`, {
-          headers: {
-            Authorization: `Bearer ${token || localStorage.getItem('token')}`,
-            'Accept-Language': 'ar',
-          },
-        });
+        setStatsLoading(true);
+        const type = filterTypeMapping[selected];
+        const res = await axios.get(
+          `admin/home/statistics?filter[type]=${type}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+              "Accept-Language": "ar",
+            },
+          }
+        );
 
         if (res.data.status) {
           const apiData = res.data.data;
 
           const formattedStats = [
             {
-              title: 'الحضور',
+              title: "الحضور",
               value: apiData.present,
-              suffix: 'طالب وطالبة',
-              bg: 'bg-[#07A869]',
-              text: 'text-white',
+              suffix: "طالب وطالبة",
+              bg: "bg-[#07A869]",
+              text: "text-white",
             },
             {
-              title: 'الغياب',
+              title: "الغياب",
               value: apiData.absent,
-              suffix: 'طالب وطالبة',
-              bg: 'bg-white',
-              text: 'text-[#07A869]',
-              borderStyle: { border: '1px solid #C2C1C1', background: '#f9f9f9' },
+              suffix: "طالب وطالبة",
+              bg: "bg-white",
+              text: "text-[#07A869]",
+              borderStyle: {
+                border: "1px solid #C2C1C1",
+                background: "#f9f9f9",
+              },
             },
             {
-              title: 'التأخير',
+              title: "التأخير",
               value: apiData.late,
-              suffix: 'حالة تأخير',
-              bg: 'bg-[#07A869]',
-              text: 'text-white',
+              suffix: "حالة تأخير",
+              bg: "bg-[#07A869]",
+              text: "text-white",
             },
             {
-              title: 'الاستئذان',
+              title: "الاستئذان",
               value: apiData.excused,
-              suffix: 'حالة استئذان',
-              bg: 'bg-white',
-              text: 'text-[#07A869]',
-              borderStyle: { border: '1px solid #C2C1C1', background: '#f9f9f9' },
+              suffix: "حالة استئذان",
+              bg: "bg-white",
+              text: "text-[#07A869]",
+              borderStyle: {
+                border: "1px solid #C2C1C1",
+                background: "#f9f9f9",
+              },
             },
             {
-              title: 'الغرامات',
+              title: "الغرامات",
               value: apiData.fines.toLocaleString(),
-              suffix: 'ريال سعودي',
-              bg: 'bg-[#07A869]',
-              text: 'text-white',
-              icon: '/riyal.png', // الصورة موجودة فقط لكارت الغرامات
+              suffix: "ريال سعودي",
+              bg: "bg-[#07A869]",
+              text: "text-white",
+              icon: "/riyal.png", // الصورة موجودة فقط لكارت الغرامات
             },
           ];
 
           setStatsData(formattedStats);
         }
       } catch (error) {
-        console.error('Error fetching stats', error);
+        console.error("Error fetching stats", error);
+      } finally {
+        setStatsLoading(false);
       }
     };
 
@@ -253,10 +279,10 @@ const AdminHome: React.FC = () => {
   useEffect(() => {
     // Fetch regions
     axios
-      .get('/regions', {
+      .get("/regions", {
         headers: {
-          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
-          'Accept-Language': 'ar',
+          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+          "Accept-Language": "ar",
         },
       })
       .then((res) => res.data.status && setRegions(res.data.data))
@@ -264,10 +290,10 @@ const AdminHome: React.FC = () => {
 
     // Fetch cities
     axios
-      .get('/cities', {
+      .get("/cities", {
         headers: {
-          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
-          'Accept-Language': 'ar',
+          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+          "Accept-Language": "ar",
         },
       })
       .then((res) => res.data.status && setCities(res.data.data.data))
@@ -275,10 +301,10 @@ const AdminHome: React.FC = () => {
 
     // Fetch schools
     axios
-      .get('/schools', {
+      .get("/schools", {
         headers: {
-          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
-          'Accept-Language': 'ar',
+          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+          "Accept-Language": "ar",
         },
       })
       .then((res) => res.data.status && setSchools(res.data.data))
@@ -290,18 +316,18 @@ const AdminHome: React.FC = () => {
       setLoading(true);
 
       const params: any = {};
-      if (selectedRegion) params['filter[region]'] = selectedRegion;
-      if (selectedCity) params['filter[city]'] = selectedCity;
-      if (ministryNumber) params['filter[ministry_number]'] = ministryNumber;
-      if (selectedType) params['filter[type]'] = selectedType;
-      if (selectedGender) params['filter[gender]'] = selectedGender;
+      if (selectedRegion) params["filter[region]"] = selectedRegion;
+      if (selectedCity) params["filter[city]"] = selectedCity;
+      if (ministryNumber) params["filter[ministry_number]"] = ministryNumber;
+      if (selectedType) params["filter[type]"] = selectedType;
+      if (selectedGender) params["filter[gender]"] = selectedGender;
 
       const queryString = new URLSearchParams(params).toString();
 
       const res = await axios.get(`/admin/home/filter?${queryString}`, {
         headers: {
-          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
-          'Accept-Language': 'ar',
+          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+          "Accept-Language": "ar",
         },
       });
 
@@ -312,7 +338,7 @@ const AdminHome: React.FC = () => {
         setHasSearched(true); // المستخدم ضغط بحث
       }
     } catch (err) {
-      console.error('Error fetching filtered data', err);
+      console.error("Error fetching filtered data", err);
     } finally {
       setLoading(false);
     }
@@ -320,11 +346,13 @@ const AdminHome: React.FC = () => {
 
   const handleSelectSchool = (schoolId: number) => {
     setSelectedSchool(schoolId);
-    setSelectedHr('الطلاب'); // عرض الطلاب
+    setSelectedHr("الطلاب"); // عرض الطلاب
 
     const schoolName = schools.find((s) => s.id === schoolId)?.name;
     if (schoolName) {
-      const filteredStudents = allStudents.filter((student) => student.school === schoolName);
+      const filteredStudents = allStudents.filter(
+        (student) => student.school === schoolName
+      );
       setStudentResults(filteredStudents);
     } else {
       setStudentResults([]);
@@ -341,57 +369,70 @@ const AdminHome: React.FC = () => {
 
   const fetchStudentList = async (schoolId: number) => {
     try {
-      const res = await axios.get(`/admin/home/students?school_id=${schoolId}`, {
-        headers: {
-          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
-          'Accept-Language': 'ar',
-        },
-      });
+      const res = await axios.get(
+        `/admin/home/students?school_id=${schoolId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+            "Accept-Language": "ar",
+          },
+        }
+      );
       if (res.data.status) {
         setStudentResults(res.data.data || []); // هنا بيملى الطلاب
       }
     } catch (err) {
-      console.error('Error fetching students', err);
+      console.error("Error fetching students", err);
     }
   };
   const fetchStudentStats = async (schoolId: number) => {
     try {
-      const res = await axios.get(`/admin/home/student/statistics/${schoolId}`, {
-        headers: {
-          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
-          'Accept-Language': 'ar',
-        },
-      });
+      setStatsLoading(true);
+      const res = await axios.get(
+        `/admin/home/student/statistics/${schoolId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+            "Accept-Language": "ar",
+          },
+        }
+      );
 
       if (res.data.status) {
         setStudentStats(res.data.data);
       }
     } catch (err) {
-      console.error('Error fetching student statistics', err);
+      console.error("Error fetching student statistics", err);
+    } finally {
+      setStatsLoading(false); // End loading
     }
   };
 
   const handleViewStudent = async (studentId: number) => {
-    // لما تضغطي على العين، هنجيب احصائيات الطالب
     try {
-      const res = await axios.get(`/admin/home/student/statistics/${studentId}`, {
-        headers: {
-          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
-          'Accept-Language': 'ar',
-        },
-      });
+      setStatsLoading(true);
+      const res = await axios.get(
+        `/admin/home/student/statistics/${studentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+            "Accept-Language": "ar",
+          },
+        }
+      );
 
       if (res.data.status) {
         setStudentStats(res.data.data);
       }
     } catch (err) {
-      console.error('Error fetching student stats', err);
+      console.error("Error fetching student stats", err);
+    } finally {
+      setStatsLoading(false);
     }
   };
 
-  // إعادة الإحصائيات للصفر قبل اختيار طالب
   useEffect(() => {
-    if (selectedHr === 'الطلاب') {
+    if (selectedHr === "الطلاب") {
       setStudentStats({ present: 0, absent: 0, rewards: 0 });
     }
   }, [selectedHr, selectedSchool]); // لو اخترت مدرسة جديدة أو رجعت على الطلاب
@@ -401,7 +442,7 @@ const AdminHome: React.FC = () => {
       <div className=" mb-3 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start  gap-1 lg:gap-5">
         <div
           className="flex rounded-3xl h-9 w-max  overflow-hidden"
-          style={{ border: '1px solid #C2C1C1' }}
+          style={{ border: "1px solid #C2C1C1" }}
         >
           {buttons.map((btn) => {
             const isSelected = selected === btn;
@@ -411,8 +452,12 @@ const AdminHome: React.FC = () => {
                 onClick={() => setSelected(btn)}
                 className={`
               text-base h-8.5 w-[76px] sm:w-24 rounded-3xl transition-all duration-200 cursor-pointer
-              ${isSelected ? 'bg-[#07A869] text-white' : 'bg-transparent text-[#C2C1C1]'}
-              hover:${isSelected ? 'brightness-110' : 'bg-gray-100'}
+              ${
+                isSelected
+                  ? "bg-[#07A869] text-white"
+                  : "bg-transparent text-[#C2C1C1]"
+              }
+              hover:${isSelected ? "brightness-110" : "bg-gray-100"}
               outline-none border-none
             `}
               >
@@ -426,24 +471,49 @@ const AdminHome: React.FC = () => {
         </h2>
       </div>
 
-      <div className="flex justify-between items-center flex-wrap gap-5 py-2 mb-5" dir="rtl">
-        {statsData.map((item, index) => (
-          <div
-            key={index}
-            className={`rounded-xl shadow-md p-4 ${item.bg} transform transition duration-300 hover:scale-105 hover:shadow-xl flex-grow w-[160px] text-right`}
-            style={item.borderStyle || {}}
-          >
-            <h3 className={`${item.text} text-lg font-medium mb-1`}>{item.title}</h3>
-            <div className="flex items-center gap-2 justify-start">
-              {item.icon && <img src={item.icon} alt="icon" className="w-7 h-7" />}
-              <span className={`${item.text} text-2xl font-semibold`}>{item.value}</span>
-            </div>
-            {item.suffix && <p className={`${item.text} text-base my-1`}>{item.suffix}</p>}
-          </div>
-        ))}
+      <div
+        className="flex justify-between items-center flex-wrap gap-5 py-2 mb-5"
+        dir="rtl"
+      >
+        {statsLoading
+          ? Array.from({ length: 5 }).map((_, i) => (
+              <div
+                key={i}
+                className="rounded-xl h-[130px] shadow-md p-4 bg-white border border-[#C2C1C1] flex-grow w-[160px] animate-pulse"
+              >
+                <div className="w-full h-3.5 bg-[#c2c1c1] rounded mb-3"></div>
+                <div className="w-[80%] h-3.5 bg-[#c2c1c1] rounded mb-3"></div>
+                <div className="w-[60%] h-3.5 bg-[#c2c1c1] rounded"></div>
+              </div>
+            ))
+          : statsData.map((item, index) => (
+              <div
+                key={index}
+                className={`rounded-xl shadow-md p-4 ${item.bg} transform transition duration-300 hover:scale-105 hover:shadow-xl flex-grow w-[160px] text-right`}
+                style={item.borderStyle || {}}
+              >
+                <h3 className={`${item.text} text-lg font-medium mb-1`}>
+                  {item.title}
+                </h3>
+                <div className="flex items-center gap-2 justify-start">
+                  {item.icon && (
+                    <img src={item.icon} alt="icon" className="w-7 h-7" />
+                  )}
+                  <span className={`${item.text} text-2xl font-semibold`}>
+                    {item.value}
+                  </span>
+                </div>
+                {item.suffix && (
+                  <p className={`${item.text} text-base my-1`}>{item.suffix}</p>
+                )}
+              </div>
+            ))}
       </div>
 
-      <div className="mb-6 mt-2 border border-[#C2C1C1] rounded-lg bg-white" dir="rtl">
+      <div
+        className="mb-6 mt-2 border border-[#C2C1C1] rounded-lg bg-white"
+        dir="rtl"
+      >
         <div className="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-4">
           {/* Region */}
           <Select
@@ -537,7 +607,10 @@ const AdminHome: React.FC = () => {
       </div>
 
       <div className="flex flex-col-reverse xl:flex-row justify-between items-stretch  gap-6">
-        <div style={{ border: '1px solid #C2C1C1' }} className="p-4 rounded-lg w-full xl:w-[35%]">
+        <div
+          style={{ border: "1px solid #C2C1C1" }}
+          className="p-4 rounded-lg w-full xl:w-[35%]"
+        >
           <div className="px-6 flex justify-center items-center mb-2 lg:mb-0">
             <img src="/map.png" alt="map" className="w-full max-w-[500px] " />
           </div>
@@ -545,7 +618,7 @@ const AdminHome: React.FC = () => {
 
         <div className="flex flex-col-reverse lg:flex-row gap-6 w-full xl:w-[65%]">
           <div
-            style={{ border: '1px solid #C2C1C1' }}
+            style={{ border: "1px solid #C2C1C1" }}
             className="flex-1  rounded-lg border border-[#C2C1C1] flex flex-col gap-4 w-full lg:w-1/2"
           >
             <div className="flex gap-2 w-full px-4 pt-3 pb-0">
@@ -556,7 +629,11 @@ const AdminHome: React.FC = () => {
                     key={btn}
                     onClick={() => setSelectedAttend(btn)}
                     className={`flex-1 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 border border-[#07A869] border-solid  cursor-pointer
-                    ${isSelected ? 'bg-[#07A869] text-white' : 'bg-gray-100 text-[#15445A]'}
+                    ${
+                      isSelected
+                        ? "bg-[#07A869] text-white"
+                        : "bg-gray-100 text-[#15445A]"
+                    }
                   `}
                   >
                     {btn}
@@ -566,37 +643,52 @@ const AdminHome: React.FC = () => {
             </div>
             <div className="w-full h-px bg-gray-300 " />
             <div className="flex items-center gap-4 justify-between px-4 mb-8">
-              <CircularProgress
-                percentage={studentStats.present}
-                size={90}
-                strokeWidth={10}
-                color="#07A869"
-                bgColor="#E5E7EB"
-              />
+              {statsLoading ? (
+                <div className="w-20 h-20 rounded-full bg-gray-200 animate-pulse" />
+              ) : (
+                <CircularProgress
+                  percentage={studentStats.present}
+                  size={90}
+                  strokeWidth={10}
+                  color="#07A869"
+                  bgColor="#E5E7EB"
+                />
+              )}
               <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
                 الحضور
               </span>
             </div>
+
             <div className="flex items-center gap-4 justify-between px-4 mb-8">
-              <CircularProgress
-                percentage={studentStats.absent}
-                size={90}
-                strokeWidth={10}
-                color="#07A869"
-                bgColor="#E5E7EB"
-              />
+              {statsLoading ? (
+                <div className="w-20 h-20 rounded-full bg-gray-200 animate-pulse" />
+              ) : (
+                <CircularProgress
+                  percentage={studentStats.absent}
+                  size={90}
+                  strokeWidth={10}
+                  color="#07A869"
+                  bgColor="#E5E7EB"
+                />
+              )}
+
               <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
                 الغياب
               </span>
             </div>
             <div className="flex items-center gap-4 justify-between px-4 mb-8">
-              <CircularProgress
-                percentage={studentStats.rewards}
-                size={90}
-                strokeWidth={10}
-                color="#07A869"
-                bgColor="#E5E7EB"
-              />
+              {statsLoading ? (
+                <div className="w-20 h-20 rounded-full bg-gray-200 animate-pulse" />
+              ) : (
+                <CircularProgress
+                  percentage={studentStats.absent}
+                  size={90}
+                  strokeWidth={10}
+                  color="#07A869"
+                  bgColor="#E5E7EB"
+                />
+              )}
+
               <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
                 المكافئات
               </span>
@@ -605,7 +697,7 @@ const AdminHome: React.FC = () => {
 
           <div
             className="flex-1 rounded-lg border border-[#C2C1C1] flex flex-col  w-full lg:w-1/2"
-            style={{ border: '1px solid #C2C1C1' }}
+            style={{ border: "1px solid #C2C1C1" }}
           >
             <div className="flex gap-2 w-full p-4">
               {buttonsHr.map((btn) => {
@@ -615,7 +707,11 @@ const AdminHome: React.FC = () => {
                     key={btn}
                     onClick={() => setSelectedHr(btn)}
                     className={`flex-1 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 border border-[#07A869] border-solid  cursor-pointer
-                    ${isSelected ? 'bg-[#07A869] text-white' : 'bg-gray-100 text-[#15445A]'}
+                    ${
+                      isSelected
+                        ? "bg-[#07A869] text-white"
+                        : "bg-gray-100 text-[#15445A]"
+                    }
                   `}
                   >
                     {btn}
@@ -630,10 +726,11 @@ const AdminHome: React.FC = () => {
                 // Skeleton Loader
                 <>
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <div className="flex flex-row-reverse justify-between items-start px-4 bg-white rounded-lg border border-[#C2C1C1] w-full mt-2 mb-3" key={i}>
-                      <button
-                        className="text-2xl text-[#15445A] cursor-pointer bg-transparent border-none outline-none"
-                      >
+                    <div
+                      className="flex flex-row-reverse justify-between items-start px-4 bg-white rounded-lg border border-[#C2C1C1] w-full mt-2 mb-3"
+                      key={i}
+                    >
+                      <button className="text-2xl text-[#15445A] cursor-pointer bg-transparent border-none outline-none">
                         <FiEye />
                       </button>
 
@@ -648,7 +745,7 @@ const AdminHome: React.FC = () => {
                     </div>
                   ))}
                 </>
-              ) : selectedHr === 'المدراس' ? (
+              ) : selectedHr === "المدراس" ? (
                 <div className="flex flex-col gap-2">
                   {schoolResults.map((school: any) => (
                     <div
@@ -698,7 +795,9 @@ const AdminHome: React.FC = () => {
                           <p className="text-right text-[#15445A] text-base font-semibold mb-1">
                             {student.grade}
                           </p>
-                          <p className="text-xs text-gray-500">{student.school}</p>
+                          <p className="text-xs text-gray-500">
+                            {student.school}
+                          </p>
                         </div>
                         <div className="w-16 h-16 bg-[#C2C1C1] rounded-full flex-shrink-0"></div>
                       </div>

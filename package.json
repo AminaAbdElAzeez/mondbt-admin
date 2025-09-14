@@ -16,6 +16,8 @@
     "antd": "^5.16.2",
     "axioos": "^0.1.0",
     "bizcharts": "^4.1.23",
+    "dayjs": "^1.11.18",
+    "dayjs-hijri": "^1.0.1",
     "file-saver": "^2.0.5",
     "framer-motion": "^11.18.2",
     "google-libphonenumber": "^3.2.34",
