@@ -244,7 +244,9 @@ const MinisterHome: React.FC = () => {
       } catch (error) {
         console.error("Error fetching map data", error);
       } finally {
-        setLoadingMap(false);
+        setTimeout(() => {
+          setLoadingMap(false);
+        }, 600);
       }
     };
 
@@ -605,7 +607,7 @@ const MinisterHome: React.FC = () => {
             <div className="flex flex-col md:flex-row justify-center md:justify-between items-center gap-5 md:gap-0 mb-8">
               {loadingMap ? (
                 <div className="w-[145px] h-[145px] rounded-full border-[20px] border-gray-200 animate-pulse flex items-center justify-center">
-                  <div className="text-gray-400 font-bold">--%</div>
+                  <div className="w-20 h-20 rounded-full bg-gray-200 animate-pulse" />
                 </div>
               ) : (
                 <CircularProgress

@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { Select, DatePicker, Upload, Button, message } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
-import dayjs from 'dayjs';
-import 'dayjs/locale/ar';
-import locale from 'antd/es/date-picker/locale/ar_EG';
-import axios from 'utlis/library/helpers/axios';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from "react";
+import { Select, DatePicker, Upload, Button, message } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
+import "dayjs/locale/ar";
+import locale from "antd/es/date-picker/locale/ar_EG";
+import axios from "utlis/library/helpers/axios";
+import { useSelector } from "react-redux";
 
 const { Option } = Select;
 
@@ -17,6 +17,7 @@ const NewExcuse: React.FC = () => {
   const [date, setDate] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const { token } = useSelector((state: any) => state.Auth);
+  const [submitting, setSubmitting] = useState(false);
 
   const [uploadKey, setUploadKey] = useState(Date.now());
   const [dateKey, setDateKey] = useState(Date.now());
@@ -25,7 +26,7 @@ const NewExcuse: React.FC = () => {
     axios
       .get(`parent/children`, {
         headers: {
-            Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
         },
       })
       .then((res) => {
@@ -34,11 +35,11 @@ const NewExcuse: React.FC = () => {
 
     axios
       .get(`parent/excuses/type`, {
-          headers: {
-            Authorization: `Bearer ${token || localStorage.getItem('token')}`,
-            'Accept-Language': 'ar',
-          },
-        })
+        headers: {
+          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+          "Accept-Language": "ar",
+        },
+      })
       .then((res) => {
         setExcuseTypes(res.data?.data || []);
       });
@@ -46,24 +47,25 @@ const NewExcuse: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!studentId || !typeId || !date || !file) {
-      return message.error('من فضلك املأ كل الحقول قبل الإرسال');
+      return message.error("من فضلك املأ كل الحقول قبل الإرسال");
     }
 
     const formData = new FormData();
-    formData.append('student_id', studentId.toString());
-    formData.append('type_id', typeId.toString());
-    formData.append('date', date);
-    formData.append('file', file, file.name);
+    formData.append("student_id", studentId.toString());
+    formData.append("type_id", typeId.toString());
+    formData.append("date", date);
+    formData.append("file", file, file.name);
 
     try {
+      setSubmitting(true);
       await axios.post(`parent/excuses`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data',
-          "Accept-Language":"ar",
-                      Authorization: `Bearer ${token || localStorage.getItem('token')}`,
-
-         },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Accept-Language": "ar",
+          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+        },
       });
-      message.success('تم إرسال العذر بنجاح');
+      message.success("تم إرسال العذر بنجاح");
 
       // Reset fields
       setStudentId(null);
@@ -75,7 +77,9 @@ const NewExcuse: React.FC = () => {
       setUploadKey(Date.now());
       setDateKey(Date.now());
     } catch (err) {
-      message.error('حدث خطأ أثناء إرسال العذر');
+      message.error("حدث خطأ أثناء إرسال العذر");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -128,9 +132,11 @@ const NewExcuse: React.FC = () => {
           key={dateKey} // force reset
           locale={locale}
           format="YYYY/MM/DD"
-          value={date ? dayjs(date, 'YYYY/MM/DD') : null}
+          value={date ? dayjs(date, "YYYY/MM/DD") : null}
           className="w-full  h-[42px]"
-          onChange={(dateObj) => setDate(dateObj ? dayjs(dateObj).format('YYYY/MM/DD') : null)}
+          onChange={(dateObj) =>
+            setDate(dateObj ? dayjs(dateObj).format("YYYY/MM/DD") : null)
+          }
         />
         <div
           className="flex flex-col md:flex-row justify-center md:justify-between items-end md:items-start mb-3 gap-5 lg:w-[67%] ml-auto group w-full md:w-[1/2] file"
@@ -139,7 +145,7 @@ const NewExcuse: React.FC = () => {
           <Upload
             key={uploadKey} // force reset
             beforeUpload={() => false}
-            className='!w-full'
+            className="!w-full"
             maxCount={1}
             accept=".jpg,.jpeg,.png,.pdf"
             onChange={({ fileList }) => {
@@ -160,17 +166,18 @@ const NewExcuse: React.FC = () => {
               ارفع ملف (صورة / PDF)
             </Button>
           </Upload>
-        </div>{' '}
+        </div>{" "}
       </div>
 
       {/* Submit Button */}
       <div className="ml-auto mt-6 ">
-        <button
+        <Button
+          loading={submitting}
           onClick={handleSubmit}
-          className="bg-[#07A869] w-full sm:w-[220px] text-[#fff] text-base sm:text-lg font-semibold px-8 py-1.5 rounded-3xl outline-none border border-[#07A869] border-solid cursor-pointer hover:text-[#07A869] hover:bg-[#fff] transition-colors duration-500"
+          className="bg-[#07A869] w-full h-[45px] sm:w-[220px] text-[#fff] text-base sm:text-lg font-semibold px-8 py-3 rounded-3xl outline-none border border-[#07A869] border-solid cursor-pointer hover:text-[#07A869] hover:bg-[#fff] transition-colors duration-500"
         >
-          قدّم العذر
-        </button>
+          <bdi>{submitting ? "جاري الإرسال..." : "قدّم العذر"}</bdi>
+        </Button>
       </div>
     </section>
   );

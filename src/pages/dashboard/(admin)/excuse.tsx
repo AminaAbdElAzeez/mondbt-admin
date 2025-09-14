@@ -1,3 +1,4 @@
+import RollerLoading from "components/loading/roller";
 import React, { useEffect, useState } from "react";
 import { MdAccessAlarms } from "react-icons/md";
 import {
@@ -83,6 +84,8 @@ const AdminExcuse: React.FC = () => {
   );
   const buttonsBottom: Array<"سنة" | "شهر" | "يوم"> = ["سنة", "شهر", "يوم"];
   const { token } = useSelector((state: any) => state.Auth);
+  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [attendanceData, setAttendanceData] = useState({
     all: 0,
@@ -102,6 +105,8 @@ const AdminExcuse: React.FC = () => {
   useEffect(() => {
     const fetchAttendance = async () => {
       try {
+        setLoading(true);
+
         const type = filterTypeMapping[selected];
         const res = await axios.get(`/admin/excuses?filter[type]=${type}`, {
           headers: {
@@ -114,6 +119,8 @@ const AdminExcuse: React.FC = () => {
         }
       } catch (error) {
         console.error("Error fetching attendance data", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -131,42 +138,65 @@ const AdminExcuse: React.FC = () => {
     { day: 21, value: 40, hijri: "15" },
   ];
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        await new Promise((resolve) => setTimeout(resolve, 600));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <section dir="ltr" className="text-right px-2">
-      <div className=" mb-3 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start gap-2">
-        <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
-          احصائيات الاستئذان
-        </h2>
-      </div>
-
-      <div className="flex flex-col xl:flex-row justify-between items-stretch  gap-6">
-        <div
-          style={{ border: "1px solid #C2C1C1" }}
-          className="p-4 rounded-lg w-full xl:w-1/2"
-        >
-          <div className="px-6 flex justify-center items-center mb-2 lg:mb-0">
-            <img src="/map.png" alt="map" className="w-full max-w-[500px] " />
+    <>
+      {isLoading ? (
+        <RollerLoading />
+      ) : (
+        <section dir="ltr" className="text-right px-2">
+          <div className=" mb-3 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start gap-2">
+            <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
+              احصائيات الاستئذان
+            </h2>
           </div>
-        </div>
 
-        <div
-          style={{ border: "1px solid #C2C1C1" }}
-          className="p-4 rounded-lg w-full xl:w-1/2 "
-        >
-          <h3 className="text-xl font-semibold text-[#07A869] mb-8">
-            منطقة الرياض
-          </h3>
-          <div
-            className="flex rounded-3xl h-9 w-full sm:w-max  overflow-hidden mx-auto"
-            style={{ border: "1px solid #C2C1C1" }}
-          >
-            {buttons.map((btn) => {
-              const isSelected = selected === btn;
-              return (
-                <button
-                  key={btn}
-                  onClick={() => setSelected(btn)}
-                  className={`
+          <div className="flex flex-col xl:flex-row justify-between items-stretch  gap-6">
+            <div
+              style={{ border: "1px solid #C2C1C1" }}
+              className="p-4 rounded-lg w-full xl:w-1/2"
+            >
+              <div className="px-6 flex justify-center items-center mb-2 lg:mb-0">
+                <img
+                  src="/map.png"
+                  alt="map"
+                  className="w-full max-w-[500px] "
+                />
+              </div>
+            </div>
+
+            <div
+              style={{ border: "1px solid #C2C1C1" }}
+              className="p-4 rounded-lg w-full xl:w-1/2 "
+            >
+              <h3 className="text-xl font-semibold text-[#07A869] mb-8">
+                منطقة الرياض
+              </h3>
+              <div
+                className="flex rounded-3xl h-9 w-full sm:w-max  overflow-hidden mx-auto"
+                style={{ border: "1px solid #C2C1C1" }}
+              >
+                {buttons.map((btn) => {
+                  const isSelected = selected === btn;
+                  return (
+                    <button
+                      key={btn}
+                      onClick={() => setSelected(btn)}
+                      className={`
               text-base h-8.5 w-1/3 sm:w-24 rounded-3xl transition-all duration-200 cursor-pointer
               ${
                 isSelected
@@ -176,61 +206,57 @@ const AdminExcuse: React.FC = () => {
               hover:${isSelected ? "brightness-110" : "bg-gray-100"}
               outline-none border-none
             `}
-                >
-                  {btn}
-                </button>
-              );
-            })}
+                    >
+                      {btn}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="mt-6 grid max-[400px]:grid-cols-1 min-[401px]:grid-cols-2  md:grid-cols-3  gap-6 justify-items-center">
+                {loading ? (
+                  Array.from({ length: 6 }).map((_, i) => (
+                    <div className="w-[140px] h-[140px] rounded-full bg-gray-200 animate-pulse" />
+                  ))
+                ) : (
+                  <>
+                    <CircularProgress
+                      label="البنات"
+                      percentage={attendanceData.female}
+                      size={140}
+                    />
+                    <CircularProgress
+                      label="البنين"
+                      percentage={attendanceData.male}
+                      size={140}
+                    />
+                    <CircularProgress
+                      label="الكل"
+                      percentage={attendanceData.all}
+                      size={140}
+                    />
+                    <CircularProgress
+                      label="الثانوي"
+                      percentage={attendanceData.secondary}
+                      size={140}
+                    />
+                    <CircularProgress
+                      label="المتوسط"
+                      percentage={attendanceData.intermidite}
+                      size={140}
+                    />
+                    <CircularProgress
+                      label="الابتدائي"
+                      percentage={attendanceData.primary}
+                      size={140}
+                    />
+                  </>
+                )}
+              </div>
+            </div>
           </div>
 
-          <div className="mt-6 grid max-[400px]:grid-cols-1 min-[401px]:grid-cols-2  md:grid-cols-3  gap-6 justify-items-center">
-            <CircularProgress
-              label="البنات"
-              percentage={attendanceData.female}
-              size={140}
-              color="#07A869"
-              bgColor="#E5E7EB"
-            />
-            <CircularProgress
-              label="البنين"
-              percentage={attendanceData.male}
-              size={140}
-              color="#07A869"
-              bgColor="#E5E7EB"
-            />
-            <CircularProgress
-              label="الكل"
-              percentage={attendanceData.all}
-              size={140}
-              color="#07A869"
-              bgColor="#E5E7EB"
-            />
-            <CircularProgress
-              label="الثانوي"
-              percentage={attendanceData.secondary}
-              size={140}
-              color="#07A869"
-              bgColor="#E5E7EB"
-            />
-            <CircularProgress
-              label="المتوسط"
-              percentage={attendanceData.intermidite}
-              size={140}
-              color="#07A869"
-              bgColor="#E5E7EB"
-            />
-            <CircularProgress
-              label="الابتدائي"
-              percentage={attendanceData.primary}
-              size={140}
-              color="#07A869"
-              bgColor="#E5E7EB"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* <div className="mt-6 mb-3 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start gap-1 lg:gap-5">
+          {/* <div className="mt-6 mb-3 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start gap-1 lg:gap-5">
         <div
           className="flex rounded-3xl h-9 w-max  overflow-hidden"
           style={{ border: '1px solid #C2C1C1' }}
@@ -257,7 +283,9 @@ const AdminExcuse: React.FC = () => {
           احصائيات الانضباط
         </h2>
       </div> */}
-    </section>
+        </section>
+      )}
+    </>
   );
 };
 

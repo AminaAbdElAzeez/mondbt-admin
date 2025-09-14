@@ -23,6 +23,7 @@ import { FaExclamation } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { FiEye } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import RollerLoading from "components/loading/roller";
 
 const { Option } = Select;
 
@@ -84,8 +85,9 @@ const AdminHome: React.FC = () => {
     Array<{ id: number; name: string; region: { id: number } }>
   >([]);
   const [schools, setSchools] = useState<Array<any>>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [selectedRegion, setSelectedRegion] = useState<number | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState<number | null>(1);
   const [selectedCity, setSelectedCity] = useState<number | null>(null);
   const [ministryNumber, setMinistryNumber] = useState<string>("");
   const [selectedType, setSelectedType] = useState<number | null>(null);
@@ -104,6 +106,8 @@ const AdminHome: React.FC = () => {
     school: any[];
     student: any[];
   }>({ school: [], student: [] });
+  const [statsLoadingCrud, setStatsLoadingCrud] = useState(false);
+
   const [statsLoading, setStatsLoading] = useState(false);
 
   const [region, setRegion] = useState<string>("1"); // اختار قيمة المنطقة
@@ -115,7 +119,6 @@ const AdminHome: React.FC = () => {
     "الاحصائيات",
     "التقارير",
   ];
-
   const [selectedHr, setSelectedHr] = useState<"الطلاب" | "المدراس">("المدراس");
   const buttonsHr: Array<"الطلاب" | "المدراس"> = ["الطلاب", "المدراس"];
   const [studentStats, setStudentStats] = useState<{
@@ -202,7 +205,7 @@ const AdminHome: React.FC = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        setStatsLoading(true);
+        setStatsLoadingCrud(true);
         const type = filterTypeMapping[selected];
         const res = await axios.get(
           `admin/home/statistics?filter[type]=${type}`,
@@ -269,12 +272,17 @@ const AdminHome: React.FC = () => {
       } catch (error) {
         console.error("Error fetching stats", error);
       } finally {
-        setStatsLoading(false);
+        setStatsLoadingCrud(false);
       }
     };
 
     fetchStats();
   }, [selected, token]);
+  useEffect(() => {
+    if (selectedRegion) {
+      handleSearch();
+    }
+  }, [selectedRegion]);
 
   useEffect(() => {
     // Fetch regions
@@ -437,20 +445,39 @@ const AdminHome: React.FC = () => {
     }
   }, [selectedHr, selectedSchool]); // لو اخترت مدرسة جديدة أو رجعت على الطلاب
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        await new Promise((resolve) => setTimeout(resolve, 600));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <section dir="ltr" className="text-right px-2">
-      <div className=" mb-3 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start  gap-1 lg:gap-5">
-        <div
-          className="flex rounded-3xl h-9 w-max  overflow-hidden"
-          style={{ border: "1px solid #C2C1C1" }}
-        >
-          {buttons.map((btn) => {
-            const isSelected = selected === btn;
-            return (
-              <button
-                key={btn}
-                onClick={() => setSelected(btn)}
-                className={`
+    <>
+      {isLoading ? (
+        <RollerLoading />
+      ) : (
+        <section dir="ltr" className="text-right px-2">
+          <div className=" mb-3 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start  gap-1 lg:gap-5">
+            <div
+              className="flex rounded-3xl h-9 w-max  overflow-hidden"
+              style={{ border: "1px solid #C2C1C1" }}
+            >
+              {buttons.map((btn) => {
+                const isSelected = selected === btn;
+                return (
+                  <button
+                    key={btn}
+                    onClick={() => setSelected(btn)}
+                    className={`
               text-base h-8.5 w-[76px] sm:w-24 rounded-3xl transition-all duration-200 cursor-pointer
               ${
                 isSelected
@@ -460,357 +487,402 @@ const AdminHome: React.FC = () => {
               hover:${isSelected ? "brightness-110" : "bg-gray-100"}
               outline-none border-none
             `}
-              >
-                {btn}
-              </button>
-            );
-          })}
-        </div>
-        <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
-          احصائيات الانضباط
-        </h2>
-      </div>
+                  >
+                    {btn}
+                  </button>
+                );
+              })}
+            </div>
+            <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
+              احصائيات الانضباط
+            </h2>
+          </div>
 
-      <div
-        className="flex justify-between items-center flex-wrap gap-5 py-2 mb-5"
-        dir="rtl"
-      >
-        {statsLoading
-          ? Array.from({ length: 5 }).map((_, i) => (
-              <div
-                key={i}
-                className="rounded-xl h-[130px] shadow-md p-4 bg-white border border-[#C2C1C1] flex-grow w-[160px] animate-pulse"
+          <div
+            className="flex justify-between items-center flex-wrap gap-5 py-2 mb-5"
+            dir="rtl"
+          >
+            {statsLoadingCrud
+              ? Array.from({ length: 5 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="rounded-xl h-[130px] shadow-md p-4 bg-white border border-[#C2C1C1] flex-grow w-[160px] animate-pulse"
+                  >
+                    <div className="w-full h-3.5 bg-[#c2c1c1] rounded mb-3"></div>
+                    <div className="w-[80%] h-3.5 bg-[#c2c1c1] rounded mb-3"></div>
+                    <div className="w-[60%] h-3.5 bg-[#c2c1c1] rounded"></div>
+                  </div>
+                ))
+              : statsData.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`rounded-xl shadow-md p-4 ${item.bg} transform transition duration-300 hover:scale-105 hover:shadow-xl flex-grow w-[160px] text-right`}
+                    style={item.borderStyle || {}}
+                  >
+                    <h3 className={`${item.text} text-lg font-medium mb-1`}>
+                      {item.title}
+                    </h3>
+                    <div className="flex items-center gap-2 justify-start">
+                      {item.icon && (
+                        <img src={item.icon} alt="icon" className="w-7 h-7" />
+                      )}
+                      <span className={`${item.text} text-2xl font-semibold`}>
+                        {item.value}
+                      </span>
+                    </div>
+                    {item.suffix && (
+                      <p className={`${item.text} text-base my-1`}>
+                        {item.suffix}
+                      </p>
+                    )}
+                  </div>
+                ))}
+          </div>
+
+          <div
+            className="mb-6 mt-2 border border-[#C2C1C1] rounded-lg bg-white"
+            dir="rtl"
+          >
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSearch();
+              }}
+              className="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-4"
+            >
+              {/* Region */}
+              <Select
+                placeholder="المنطقة"
+                className="w-full"
+                value={selectedRegion}
+                onChange={(val) => setSelectedRegion(val)}
               >
-                <div className="w-full h-3.5 bg-[#c2c1c1] rounded mb-3"></div>
-                <div className="w-[80%] h-3.5 bg-[#c2c1c1] rounded mb-3"></div>
-                <div className="w-[60%] h-3.5 bg-[#c2c1c1] rounded"></div>
+                {regions.map((r) => (
+                  <Option key={r.id} value={r.id}>
+                    {r.name}
+                  </Option>
+                ))}
+              </Select>
+
+              {/* City */}
+              <Select
+                placeholder="المدينة"
+                className="w-full"
+                value={selectedCity}
+                onChange={(val) => setSelectedCity(val)}
+              >
+                {cities
+                  .filter(
+                    (c) => !selectedRegion || c.region.id === selectedRegion
+                  )
+                  .map((c) => (
+                    <Option key={c.id} value={c.id}>
+                      {c.name}
+                    </Option>
+                  ))}
+              </Select>
+
+              {/* Ministry Number */}
+              <input
+                type="text"
+                placeholder="الرقم الوزاري"
+                className="w-full p-2 border border-gray-300 rounded"
+                value={ministryNumber}
+                onChange={(e) => setMinistryNumber(e.target.value)}
+              />
+
+              {/* Type */}
+              <Select
+                placeholder="النوع"
+                className="w-full"
+                value={selectedType}
+                onChange={(val) => setSelectedType(val)}
+              >
+                <Option value={1}>أساسي</Option>
+                <Option value={2}>متوسط</Option>
+                <Option value={3}>ثانوي</Option>
+              </Select>
+
+              {/* Gender */}
+              <Select
+                placeholder="الجنس"
+                className="w-full"
+                value={selectedGender}
+                onChange={(val) => setSelectedGender(val)}
+              >
+                <Option value={1}>ذكر</Option>
+                <Option value={2}>أنثى</Option>
+              </Select>
+
+              {/* School */}
+              <Select
+                placeholder="اسم المدرسة"
+                className="w-full"
+                value={selectedSchool}
+                onChange={(val) => {
+                  setSelectedSchool(val);
+                  fetchStudentStats(val);
+                  handleSelectSchool(val);
+                }}
+              >
+                {schools.map((s) => (
+                  <Option key={s.id} value={s.id}>
+                    {s.name}
+                  </Option>
+                ))}
+              </Select>
+
+              {/* Search Button */}
+              <Button
+                type="primary"
+                className="flex justify-center items-center gap-1"
+                onClick={handleSearch}
+                loading={loading}
+              >
+                بحث <IoSearch className="text-lg" />
+              </Button>
+            </form>
+          </div>
+
+          <div className="flex flex-col-reverse xl:flex-row justify-between items-stretch  gap-6">
+            <div
+              style={{ border: "1px solid #C2C1C1" }}
+              className="p-4 rounded-lg w-full xl:w-[35%]"
+            >
+              <div className="px-6 flex justify-center items-center mb-2 lg:mb-0">
+                <img
+                  src="/map.png"
+                  alt="map"
+                  className="w-full max-w-[500px] "
+                />
               </div>
-            ))
-          : statsData.map((item, index) => (
+            </div>
+
+            <div className="flex flex-col-reverse lg:flex-row gap-6 w-full xl:w-[65%]">
               <div
-                key={index}
-                className={`rounded-xl shadow-md p-4 ${item.bg} transform transition duration-300 hover:scale-105 hover:shadow-xl flex-grow w-[160px] text-right`}
-                style={item.borderStyle || {}}
+                style={{ border: "1px solid #C2C1C1" }}
+                className="flex-1  rounded-lg border border-[#C2C1C1] flex flex-col gap-4 w-full lg:w-1/2"
               >
-                <h3 className={`${item.text} text-lg font-medium mb-1`}>
-                  {item.title}
-                </h3>
-                <div className="flex items-center gap-2 justify-start">
-                  {item.icon && (
-                    <img src={item.icon} alt="icon" className="w-7 h-7" />
+                <div className="flex gap-2 w-full px-4 pt-3 pb-0">
+                  {buttonsAttend.map((btn) => {
+                    const isSelected = selectedAttend === btn;
+                    return (
+                      <button
+                        key={btn}
+                        onClick={() => setSelectedAttend(btn)}
+                        className={`flex-1 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 border border-[#07A869] border-solid  cursor-pointer
+                    ${
+                      isSelected
+                        ? "bg-[#07A869] text-white"
+                        : "bg-gray-100 text-[#15445A]"
+                    }
+                  `}
+                      >
+                        {btn}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="w-full h-px bg-gray-300 " />
+                <div className="flex items-center gap-4 justify-between px-4 mb-8">
+                  {statsLoading ? (
+                    <div className="w-[90px] h-[90px] rounded-full bg-gray-200 animate-pulse" />
+                  ) : (
+                    <CircularProgress
+                      percentage={studentStats.present}
+                      size={90}
+                      strokeWidth={10}
+                      color="#07A869"
+                      bgColor="#E5E7EB"
+                    />
                   )}
-                  <span className={`${item.text} text-2xl font-semibold`}>
-                    {item.value}
+                  <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
+                    الحضور
                   </span>
                 </div>
-                {item.suffix && (
-                  <p className={`${item.text} text-base my-1`}>{item.suffix}</p>
-                )}
+
+                <div className="flex items-center gap-4 justify-between px-4 mb-8">
+                  {statsLoading ? (
+                    <div className="w-[90px] h-[90px] rounded-full bg-gray-200 animate-pulse" />
+                  ) : (
+                    <CircularProgress
+                      percentage={studentStats.absent}
+                      size={90}
+                      strokeWidth={10}
+                      color="#07A869"
+                      bgColor="#E5E7EB"
+                    />
+                  )}
+
+                  <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
+                    الغياب
+                  </span>
+                </div>
+                <div className="flex items-center gap-4 justify-between px-4 mb-8">
+                  {statsLoading ? (
+                    <div className="w-[90px] h-[90px] rounded-full bg-gray-200 animate-pulse" />
+                  ) : (
+                    <CircularProgress
+                      percentage={studentStats.rewards}
+                      size={90}
+                      strokeWidth={10}
+                      color="#07A869"
+                      bgColor="#E5E7EB"
+                    />
+                  )}
+
+                  <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
+                    المكافئات
+                  </span>
+                </div>
               </div>
-            ))}
-      </div>
 
-      <div
-        className="mb-6 mt-2 border border-[#C2C1C1] rounded-lg bg-white"
-        dir="rtl"
-      >
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-4">
-          {/* Region */}
-          <Select
-            placeholder="المنطقة"
-            className="w-full"
-            value={selectedRegion}
-            onChange={(val) => setSelectedRegion(val)}
-          >
-            {regions.map((r) => (
-              <Option key={r.id} value={r.id}>
-                {r.name}
-              </Option>
-            ))}
-          </Select>
-
-          {/* City */}
-          <Select
-            placeholder="المدينة"
-            className="w-full"
-            value={selectedCity}
-            onChange={(val) => setSelectedCity(val)}
-          >
-            {cities
-              .filter((c) => !selectedRegion || c.region.id === selectedRegion)
-              .map((c) => (
-                <Option key={c.id} value={c.id}>
-                  {c.name}
-                </Option>
-              ))}
-          </Select>
-
-          {/* Ministry Number */}
-          <input
-            type="text"
-            placeholder="الرقم الوزاري"
-            className="w-full p-2 border border-gray-300 rounded"
-            value={ministryNumber}
-            onChange={(e) => setMinistryNumber(e.target.value)}
-          />
-
-          {/* Type */}
-          <Select
-            placeholder="النوع"
-            className="w-full"
-            value={selectedType}
-            onChange={(val) => setSelectedType(val)}
-          >
-            <Option value={1}>Primary</Option>
-            <Option value={2}>Intermediate</Option>
-            <Option value={3}>Secondary</Option>
-          </Select>
-
-          {/* Gender */}
-          <Select
-            placeholder="الجنس"
-            className="w-full"
-            value={selectedGender}
-            onChange={(val) => setSelectedGender(val)}
-          >
-            <Option value={1}>ذكر</Option>
-            <Option value={2}>أنثى</Option>
-          </Select>
-
-          {/* School */}
-          <Select
-            placeholder="اسم المدرسة"
-            className="w-full"
-            value={selectedSchool}
-            onChange={(val) => {
-              setSelectedSchool(val);
-              fetchStudentStats(val);
-              handleSelectSchool(val);
-            }}
-          >
-            {schools.map((s) => (
-              <Option key={s.id} value={s.id}>
-                {s.name}
-              </Option>
-            ))}
-          </Select>
-
-          {/* Search Button */}
-          <Button
-            type="primary"
-            className="flex justify-center items-center gap-1"
-            onClick={handleSearch}
-          >
-            بحث <IoSearch className="text-lg" />
-          </Button>
-        </div>
-      </div>
-
-      <div className="flex flex-col-reverse xl:flex-row justify-between items-stretch  gap-6">
-        <div
-          style={{ border: "1px solid #C2C1C1" }}
-          className="p-4 rounded-lg w-full xl:w-[35%]"
-        >
-          <div className="px-6 flex justify-center items-center mb-2 lg:mb-0">
-            <img src="/map.png" alt="map" className="w-full max-w-[500px] " />
-          </div>
-        </div>
-
-        <div className="flex flex-col-reverse lg:flex-row gap-6 w-full xl:w-[65%]">
-          <div
-            style={{ border: "1px solid #C2C1C1" }}
-            className="flex-1  rounded-lg border border-[#C2C1C1] flex flex-col gap-4 w-full lg:w-1/2"
-          >
-            <div className="flex gap-2 w-full px-4 pt-3 pb-0">
-              {buttonsAttend.map((btn) => {
-                const isSelected = selectedAttend === btn;
-                return (
-                  <button
-                    key={btn}
-                    onClick={() => setSelectedAttend(btn)}
-                    className={`flex-1 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 border border-[#07A869] border-solid  cursor-pointer
+              <div
+                className="flex-1 rounded-lg border border-[#C2C1C1] flex flex-col  w-full lg:w-1/2"
+                style={{ border: "1px solid #C2C1C1" }}
+              >
+                <div className="flex gap-2 w-full p-4">
+                  {buttonsHr.map((btn) => {
+                    const isSelected = selectedHr === btn;
+                    return (
+                      <button
+                        key={btn}
+                        onClick={() => setSelectedHr(btn)}
+                        className={`flex-1 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 border border-[#07A869] border-solid  cursor-pointer
                     ${
                       isSelected
                         ? "bg-[#07A869] text-white"
                         : "bg-gray-100 text-[#15445A]"
                     }
                   `}
-                  >
-                    {btn}
-                  </button>
-                );
-              })}
-            </div>
-            <div className="w-full h-px bg-gray-300 " />
-            <div className="flex items-center gap-4 justify-between px-4 mb-8">
-              {statsLoading ? (
-                <div className="w-20 h-20 rounded-full bg-gray-200 animate-pulse" />
-              ) : (
-                <CircularProgress
-                  percentage={studentStats.present}
-                  size={90}
-                  strokeWidth={10}
-                  color="#07A869"
-                  bgColor="#E5E7EB"
-                />
-              )}
-              <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
-                الحضور
-              </span>
-            </div>
-
-            <div className="flex items-center gap-4 justify-between px-4 mb-8">
-              {statsLoading ? (
-                <div className="w-20 h-20 rounded-full bg-gray-200 animate-pulse" />
-              ) : (
-                <CircularProgress
-                  percentage={studentStats.absent}
-                  size={90}
-                  strokeWidth={10}
-                  color="#07A869"
-                  bgColor="#E5E7EB"
-                />
-              )}
-
-              <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
-                الغياب
-              </span>
-            </div>
-            <div className="flex items-center gap-4 justify-between px-4 mb-8">
-              {statsLoading ? (
-                <div className="w-20 h-20 rounded-full bg-gray-200 animate-pulse" />
-              ) : (
-                <CircularProgress
-                  percentage={studentStats.absent}
-                  size={90}
-                  strokeWidth={10}
-                  color="#07A869"
-                  bgColor="#E5E7EB"
-                />
-              )}
-
-              <span className="text-[#15445A] text-lg font-medium hover:text-[#07A869] transition-colors duration-500 ">
-                المكافئات
-              </span>
-            </div>
-          </div>
-
-          <div
-            className="flex-1 rounded-lg border border-[#C2C1C1] flex flex-col  w-full lg:w-1/2"
-            style={{ border: "1px solid #C2C1C1" }}
-          >
-            <div className="flex gap-2 w-full p-4">
-              {buttonsHr.map((btn) => {
-                const isSelected = selectedHr === btn;
-                return (
-                  <button
-                    key={btn}
-                    onClick={() => setSelectedHr(btn)}
-                    className={`flex-1 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 border border-[#07A869] border-solid  cursor-pointer
-                    ${
-                      isSelected
-                        ? "bg-[#07A869] text-white"
-                        : "bg-gray-100 text-[#15445A]"
-                    }
-                  `}
-                  >
-                    {btn}
-                  </button>
-                );
-              })}
-            </div>
-            <div className="w-full h-px bg-gray-300 " />
-
-            <div className="mt-2 overflow-y-auto max-h-[400px]" dir="rtl">
-              {!hasSearched ? (
-                // Skeleton Loader
-                <>
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <div
-                      className="flex flex-row-reverse justify-between items-start px-4 bg-white rounded-lg border border-[#C2C1C1] w-full mt-2 mb-3"
-                      key={i}
-                    >
-                      <button className="text-2xl text-[#15445A] cursor-pointer bg-transparent border-none outline-none">
-                        <FiEye />
+                      >
+                        {btn}
                       </button>
+                    );
+                  })}
+                </div>
+                <div className="w-full h-px bg-gray-300 " />
 
-                      <div className="flex flex-row-reverse items-center gap-3 w-[80%]">
-                        <div className="flex-1 flex flex-col gap-2 justify-end items-start">
-                          <div className="w-full h-2.5 bg-[#C2C1C1] rounded-md"></div>
-                          <div className="w-[70%] h-2.5 bg-[#C2C1C1] rounded-md"></div>
+                <div className="mt-2 overflow-y-auto max-h-[400px]" dir="rtl">
+                  {!hasSearched ? (
+                    // Skeleton Loader
+                    <>
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <div
+                          className="flex flex-row-reverse justify-between items-start px-4 bg-white rounded-lg border border-[#C2C1C1] w-full mt-2 mb-3"
+                          key={i}
+                        >
+                          <button className="text-2xl text-[#15445A] cursor-pointer bg-transparent border-none outline-none">
+                            <FiEye />
+                          </button>
+
+                          <div className="flex flex-row-reverse items-center gap-3 w-[80%]">
+                            <div className="flex-1 flex flex-col gap-2 justify-end items-start">
+                              <div className="w-full h-2.5 bg-[#C2C1C1] rounded-md"></div>
+                              <div className="w-[70%] h-2.5 bg-[#C2C1C1] rounded-md"></div>
+                            </div>
+
+                            <div className="w-10 h-10 bg-[#C2C1C1] rounded-full flex-shrink-0"></div>
+                          </div>
                         </div>
+                      ))}
+                    </>
+                  ) : selectedHr === "المدراس" ? (
+                    <div className="flex flex-col gap-2">
+                      {loading ? (
+                        <>
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <div
+                              className="flex flex-row-reverse justify-between items-start px-4 bg-white rounded-lg border border-[#C2C1C1] w-full mt-2 mb-3"
+                              key={i}
+                            >
+                              <button className="text-2xl text-[#15445A] cursor-pointer bg-transparent border-none outline-none">
+                                <FiEye />
+                              </button>
 
-                        <div className="w-10 h-10 bg-[#C2C1C1] rounded-full flex-shrink-0"></div>
-                      </div>
+                              <div className="flex flex-row-reverse items-center gap-3 w-[80%]">
+                                <div className="flex-1 flex flex-col gap-2 justify-end items-start">
+                                  <div className="w-full h-2.5 bg-[#C2C1C1] rounded-md"></div>
+                                  <div className="w-[70%] h-2.5 bg-[#C2C1C1] rounded-md"></div>
+                                </div>
+
+                                <div className="w-10 h-10 bg-[#C2C1C1] rounded-full flex-shrink-0"></div>
+                              </div>
+                            </div>
+                          ))}
+                        </>
+                      ) : schoolResults.length === 0 ? (
+                        <div className="flex justify-center items-center h-full">
+                          <p className="text-center text-[#15445A] font-semibold text-lg pt-3 pb-1">
+                            لا يوجد مدارس
+                          </p>
+                        </div>
+                      ) : (
+                        schoolResults.map((school: any) => (
+                          <div
+                            key={school.id}
+                            className="px-3 sm:px-4 w-full mb-1 cursor-pointer"
+                            onClick={() => handleSelectSchool(school.id)}
+                          >
+                            <h4 className="sm:text-right font-semibold text-lg text-[#07A869] hover:text-[#15445A] transition-colors duration-500 mb-1.5">
+                              {school.name}
+                            </h4>
+                            <p className="text-right text-[#15445A] text-base font-semibold mb-3">
+                              {school.address}
+                            </p>
+                          </div>
+                        ))
+                      )}
                     </div>
-                  ))}
-                </>
-              ) : selectedHr === "المدراس" ? (
-                <div className="flex flex-col gap-2">
-                  {schoolResults.map((school: any) => (
-                    <div
-                      key={school.id}
-                      className="px-3 sm:px-4 w-full mb-1 cursor-pointer"
-                      onClick={() => handleSelectSchool(school.id)}
-                    >
-                      <h4 className="sm:text-right font-semibold text-lg text-[#07A869] hover:text-[#15445A] transition-colors duration-500 mb-1.5">
-                        {school.name}
-                      </h4>
-                      <p className="text-right text-[#15445A] text-base font-semibold mb-3">
-                        {school.address}
+                  ) : !selectedSchool ? (
+                    <div className="flex justify-center items-center h-full">
+                      <p className="text-center text-[#15445A] font-semibold text-lg pt-3 pb-1">
+                        اختر مدرسة أولًا لعرض الطلاب
                       </p>
                     </div>
-                  ))}
-                </div>
-              ) : !selectedSchool ? (
-                <div className="flex justify-center items-center h-full">
-                  <p className="text-center text-[#15445A] font-semibold text-lg">
-                    اختر مدرسة أولًا لعرض الطلاب
-                  </p>
-                </div>
-              ) : studentResults.length === 0 ? (
-                <div className="flex justify-center items-center h-full">
-                  <p className="text-center text-[#15445A] font-semibold text-lg">
-                    لا يوجد طلاب في هذه المدرسة
-                  </p>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-2" dir="ltr">
-                  {studentResults.map((student: any) => (
-                    <div
-                      key={student.id}
-                      className="flex sm:flex-row justify-between items-start px-3 sm:px-4"
-                    >
-                      <button
-                        onClick={() => handleViewStudent(student.id)}
-                        className="text-2xl text-[#15445A] hover:text-[#07A869] transition-colors duration-500 cursor-pointer bg-transparent border-none outline-none mb-2 sm:mb-0"
-                      >
-                        <FiEye />
-                      </button>
-                      <div className="flex flex-col-reverse md:flex-row items-end md:items-center gap-3 w-[100%] sm:w-[80%]">
-                        <div className="flex-1 flex flex-col justify-end items-end w-full">
-                          <h4 className="sm:text-right font-semibold text-lg text-[#07A869] hover:text-[#15445A] transition-colors duration-500 mb-1.5">
-                            {student.name}
-                          </h4>
-                          <p className="text-right text-[#15445A] text-base font-semibold mb-1">
-                            {student.grade}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {student.school}
-                          </p>
-                        </div>
-                        <div className="w-16 h-16 bg-[#C2C1C1] rounded-full flex-shrink-0"></div>
-                      </div>
+                  ) : studentResults.length === 0 ? (
+                    <div className="flex justify-center items-center h-full">
+                      <p className="text-center text-[#15445A] font-semibold text-lg pt-3 pb-1">
+                        لا يوجد طلاب في هذه المدرسة
+                      </p>
                     </div>
-                  ))}
+                  ) : (
+                    <div className="flex flex-col gap-2" dir="ltr">
+                      {studentResults.map((student: any) => (
+                        <div
+                          key={student.id}
+                          className="flex sm:flex-row justify-between items-start px-3 sm:px-4"
+                        >
+                          <button
+                            onClick={() => handleViewStudent(student.id)}
+                            className="text-2xl text-[#15445A] hover:text-[#07A869] transition-colors duration-500 cursor-pointer bg-transparent border-none outline-none mb-2 sm:mb-0"
+                          >
+                            <FiEye />
+                          </button>
+                          <div className="flex flex-col-reverse md:flex-row items-end md:items-center gap-3 w-[100%] sm:w-[80%]">
+                            <div className="flex-1 flex flex-col justify-end items-end w-full">
+                              <h4 className="sm:text-right font-semibold text-lg text-[#07A869] hover:text-[#15445A] transition-colors duration-500 mb-1.5">
+                                {student.name}
+                              </h4>
+                              <p className="text-right text-[#15445A] text-base font-semibold mb-1">
+                                {student.grade}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {student.school}
+                              </p>
+                            </div>
+                            <div className="w-16 h-16 bg-[#C2C1C1] rounded-full flex-shrink-0"></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* <div className="flex flex-col lg:flex-row justify-between items-stretch  gap-6">
+          {/* <div className="flex flex-col lg:flex-row justify-between items-stretch  gap-6">
         <div style={{ border: '1px solid #C2C1C1' }} className="p-4 rounded-lg w-full lg:w-1/2">
           <div className="px-6 flex justify-center items-center mb-2 lg:mb-0">
             <img src="/map.png" alt="map" className="w-full max-w-[500px] " />
@@ -829,7 +901,9 @@ const AdminHome: React.FC = () => {
           </h4>
         </div>
       </div> */}
-    </section>
+        </section>
+      )}
+    </>
   );
 };
 

@@ -36,12 +36,12 @@ function RollerLoading() {
       // style={{ height: "calc(100vh - 200px)" }}
       className="flex flex-col items-center justify-center h-[100vh]"
     >
-      <div className="drop-shadow-xl ">
+      <div className="drop-shadow-xl p-3 rounded-md !bg-[#07A869]">
         <img
           loading="eager"
-          width={60}
-          height={60}
-          className="w-[180px] h-auto"
+          // width={60}
+          // height={60}
+          className="w-[70px] md:w-[95px] h-auto"
           src="/bg-logo.svg"
           alt="Outlet Call Center Admin"
         />
