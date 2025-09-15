@@ -114,7 +114,7 @@ function TopBar({ collapsed }) {
 
               
               <p className="text-[#15445A] text-sm p-0 mb-2">
-                <strong className="text-[#07A869] mx-1">الموافق:</strong>{' '}
+                <strong className="text-[#07A869] mx-1">التاريخ:</strong>{' '}
                 {hijri.replaceAll('-', '/')}
               </p>
               <p className="text-[#15445A] text-sm p-0 mb-3">
@@ -162,7 +162,7 @@ function TopBar({ collapsed }) {
             {gregorian.replaceAll('-', '/')}
           </p>
           <p className="text-[#15445A] text-sm p-0 m-0">
-            <strong className="text-[#07A869] mx-1 text-base">الموافق:</strong>
+            <strong className="text-[#07A869] mx-1 text-base">التاريخ:</strong>
             {hijri.replaceAll('-', '/')}
           </p>
         </div>
