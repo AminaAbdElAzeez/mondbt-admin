@@ -47,7 +47,12 @@ html.dark {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: #00000033;
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
 }
 
 /* Handle on hover */

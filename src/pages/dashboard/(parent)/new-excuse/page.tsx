@@ -6,6 +6,7 @@ import "dayjs/locale/ar";
 import locale from "antd/es/date-picker/locale/ar_EG";
 import axios from "utlis/library/helpers/axios";
 import { useSelector } from "react-redux";
+import RollerLoading from "components/loading/roller";
 
 const { Option } = Select;
 
@@ -18,6 +19,8 @@ const NewExcuse: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const { token } = useSelector((state: any) => state.Auth);
   const [submitting, setSubmitting] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+  
 
   const [uploadKey, setUploadKey] = useState(Date.now());
   const [dateKey, setDateKey] = useState(Date.now());
@@ -83,8 +86,25 @@ const NewExcuse: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+      const fetchData = async () => {
+        try {
+          setIsLoading(true);
+          await new Promise((resolve) => setTimeout(resolve, 600));
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+  
+      fetchData();
+    }, []);
+
   return (
-    <section dir="ltr" className="text-right px-2">
+    <>{isLoading ? (
+            <RollerLoading />
+          ) : (<section dir="ltr" className="text-right px-2">
       <div className="mb-2 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start gap-1 lg:gap-5">
         <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
           تقديم عذر جديد
@@ -179,7 +199,8 @@ const NewExcuse: React.FC = () => {
           <bdi>{submitting ? "جاري الإرسال..." : "قدّم العذر"}</bdi>
         </Button>
       </div>
-    </section>
+    </section>)}</>
+    
   );
 };
 

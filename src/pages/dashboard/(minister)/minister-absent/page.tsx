@@ -1,3 +1,4 @@
+import RollerLoading from "components/loading/roller";
 import React, { useEffect, useState } from "react";
 import { MdAccessAlarms } from "react-icons/md";
 import {
@@ -84,6 +85,7 @@ const MinisterAbsent: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const buttonsBottom: Array<"سنة" | "شهر" | "يوم"> = ["سنة", "شهر", "يوم"];
   const { token } = useSelector((state: any) => state.Auth);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [attendanceData, setAttendanceData] = useState({
     all: 0,
@@ -134,9 +136,25 @@ const MinisterAbsent: React.FC = () => {
     { day: 20, value: 80, hijri: "16" },
     { day: 21, value: 40, hijri: "15" },
   ];
+  useEffect(() => {
+        const fetchData = async () => {
+          try {
+            setIsLoading(true);
+            await new Promise((resolve) => setTimeout(resolve, 600));
+          } catch (err) {
+            console.error(err);
+          } finally {
+            setIsLoading(false);
+          }
+        };
+    
+        fetchData();
+      }, []);
 
   return (
-    <section dir="ltr" className="text-right px-2">
+    <>{isLoading ? (
+        <RollerLoading />
+      ) : ( <section dir="ltr" className="text-right px-2">
       <div className=" mb-3 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start gap-2">
         <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
           احصائيات الغياب
@@ -257,7 +275,8 @@ const MinisterAbsent: React.FC = () => {
           احصائيات الانضباط
         </h2>
       </div> */}
-    </section>
+    </section>)}</>
+   
   );
 };
 

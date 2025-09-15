@@ -54,9 +54,9 @@ function SubSide({
         <div className="flex items-center justify-center flex-shrink-0 pt-4 bg-[#07A869]">
           <Link to={'/'} target="_blank">
             <img
-              className="w-22 h-auto mt-2 mb-3"
+              className="w-22 h-auto mt-4 mb-6"
               src="/logo.svg"
-              width={100}
+              width={190}
               height={39}
               alt="Mondbt Admin"
             />

@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import RollerLoading from 'components/loading/roller';
+import { useEffect, useState } from 'react';
 
 const PayFines: React.FC = () => {
   const [method, setMethod] = useState('credit');
+    const [isLoading, setIsLoading] = useState(false);
+  
   const options = [
     { id: 'bank', label: 'تحويل بنكي' },
     { id: 'credit', label: 'بطاقة ائتمان' },
@@ -9,8 +12,25 @@ const PayFines: React.FC = () => {
     { id: 'sadad', label: 'فاتورة سداد' },
   ];
 
+  useEffect(() => {
+      const fetchData = async () => {
+        try {
+          setIsLoading(true);
+          await new Promise((resolve) => setTimeout(resolve, 600));
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+  
+      fetchData();
+    }, []);
+
   return (
-    <section dir="ltr" className="text-right px-2">
+    <>{isLoading ? (
+        <RollerLoading />
+      ) : (<section dir="ltr" className="text-right px-2">
       <div className=" mb-2 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start  gap-1 lg:gap-5">
         <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
           دفع الغرامات
@@ -76,7 +96,8 @@ const PayFines: React.FC = () => {
           ادفع الآن
         </button>
       </div>
-    </section>
+    </section>)}</>
+    
   );
 };
 

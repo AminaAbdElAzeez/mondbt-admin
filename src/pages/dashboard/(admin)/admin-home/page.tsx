@@ -586,7 +586,7 @@ const AdminHome: React.FC = () => {
               <input
                 type="text"
                 placeholder="الرقم الوزاري"
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-1.5 border border-gray-300 border-solid rounded-lg placeholder:text-sm placeholder:text-[#c2c1c1]"
                 value={ministryNumber}
                 onChange={(e) => setMinistryNumber(e.target.value)}
               />

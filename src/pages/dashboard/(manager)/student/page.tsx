@@ -1,12 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { MdAccessAlarms } from "react-icons/md";
-import {
-  RiFileEditLine,
-  RiUserFollowLine,
-  RiUserUnfollowLine,
-} from "react-icons/ri";
-import { Link, useParams } from "react-router-dom";
-import axios from "utlis/library/helpers/axios";
+import React, { useEffect, useState } from 'react';
+import { MdAccessAlarms } from 'react-icons/md';
+import { RiFileEditLine, RiUserFollowLine, RiUserUnfollowLine } from 'react-icons/ri';
+import { Link, useParams } from 'react-router-dom';
+import axios from 'utlis/library/helpers/axios';
 
 import {
   BarChart,
@@ -17,9 +13,9 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
-} from "recharts";
-import { useSelector } from "react-redux";
-import RollerLoading from "components/loading/roller";
+} from 'recharts';
+import { useSelector } from 'react-redux';
+import RollerLoading from 'components/loading/roller';
 
 type StudentData = {
   id: number;
@@ -53,56 +49,56 @@ type Fine = {
   id: number;
   description: string;
   date: string;
-  status: "مقبول" | "مرفوض";
+  status: 'مقبول' | 'مرفوض';
 };
 
 const fines = [
   {
     id: 1,
-    description: "مرض الطالب/ احمد علي",
-    date: "1447/03/23",
-    status: "مقبول",
+    description: 'مرض الطالب/ احمد علي',
+    date: '1447/03/23',
+    status: 'مقبول',
   },
   {
     id: 2,
-    description: "وفاة قريبة من الدرجة الاولى",
-    date: "1447/03/24",
-    status: "مرفوض",
+    description: 'وفاة قريبة من الدرجة الاولى',
+    date: '1447/03/24',
+    status: 'مرفوض',
   },
   {
     id: 3,
-    description: "موعد طبي للطالبة/ زهرة علي",
-    date: "1447/03/25",
-    status: "مقبول",
+    description: 'موعد طبي للطالبة/ زهرة علي',
+    date: '1447/03/25',
+    status: 'مقبول',
   },
   {
     id: 4,
-    description: "مرض الطالب/ علي ابراهيم",
-    date: "1447/03/26",
-    status: "مرفوض",
+    description: 'مرض الطالب/ علي ابراهيم',
+    date: '1447/03/26',
+    status: 'مرفوض',
   },
 ];
 
 const fineReasons = [
   {
-    id: "1",
-    name: "تأخر عن الاصطفاف الصباحي",
-    value: "1,020,935",
+    id: '1',
+    name: 'تأخر عن الاصطفاف الصباحي',
+    value: '1,020,935',
   },
   {
-    id: "2",
-    name: "تأخر عن الحصة الاولى",
-    value: "1,020,935",
+    id: '2',
+    name: 'تأخر عن الحصة الاولى',
+    value: '1,020,935',
   },
   {
-    id: "3",
-    name: "استئذان أثناء اليوم الدراسي",
-    value: "1,020,935",
+    id: '3',
+    name: 'استئذان أثناء اليوم الدراسي',
+    value: '1,020,935',
   },
   {
-    id: "4",
-    name: "غياب بدون عذر",
-    value: "1,020,935",
+    id: '4',
+    name: 'غياب بدون عذر',
+    value: '1,020,935',
   },
 ];
 
@@ -110,8 +106,8 @@ function CircularProgress({
   percentage,
   size = 200,
   strokeWidth = 20,
-  color = "#07A869",
-  bgColor = "#D9D9D9", // gray-200
+  color = '#07A869',
+  bgColor = '#D9D9D9', // gray-200
 }: CircularProgressProps) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -162,68 +158,63 @@ const ManagerStudents: React.FC = () => {
   const [student, setStudent] = useState<StudentData | null>(null);
   const [attendance, setAttendance] = useState<number>(0);
   const [rewards, setRewards] = useState<Reward[]>([]);
-  const [selected, setSelected] = useState<"سنة" | "شهر" | "يوم">("يوم");
-  const buttons: Array<"سنة" | "شهر" | "يوم"> = ["سنة", "شهر", "يوم"];
+  const [selected, setSelected] = useState<'سنة' | 'شهر' | 'يوم'>('يوم');
+  const buttons: Array<'سنة' | 'شهر' | 'يوم'> = ['سنة', 'شهر', 'يوم'];
   const [isLoading, setIsLoading] = useState(false);
 
-  const [selectedAttend, setSelectedAttend] = useState<
-    "جميع الشهور" | "ربيع الاول"
-  >("ربيع الاول");
+  const [selectedAttend, setSelectedAttend] = useState<'جميع الشهور' | 'ربيع الاول'>('ربيع الاول');
 
-  const buttonsAttend: Array<"جميع الشهور" | "ربيع الاول"> = [
-    "جميع الشهور",
-    "ربيع الاول",
-  ];
+  const buttonsAttend: Array<'جميع الشهور' | 'ربيع الاول'> = ['جميع الشهور', 'ربيع الاول'];
   const stats = [
     {
-      title: "الغرامات",
-      value: "1,020,935",
-      suffix: "ريال سعودي",
-      bg: "bg-[#07A869]",
-      text: "text-white",
-      icon: "/riyal.png",
+      title: 'الغرامات',
+      value: '1,020,935',
+      suffix: 'ريال سعودي',
+      bg: 'bg-[#07A869]',
+      text: 'text-white',
+      icon: '/riyal.png',
     },
     {
-      title: "الاستئذان",
-      value: "12,650",
-      suffix: "حالة استئذان",
-      bg: "bg-white",
-      text: "text-[#07A869]",
-      borderStyle: { border: "1px solid #C2C1C1", background: "#f9f9f9" },
+      title: 'الاستئذان',
+      value: '12,650',
+      suffix: 'حالة استئذان',
+      bg: 'bg-white',
+      text: 'text-[#07A869]',
+      borderStyle: { border: '1px solid #C2C1C1', background: '#f9f9f9' },
     },
     {
-      title: "التأخير",
-      value: "1,180,935",
-      suffix: "حالة تأخير",
-      bg: "bg-[#07A869]",
-      text: "text-white",
+      title: 'التأخير',
+      value: '1,180,935',
+      suffix: 'حالة تأخير',
+      bg: 'bg-[#07A869]',
+      text: 'text-white',
     },
     {
-      title: "الغياب",
-      value: "314,919",
-      suffix: "طالب وطالبة",
-      bg: "bg-white",
-      text: "text-[#07A869]",
-      borderStyle: { border: "1px solid #C2C1C1", background: "#f9f9f9" },
+      title: 'الغياب',
+      value: '314,919',
+      suffix: 'طالب وطالبة',
+      bg: 'bg-white',
+      text: 'text-[#07A869]',
+      borderStyle: { border: '1px solid #C2C1C1', background: '#f9f9f9' },
     },
     {
-      title: "الحضور",
-      value: "5,983,404",
-      suffix: "طالب وطالبة",
-      bg: "bg-[#07A869]",
-      text: "text-white",
+      title: 'الحضور',
+      value: '5,983,404',
+      suffix: 'طالب وطالبة',
+      bg: 'bg-[#07A869]',
+      text: 'text-white',
     },
   ];
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const data = [
-    { day: 15, value: 70, hijri: "21" },
-    { day: 16, value: 50, hijri: "20" },
-    { day: 17, value: 90, hijri: "19" },
-    { day: 18, value: 30, hijri: "18" },
-    { day: 19, value: 60, hijri: "17" },
-    { day: 20, value: 80, hijri: "16" },
-    { day: 21, value: 40, hijri: "15" },
+    { day: 15, value: 70, hijri: '21' },
+    { day: 16, value: 50, hijri: '20' },
+    { day: 17, value: 90, hijri: '19' },
+    { day: 18, value: 30, hijri: '18' },
+    { day: 19, value: 60, hijri: '17' },
+    { day: 20, value: 80, hijri: '16' },
+    { day: 21, value: 40, hijri: '15' },
   ];
 
   useEffect(() => {
@@ -232,8 +223,8 @@ const ManagerStudents: React.FC = () => {
     axios
       .get(`manager/student/${id}`, {
         headers: {
-          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-          "Accept-Language": "ar",
+          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+          'Accept-Language': 'ar',
         },
       })
       .then((res) => {
@@ -244,8 +235,8 @@ const ManagerStudents: React.FC = () => {
     axios
       .get(`manager/student/rewards/${id}`, {
         headers: {
-          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-          "Accept-Language": "ar",
+          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+          'Accept-Language': 'ar',
         },
       })
       .then((res) => {
@@ -262,23 +253,23 @@ const ManagerStudents: React.FC = () => {
     setLoading(true);
 
     const url =
-      selectedAttend === "ربيع الاول"
+      selectedAttend === 'ربيع الاول'
         ? `/manager/student/attendance-by-month/${id}`
         : `/manager/student/attendance-by-year/${id}`;
 
     axios
       .get(url, {
         headers: {
-          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-          "Accept-Language": "ar",
+          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+          'Accept-Language': 'ar',
         },
       })
       .then((res) => {
-        console.log("attendance:", res.data);
+        console.log('attendance:', res.data);
         setAttendance(res.data.data.attendance_percentage);
       })
       .catch((err) => {
-        console.error("Error fetching attendance:", err);
+        console.error('Error fetching attendance:', err);
       })
       .finally(() => {
         setLoading(false);
@@ -291,8 +282,8 @@ const ManagerStudents: React.FC = () => {
     axios
       .get(`/manager/student/fines/${id}`, {
         headers: {
-          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-          "Accept-Language": "ar",
+          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+          'Accept-Language': 'ar',
         },
       })
       .then((res) => {
@@ -374,38 +365,32 @@ const ManagerStudents: React.FC = () => {
 
           <div className="flex flex-col xl:flex-row justify-between  items-stretch  gap-6 mb-6">
             <div
-              style={{ border: "1px solid #C2C1C1" }}
+              style={{ border: '1px solid #C2C1C1' }}
               className=" p-4 rounded-lg w-full xl:w-1/2 "
             >
               <h3 className="text-[#07A869] font-semibold hover:text-[#15445A] transition-colors duration-500 text-2xl mb-7">
                 المكافئات
               </h3>
-              <div
-                className="flex justify-between items-center flex-wrap gap-2"
-                dir="rtl"
-              >
+              <div className="flex justify-between items-center flex-wrap gap-2" dir="rtl">
                 {rewards.map((reward, idx) => (
                   <div
                     key={idx}
                     className="flex flex-col justify-center items-center gap-1 group w-[90px] flex-grow mb-2"
                   >
                     <img
-                      src={reward.used ? "/img.png" : "/gray-img.png"}
+                      src={reward.used ? '/img.png' : '/gray-img.png'}
                       alt="icon"
                       className="w-16 h-auto"
                     />
                     <h5 className="text-[#15445A] text-sm group-hover:text-[#07A869] transition-colors duration-500 font-semibold text-center">
-                      {reward.reward_title || "بدون عنوان"}
+                      {reward.reward_title || 'بدون عنوان'}
                     </h5>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div
-              style={{ border: "1px solid #C2C1C1" }}
-              className="p-4 rounded-lg w-full xl:w-1/2"
-            >
+            <div style={{ border: '1px solid #C2C1C1' }} className="p-4 rounded-lg w-full xl:w-1/2">
               <h3 className="text-[#07A869] font-semibold hover:text-[#15445A] transition-colors duration-500 text-2xl mb-6 sm:mb-2 text-center sm:text-right">
                 نسبة الحضور
               </h3>
@@ -434,11 +419,7 @@ const ManagerStudents: React.FC = () => {
                       key={btn}
                       onClick={() => setSelectedAttend(btn)}
                       className={`flex-1 py-2 rounded-3xl text-base font-medium transition-colors duration-200 border-none  cursor-pointer
-              ${
-                isSelected
-                  ? "bg-[#07A869] text-white"
-                  : "bg-gray-100 text-[#15445A]"
-              }
+              ${isSelected ? 'bg-[#07A869] text-white' : 'bg-gray-100 text-[#15445A]'}
             `}
                     >
                       {btn}
@@ -454,53 +435,38 @@ const ManagerStudents: React.FC = () => {
             dir="rtl"
           >
             <div
-              style={{ border: "1px solid #C2C1C1" }}
+              style={{ border: '1px solid #C2C1C1' }}
               className="p-4 rounded-lg w-full xl:w-1/2 overflow-x-auto"
             >
               <h3 className="text-[#07A869] font-semibold hover:text-[#15445A] transition-colors duration-500 text-2xl mb-6 text-center">
                 الغرامات
               </h3>
-
-              <table className="min-w-[420px] w-full border-collapse">
-                <thead>
-                  <tr
-                    className="text-right"
-                    style={{ borderBottom: "1px solid #D9D9D9" }}
-                  >
-                    <th className="p-3 text-[#07A869] font-semibold text-lg">
-                      <bdi>مجموع الغرامات:</bdi>
-                    </th>
-                    <th className="p-3 text-[#07A869] font-semibold text-xl flex justify-end items-center gap-1">
-                      {finesData.total}{" "}
-                      <img
-                        src="/green-riyal.png"
-                        alt="icon"
-                        className="w-7 h-auto"
-                      />
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {finesData.fines.map((fine) => (
-                    <tr
-                      key={fine.id}
-                      className="hover:bg-[#f0eeee] transition-all duration-500"
-                    >
-                      <td className="p-3 text-[#15445A] font-semibold">
-                        {fine.type}
-                      </td>
-                      <td className="p-3 text-[#15445A] font-medium text-left text-lg">
-                        {fine.amount}{" "}
-                        <img
-                          src="/black-riyal.png"
-                          alt="icon"
-                          className="w-6 h-auto"
-                        />
-                      </td>
+              <div className="max-h-[300px] overflow-y-auto">
+                <table className="min-w-[420px] w-full border-collapse">
+                  <thead className="sticky top-0 bg-white z-10">
+                    <tr className="text-right" style={{ borderBottom: '1px solid #D9D9D9' }}>
+                      <th className="p-3 text-[#07A869] font-semibold text-lg">
+                        <bdi>مجموع الغرامات:</bdi>
+                      </th>
+                      <th className="p-3 text-[#07A869] font-semibold text-xl flex justify-end items-center gap-1">
+                        {finesData.total}{' '}
+                        <img src="/green-riyal.png" alt="icon" className="w-7 h-auto" />
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {finesData.fines.map((fine) => (
+                      <tr key={fine.id} className="hover:bg-[#f0eeee] transition-all duration-500">
+                        <td className="p-3 text-[#15445A] font-semibold">{fine.type}</td>
+                        <td className="p-3 text-[#15445A] font-medium text-left text-lg">
+                          {fine.amount}{' '}
+                          <img src="/black-riyal.png" alt="icon" className="w-6 h-auto" />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
               {/* <div className="flex justify-center mt-6 mb-2">
             <Link
@@ -513,49 +479,35 @@ const ManagerStudents: React.FC = () => {
             </div>
 
             <div
-              style={{ border: "1px solid #C2C1C1" }}
+              style={{ border: '1px solid #C2C1C1' }}
               className="p-4 rounded-lg w-full xl:w-1/2 overflow-x-auto"
             >
               <h3 className="text-[#07A869] font-semibold hover:text-[#15445A] transition-colors duration-500 text-2xl mb-6 text-center">
                 الغرامات
               </h3>
 
-              <table className="min-w-[420px] w-full border-collapse">
-                <thead className="  ">
-                  <tr
-                    className="text-right"
-                    style={{ borderBottom: "1px solid #D9D9D9" }}
-                  >
-                    <th className="p-3 text-[#07A869] font-semibold text-lg">
-                      الوصف
-                    </th>
-                    <th className="p-3 text-[#07A869] font-semibold text-lg">
-                      التاريخ
-                    </th>
-                    <th className="p-3 text-[#07A869] font-semibold text-lg">
-                      الحالة
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {fines.map((fine) => (
-                    <tr
-                      key={fine.id}
-                      className="hover:bg-[#f0eeee] transition-all duration-500"
-                    >
-                      <td className="p-4 text-[#15445A] font-semibold">
-                        {fine.description}
-                      </td>
-                      <td className="p-4 text-[#15445A]">{fine.date}</td>
-                      <td className="p-4">
-                        <span className={` font-semibold text-[#15445A]`}>
-                          {fine.status}
-                        </span>
-                      </td>
+              <div className="max-h-[300px] overflow-y-auto">
+                <table className="min-w-[420px] w-full border-collapse">
+                  <thead className="sticky top-0 bg-white z-10">
+                    <tr className="text-right" style={{ borderBottom: '1px solid #D9D9D9' }}>
+                      <th className="p-3 text-[#07A869] font-semibold text-lg">الوصف</th>
+                      <th className="p-3 text-[#07A869] font-semibold text-lg">التاريخ</th>
+                      <th className="p-3 text-[#07A869] font-semibold text-lg">الحالة</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {fines.map((fine) => (
+                      <tr key={fine.id} className="hover:bg-[#f0eeee] transition-all duration-500">
+                        <td className="p-4 text-[#15445A] font-semibold">{fine.description}</td>
+                        <td className="p-4 text-[#15445A]">{fine.date}</td>
+                        <td className="p-4">
+                          <span className={` font-semibold text-[#15445A]`}>{fine.status}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
               {/* <div className="flex justify-center mt-6 mb-2">
             <Link

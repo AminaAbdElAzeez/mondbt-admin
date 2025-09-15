@@ -35,7 +35,7 @@ function SmallLogo() {
   return (
     <Link className="inline-block" to={"/"}>
       <motion.img
-        className={`w-20  ${isFetching ? "motion-safe:animate-wiggle" : ""}`}
+        className={`w-12  ${isFetching ? "motion-safe:animate-wiggle" : ""}`}
         initial={{ y: -250 }}
         animate={{ y: 0 }}
         width={52}

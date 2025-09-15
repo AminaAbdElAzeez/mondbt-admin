@@ -1,20 +1,41 @@
-import React, { useState } from "react";
-import { Switch } from "antd";
-import "antd/dist/reset.css";
-import { AnimatePresence, motion } from "framer-motion";
-import { useDispatch } from "react-redux";
-import profileActions from "store/profile/actions";
-import { useNavigate } from "react-router-dom";
-import dayjs from "dayjs";
-import "dayjs/locale/ar";
-import hijri from "dayjs-hijri";
-dayjs.extend(hijri);
+import React, { useState } from 'react';
+import { Switch } from 'antd';
+import 'antd/dist/reset.css';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useDispatch } from 'react-redux';
+import profileActions from 'store/profile/actions';
+import { useNavigate } from 'react-router-dom';
 
 function TopBar({ collapsed }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const name = localStorage.getItem("name") || "المستخدم";
+  const name = localStorage.getItem('name') || 'المستخدم';
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const today = new Date();
+
+  // ميلادي (yyyy/mm/dd)
+  const gregorianParts = new Intl.DateTimeFormat('en-GB', {
+    calendar: 'gregory',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(today);
+
+  const gregorian = `${gregorianParts.find((p) => p.type === 'year')?.value}/${
+    gregorianParts.find((p) => p.type === 'month')?.value
+  }/${gregorianParts.find((p) => p.type === 'day')?.value}`;
+
+  // هجري (yyyy/mm/dd)
+  const hijriParts = new Intl.DateTimeFormat('en-GB', {
+    calendar: 'islamic-umalqura',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(today);
+
+  const hijri = `${hijriParts.find((p) => p.type === 'year')?.value}/${
+    hijriParts.find((p) => p.type === 'month')?.value
+  }/${hijriParts.find((p) => p.type === 'day')?.value} هـ`;
 
   return (
     <section
@@ -23,8 +44,8 @@ function TopBar({ collapsed }) {
         transition-all duration-500
         ${
           collapsed
-            ? "right-0 sm:right-80 w-full sm:w-[calc(100%-320px)]"
-            : "right-0 sm:right-16 w-full sm:w-[calc(100%-64px)]"
+            ? 'right-0 sm:right-80 w-full sm:w-[calc(100%-320px)]'
+            : 'right-0 sm:right-16 w-full sm:w-[calc(100%-64px)]'
         }
       `}
     >
@@ -63,9 +84,9 @@ function TopBar({ collapsed }) {
         {menuOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
+            animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
+            transition={{ duration: 0.4, ease: 'easeInOut' }}
             className="overflow-hidden lg:hidden"
           >
             <div className="flex flex-col items-center mt-3">
@@ -81,23 +102,24 @@ function TopBar({ collapsed }) {
               /> */}
               <button
                 onClick={() => {
-                  localStorage.removeItem("token");
-                  localStorage.removeItem("role");
+                  localStorage.removeItem('token');
+                  localStorage.removeItem('role');
 
-                  navigate("/login");
+                  navigate('/login');
                 }}
                 className="cursor-pointer border border-[#C2C1C1] border-t-[#C2C1C1] border-b-[#C2C1C1] border-l-[#C2C1C1] border-r-[#C2C1C1] border-solid rounded-3xl py-2 px-4 text-[#C2C1C1] font-[500] text-sm bg-[#fff] hover:text-[#07A869] transition-colors duration-500 hover:border-[#07A869] mb-3"
               >
                 تسجيل الخروج
               </button>
 
+              
               <p className="text-[#15445A] text-sm p-0 mb-2">
-                <strong className="text-[#07A869] mx-1">الموافق:</strong>{" "}
-                2025/10/05
+                <strong className="text-[#07A869] mx-1">الموافق:</strong>{' '}
+                {hijri.replaceAll('-', '/')}
               </p>
               <p className="text-[#15445A] text-sm p-0 mb-3">
-                <strong className="text-[#07A869] mx-1">الموافق:</strong>{" "}
-                الاربعاء 1447/03/27
+                <strong className="text-[#07A869] mx-1">الموافق:</strong>{' '}
+                {gregorian.replaceAll('-', '/')}
               </p>
             </div>
           </motion.div>
@@ -123,10 +145,10 @@ function TopBar({ collapsed }) {
           /> */}
           <button
             onClick={() => {
-              localStorage.removeItem("token");
-              localStorage.removeItem("role");
+              localStorage.removeItem('token');
+              localStorage.removeItem('role');
 
-              navigate("/login");
+              navigate('/login');
             }}
             className="cursor-pointer border border-[#C2C1C1] border-t-[#C2C1C1] border-b-[#C2C1C1] border-l-[#C2C1C1] border-r-[#C2C1C1] border-solid rounded-3xl py-2 px-4 text-[#C2C1C1] font-[500] text-sm bg-[#fff] hover:text-[#07A869] transition-colors duration-500 hover:border-[#07A869]"
           >
@@ -137,11 +159,11 @@ function TopBar({ collapsed }) {
         <div className="flex flex-row-reverse items-center gap-5">
           <p className="text-[#15445A] text-sm p-0 m-0">
             <strong className="text-[#07A869] mx-1 text-base">الموافق:</strong>
-            2025/10/05
+            {gregorian.replaceAll('-', '/')}
           </p>
           <p className="text-[#15445A] text-sm p-0 m-0">
             <strong className="text-[#07A869] mx-1 text-base">الموافق:</strong>
-            الاربعاء 1447/03/27
+            {hijri.replaceAll('-', '/')}
           </p>
         </div>
       </div>
