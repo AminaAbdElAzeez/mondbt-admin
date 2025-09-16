@@ -1,7 +1,7 @@
-import RollerLoading from 'components/loading/roller';
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'utlis/library/helpers/axios';
+import RollerLoading from "components/loading/roller";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "utlis/library/helpers/axios";
 
 type Excuse = {
   id: number;
@@ -23,8 +23,8 @@ const ExcuseStatus: React.FC = () => {
     axios
       .get(`/parent/excuses/${id}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-          'Accept-Language': 'ar',
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Accept-Language": "ar",
         },
       })
       .then((res) => {
@@ -50,10 +50,9 @@ const ExcuseStatus: React.FC = () => {
 
   // if (!excuse) return <p>جاري التحميل...</p>;
 
-
   return (
     <>
-      {isLoading ? (
+      {!excuse ? (
         <RollerLoading />
       ) : (
         <section dir="ltr" className="text-right px-2">
@@ -74,7 +73,7 @@ const ExcuseStatus: React.FC = () => {
 
             <div className="flex items-center gap-2 text-base text-right group">
               <span className="text-[#15445A] group-hover:text-[#07A869] transition-colors duration-500">
-                {' '}
+                {" "}
                 {excuse.student}
               </span>
               <strong className="text-[#15445A] w-[85px] group-hover:text-[#07A869] transition-colors duration-500">
@@ -84,7 +83,7 @@ const ExcuseStatus: React.FC = () => {
 
             <div className="flex items-center gap-2 text-base text-right group">
               <span className="text-[#07A869] group-hover:text-[#07A869] transition-colors duration-500">
-                {' '}
+                {" "}
                 {excuse.status}
               </span>
               <strong className="text-[#15445A] w-[85px] group-hover:text-[#07A869] transition-colors duration-500">
@@ -94,7 +93,7 @@ const ExcuseStatus: React.FC = () => {
 
             <div className="flex items-center gap-2 text-base text-right group">
               <span className="text-[#15445A] group-hover:text-[#07A869] transition-colors duration-500">
-                {' '}
+                {" "}
                 {excuse.date}
               </span>
               <strong className="text-[#15445A] w-[85px] group-hover:text-[#07A869] transition-colors duration-500">
