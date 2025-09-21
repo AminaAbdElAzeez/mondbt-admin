@@ -24,7 +24,7 @@ export default function SaudiMap({ regions, handleSearch }: Props) {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 800 700"
-        className="w-auto h-[300px]"
+        className="w-auto h-[400px]"
       >
         {/* الرياض SA01 */}
         <g>

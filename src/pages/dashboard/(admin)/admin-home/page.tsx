@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "utlis/library/helpers/axios";
-import { Select, Button } from "antd";
+import { Select, Button, Switch } from "antd";
 import "antd/dist/reset.css";
 import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
@@ -10,6 +10,7 @@ import InlineSvgMap from "components/SaudiMap/SaudiMap";
 import TilesMap from "components/SaudiMap/SaudiMap";
 import SaudiMap from "components/SaudiMap/SaudiMap";
 import Search from "antd/es/transfer/search";
+import SchoolsMap from "components/SchoolMap/SchoolMap";
 
 const { Option } = Select;
 
@@ -90,6 +91,7 @@ const AdminHome: React.FC = () => {
   const buttons: Array<"سنة" | "شهر" | "يوم"> = ["سنة", "شهر", "يوم"];
   const [statsLoadingCrud, setStatsLoadingCrud] = useState(false);
   const [statsLoading, setStatsLoading] = useState(false);
+  const [showSchoolsMap, setShowSchoolsMap] = useState(false);
   const [selectedAttend, setSelectedAttend] = useState<
     "الاحصائيات" | "التقارير"
   >("الاحصائيات");
@@ -624,7 +626,34 @@ const AdminHome: React.FC = () => {
               style={{ border: "1px solid #C2C1C1" }}
               className="p-4 rounded-lg w-full xl:w-[35%] flex justify-center items-center"
             >
-              <SaudiMap regions={region} handleSearch={handleSearchRegion} />
+              <div className="flex flex-col gap-4 w-full">
+                {/* Switch Header */}
+                <div className="flex items-center justify-between p-2 border-b border-gray-300">
+                  <Switch
+                    checked={showSchoolsMap}
+                    onChange={(checked) => setShowSchoolsMap(checked)}
+                  />
+                </div>
+
+                {/* Map Container */}
+                <div
+                  className="border border-gray-300 rounded-lg overflow-hidden"
+                  style={{ width: "100%" }}
+                >
+                  {showSchoolsMap ? (
+                    <SchoolsMap
+                      schools={schoolResults}
+                      selectedSchoolId={selectedSchool}
+                      onSelectSchool={(id) => handleSelectSchool(id)}
+                    />
+                  ) : (
+                    <SaudiMap
+                      regions={region}
+                      handleSearch={handleSearchRegion}
+                    />
+                  )}
+                </div>
+              </div>
 
               {/* <div className="px-6 flex justify-center items-center mb-2 lg:mb-0">
                 <img
