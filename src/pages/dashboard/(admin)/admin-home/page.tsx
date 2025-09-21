@@ -1,29 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "utlis/library/helpers/axios";
-import { MdAccessAlarms } from "react-icons/md";
-import {
-  RiFileEditLine,
-  RiUserFollowLine,
-  RiUserUnfollowLine,
-} from "react-icons/ri";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
 import { Select, Button } from "antd";
 import "antd/dist/reset.css";
 import { IoSearch } from "react-icons/io5";
-import { FaExclamation } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { FiEye } from "react-icons/fi";
-import { Link } from "react-router-dom";
 import RollerLoading from "components/loading/roller";
+import InlineSvgMap from "components/SaudiMap/SaudiMap";
+import TilesMap from "components/SaudiMap/SaudiMap";
+import SaudiMap from "components/SaudiMap/SaudiMap";
+import Search from "antd/es/transfer/search";
 
 const { Option } = Select;
 
@@ -40,7 +26,7 @@ function CircularProgress({
   size = 200,
   strokeWidth = 20,
   color = "#07A869",
-  bgColor = "#D9D9D9", // gray-200
+  bgColor = "#D9D9D9",
 }: CircularProgressProps) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -102,16 +88,8 @@ const AdminHome: React.FC = () => {
 
   const [selected, setSelected] = useState<"سنة" | "شهر" | "يوم">("يوم");
   const buttons: Array<"سنة" | "شهر" | "يوم"> = ["سنة", "شهر", "يوم"];
-  const [filteredData, setFilteredData] = useState<{
-    school: any[];
-    student: any[];
-  }>({ school: [], student: [] });
   const [statsLoadingCrud, setStatsLoadingCrud] = useState(false);
-
   const [statsLoading, setStatsLoading] = useState(false);
-
-  const [region, setRegion] = useState<string>("1"); // اختار قيمة المنطقة
-
   const [selectedAttend, setSelectedAttend] = useState<
     "الاحصائيات" | "التقارير"
   >("الاحصائيات");
@@ -130,59 +108,6 @@ const AdminHome: React.FC = () => {
     absent: 0,
     rewards: 0,
   });
-
-  const stats = [
-    {
-      title: "الغرامات",
-      value: "1,020,935",
-      suffix: "ريال سعودي",
-      bg: "bg-[#07A869]",
-      text: "text-white",
-      icon: "/riyal.png",
-    },
-    {
-      title: "الاستئذان",
-      value: "12,650",
-      suffix: "حالة استئذان",
-      bg: "bg-white",
-      text: "text-[#07A869]",
-      borderStyle: { border: "1px solid #C2C1C1", background: "#f9f9f9" },
-    },
-    {
-      title: "التأخير",
-      value: "1,180,935",
-      suffix: "حالة تأخير",
-      bg: "bg-[#07A869]",
-      text: "text-white",
-    },
-    {
-      title: "الغياب",
-      value: "314,919",
-      suffix: "طالب وطالبة",
-      bg: "bg-white",
-      text: "text-[#07A869]",
-      borderStyle: { border: "1px solid #C2C1C1", background: "#f9f9f9" },
-    },
-    {
-      title: "الحضور",
-      value: "5,983,404",
-      suffix: "طالب وطالبة",
-      bg: "bg-[#07A869]",
-      text: "text-white",
-    },
-  ];
-
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const data = [
-    { day: 15, value: 70, hijri: "21" },
-    { day: 16, value: 50, hijri: "20" },
-    { day: 17, value: 90, hijri: "19" },
-    { day: 18, value: 30, hijri: "18" },
-    { day: 19, value: 60, hijri: "17" },
-    { day: 20, value: 80, hijri: "16" },
-    { day: 21, value: 40, hijri: "15" },
-  ];
-
   const [statsData, setStatsData] = useState<
     Array<{
       title: string;
@@ -263,7 +188,7 @@ const AdminHome: React.FC = () => {
               suffix: "ريال سعودي",
               bg: "bg-[#07A869]",
               text: "text-white",
-              icon: "/riyal.png", // الصورة موجودة فقط لكارت الغرامات
+              icon: "/riyal.png",
             },
           ];
 
@@ -343,7 +268,7 @@ const AdminHome: React.FC = () => {
         setSchoolResults(res.data.data.school || []);
         setAllStudents(res.data.data.student || []);
         setStudentResults(res.data.data.student || []);
-        setHasSearched(true); // المستخدم ضغط بحث
+        setHasSearched(true);
       }
     } catch (err) {
       console.error("Error fetching filtered data", err);
@@ -354,7 +279,7 @@ const AdminHome: React.FC = () => {
 
   const handleSelectSchool = (schoolId: number) => {
     setSelectedSchool(schoolId);
-    setSelectedHr("الطلاب"); // عرض الطلاب
+    setSelectedHr("الطلاب");
 
     const schoolName = schools.find((s) => s.id === schoolId)?.name;
     if (schoolName) {
@@ -366,14 +291,6 @@ const AdminHome: React.FC = () => {
       setStudentResults([]);
     }
   };
-
-  // تابع useEffect لتحديث الطلاب والإحصائيات عند تغيير selectedSchool
-  // useEffect(() => {
-  //   if (selectedSchool) {
-  //     // fetchStudentList(selectedSchool);
-  //     fetchStudentStats(selectedSchool);
-  //   }
-  // }, [selectedSchool]);
 
   const fetchStudentList = async (schoolId: number) => {
     try {
@@ -387,7 +304,7 @@ const AdminHome: React.FC = () => {
         }
       );
       if (res.data.status) {
-        setStudentResults(res.data.data || []); // هنا بيملى الطلاب
+        setStudentResults(res.data.data || []);
       }
     } catch (err) {
       console.error("Error fetching students", err);
@@ -412,7 +329,7 @@ const AdminHome: React.FC = () => {
     } catch (err) {
       console.error("Error fetching student statistics", err);
     } finally {
-      setStatsLoading(false); // End loading
+      setStatsLoading(false);
     }
   };
 
@@ -443,7 +360,7 @@ const AdminHome: React.FC = () => {
     if (selectedHr === "الطلاب") {
       setStudentStats({ present: 0, absent: 0, rewards: 0 });
     }
-  }, [selectedHr, selectedSchool]); // لو اخترت مدرسة جديدة أو رجعت على الطلاب
+  }, [selectedHr, selectedSchool]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -459,6 +376,31 @@ const AdminHome: React.FC = () => {
 
     fetchData();
   }, []);
+
+  const region = [
+    { id: 1, code: "SA01", name: "Ar Riyad" },
+    { id: 2, code: "SA02", name: "Makkah" },
+    { id: 3, code: "SA03", name: "Al Madinah" },
+    { id: 4, code: "SA04", name: "Ash Sharqiyah" },
+    { id: 5, code: "SA05", name: "Al Quassim" },
+    { id: 6, code: "SA06", name: "Ha'il" },
+    { id: 7, code: "SA07", name: "Tabuk" },
+    { id: 8, code: "SA08", name: "Al Hudud ash Shamaliyah" },
+    { id: 9, code: "SA09", name: "Jizan" },
+    { id: 10, code: "SA10", name: "Najran" },
+    { id: 11, code: "SA11", name: "Al Bahah" },
+    { id: 12, code: "SA12", name: "Al Jawf" },
+    { id: 13, code: "SA13", name: "Northern Borders" },
+    { id: 14, code: "SA14", name: "`Asir" },
+  ];
+
+  const handleSearchRegion = (regionCode: string) => {
+    const regionObj = region.find((r) => r.code === regionCode);
+    if (regionObj) {
+      setSelectedRegion(regionObj.id);
+      handleSearch();
+    }
+  };
 
   return (
     <>
@@ -551,111 +493,146 @@ const AdminHome: React.FC = () => {
               className="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-4"
             >
               {/* Region */}
-              <Select
-                placeholder="المنطقة"
-                className="w-full"
-                value={selectedRegion}
-                onChange={(val) => setSelectedRegion(val)}
-              >
-                {regions.map((r) => (
-                  <Option key={r.id} value={r.id}>
-                    {r.name}
-                  </Option>
-                ))}
-              </Select>
-
-              {/* City */}
-              <Select
-                placeholder="المدينة"
-                className="w-full"
-                value={selectedCity}
-                onChange={(val) => setSelectedCity(val)}
-              >
-                {cities
-                  .filter(
-                    (c) => !selectedRegion || c.region.id === selectedRegion
-                  )
-                  .map((c) => (
-                    <Option key={c.id} value={c.id}>
-                      {c.name}
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">
+                  المنطقة
+                </label>
+                <Select
+                  placeholder="اختر المنطقة"
+                  className="w-full"
+                  value={selectedRegion}
+                  onChange={(val) => setSelectedRegion(val)}
+                >
+                  {regions.map((r) => (
+                    <Option key={r.id} value={r.id}>
+                      {r.name}
                     </Option>
                   ))}
-              </Select>
+                </Select>
+              </div>
+
+              {/* City */}
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">
+                  المدينة
+                </label>
+                <Select
+                  placeholder="اختر المدينة"
+                  className="w-full"
+                  value={selectedCity}
+                  onChange={(val) => setSelectedCity(val)}
+                >
+                  {cities
+                    .filter(
+                      (c) => !selectedRegion || c.region.id === selectedRegion
+                    )
+                    .map((c) => (
+                      <Option key={c.id} value={c.id}>
+                        {c.name}
+                      </Option>
+                    ))}
+                </Select>
+              </div>
 
               {/* Ministry Number */}
-              <input
-                type="text"
-                placeholder="الرقم الوزاري"
-                className="w-full p-1.5 border border-gray-300 border-solid rounded-lg placeholder:text-sm placeholder:text-[#c2c1c1]"
-                value={ministryNumber}
-                onChange={(e) => setMinistryNumber(e.target.value)}
-              />
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">
+                  الرقم الوزاري
+                </label>
+                <input
+                  type="text"
+                  placeholder="أدخل الرقم الوزاري"
+                  className="w-full p-1.5 focus:outline-none hover:border-[#07A869] focus:border-[#07A869] border border-gray-300 border-solid rounded-lg placeholder:text-sm placeholder:text-[#c2c1c1]"
+                  value={ministryNumber}
+                  onChange={(e) => setMinistryNumber(e.target.value)}
+                />
+              </div>
 
               {/* Type */}
-              <Select
-                placeholder="النوع"
-                className="w-full"
-                value={selectedType}
-                onChange={(val) => setSelectedType(val)}
-              >
-                <Option value={1}>أساسي</Option>
-                <Option value={2}>متوسط</Option>
-                <Option value={3}>ثانوي</Option>
-              </Select>
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">
+                  النوع
+                </label>
+                <Select
+                  placeholder="اختر النوع"
+                  className="w-full"
+                  value={selectedType}
+                  onChange={(val) => setSelectedType(val)}
+                >
+                  <Option value={1}>ابتدائي</Option>
+                  <Option value={2}>متوسط</Option>
+                  <Option value={3}>ثانوي</Option>
+                </Select>
+              </div>
 
               {/* Gender */}
-              <Select
-                placeholder="الجنس"
-                className="w-full"
-                value={selectedGender}
-                onChange={(val) => setSelectedGender(val)}
-              >
-                <Option value={1}>ذكر</Option>
-                <Option value={2}>أنثى</Option>
-              </Select>
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">
+                  الجنس
+                </label>
+                <Select
+                  placeholder="اختر الجنس"
+                  className="w-full"
+                  value={selectedGender}
+                  onChange={(val) => setSelectedGender(val)}
+                >
+                  <Option value={1}>ذكر</Option>
+                  <Option value={2}>أنثى</Option>
+                </Select>
+              </div>
 
               {/* School */}
-              <Select
-                placeholder="اسم المدرسة"
-                className="w-full"
-                value={selectedSchool}
-                onChange={(val) => {
-                  setSelectedSchool(val);
-                  fetchStudentStats(val);
-                  handleSelectSchool(val);
-                }}
-              >
-                {schools.map((s) => (
-                  <Option key={s.id} value={s.id}>
-                    {s.name}
-                  </Option>
-                ))}
-              </Select>
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">
+                  اسم المدرسة
+                </label>
+                <Select
+                  placeholder="اختر المدرسة"
+                  className="w-full"
+                  value={selectedSchool}
+                  onChange={(val) => {
+                    setSelectedSchool(val);
+                    fetchStudentStats(val);
+                    handleSelectSchool(val);
+                  }}
+                >
+                  {schools.map((s) => (
+                    <Option key={s.id} value={s.id}>
+                      {s.name}
+                    </Option>
+                  ))}
+                </Select>
+              </div>
 
               {/* Search Button */}
-              <Button
-                type="primary"
-                className="flex justify-center items-center gap-1"
-                onClick={handleSearch}
-                loading={loading}
-              >
-                بحث <IoSearch className="text-lg" />
-              </Button>
+              <div className="flex flex-col gap-1 justify-end">
+                <label className="invisible">بحث</label>
+                <Button
+                  type="primary"
+                  className="flex justify-center items-center gap-1"
+                  onClick={handleSearch}
+                  loading={loading}
+                >
+                  بحث <IoSearch className="text-lg" />
+                </Button>
+              </div>
             </form>
           </div>
 
           <div className="flex flex-col-reverse xl:flex-row justify-between items-stretch  gap-6">
             <div
               style={{ border: "1px solid #C2C1C1" }}
-              className="p-4 rounded-lg w-full xl:w-[35%]"
+              className="p-4 rounded-lg w-full xl:w-[35%] flex justify-center items-center"
             >
-              <div className="px-6 flex justify-center items-center mb-2 lg:mb-0">
+              <SaudiMap regions={region} handleSearch={handleSearchRegion} />
+
+              {/* <div className="px-6 flex justify-center items-center mb-2 lg:mb-0">
                 <img
                   src="/map.png"
                   alt="map"
                   className="w-full max-w-[500px] "
                 />
-              </div>
+              </div> */}
             </div>
 
             <div className="flex flex-col-reverse lg:flex-row gap-6 w-full xl:w-[65%]">
