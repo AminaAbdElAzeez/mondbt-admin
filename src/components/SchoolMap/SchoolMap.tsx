@@ -40,11 +40,11 @@ const SchoolsMap: React.FC<SchoolsMapProps> = ({
   };
 
   const icon = new L.Icon({
-    iconUrl: "/marker-icon.png",
-    iconRetinaUrl: "/marker-icon-2x.png",
+    iconUrl: "/public/marker-icon.png",
+    iconRetinaUrl: "/public/marker-icon-2x.png",
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
-    shadowUrl: "/marker-shadow.png",
+    shadowUrl: "/public/marker-shadow.png",
     shadowSize: [41, 41],
   });
 
