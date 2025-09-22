@@ -39,17 +39,14 @@ const SchoolsMap: React.FC<SchoolsMapProps> = ({
     return null;
   };
 
- const icon = new L.Icon({
-  iconUrl: "/marker-icon.png",
-  iconRetinaUrl: "/marker-icon-2x.png",
-  shadowUrl: "/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-  shadowAnchor: [12, 41],
-});
-
+  const icon = new L.Icon({
+    // iconUrl: "/public/marker-icon.png",
+    // iconRetinaUrl: "/public/marker-icon-2x.png",
+    // iconAnchor: [12, 41],
+    // popupAnchor: [1, -34],
+    // shadowUrl: "/public/marker-shadow.png",
+    // shadowSize: [41, 41],
+  });
 
   return (
     <MapContainer
