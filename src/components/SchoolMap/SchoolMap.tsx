@@ -40,12 +40,12 @@ const SchoolsMap: React.FC<SchoolsMapProps> = ({
   };
 
   const icon = new L.Icon({
-    // iconUrl: "/public/marker-icon.png",
-    // iconRetinaUrl: "/public/marker-icon-2x.png",
-    // iconAnchor: [12, 41],
-    // popupAnchor: [1, -34],
-    // shadowUrl: "/public/marker-shadow.png",
-    // shadowSize: [41, 41],
+    iconUrl: "/marker-icon.png",
+    iconRetinaUrl: "/marker-icon-2x.png",
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowUrl: "/marker-shadow.png",
+    shadowSize: [41, 41],
   });
 
   return (
@@ -59,6 +59,7 @@ const SchoolsMap: React.FC<SchoolsMapProps> = ({
         <Marker
           key={school.id}
           position={[parseFloat(school.latitude), parseFloat(school.longitude)]}
+          icon={icon}
         >
           <Popup>{school.name}</Popup>
         </Marker>
