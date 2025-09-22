@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
-import axios from "utlis/library/helpers/axios";
-import { Select, Button, Switch } from "antd";
-import "antd/dist/reset.css";
-import { IoSearch } from "react-icons/io5";
-import { useSelector } from "react-redux";
-import { FiEye } from "react-icons/fi";
-import RollerLoading from "components/loading/roller";
-import InlineSvgMap from "components/SaudiMap/SaudiMap";
-import TilesMap from "components/SaudiMap/SaudiMap";
-import SaudiMap from "components/SaudiMap/SaudiMap";
-import Search from "antd/es/transfer/search";
-import SchoolsMap from "components/SchoolMap/SchoolMap";
+import React, { useEffect, useState } from 'react';
+import axios from 'utlis/library/helpers/axios';
+import { Select, Button, Switch } from 'antd';
+import 'antd/dist/reset.css';
+import { IoSearch } from 'react-icons/io5';
+import { useSelector } from 'react-redux';
+import { FiEye } from 'react-icons/fi';
+import RollerLoading from 'components/loading/roller';
+import InlineSvgMap from 'components/SaudiMap/SaudiMap';
+import TilesMap from 'components/SaudiMap/SaudiMap';
+import SaudiMap from 'components/SaudiMap/SaudiMap';
+import Search from 'antd/es/transfer/search';
+import SchoolsMap from 'components/SchoolMap/SchoolMap';
 
 const { Option } = Select;
 
@@ -26,8 +26,8 @@ function CircularProgress({
   percentage,
   size = 200,
   strokeWidth = 20,
-  color = "#07A869",
-  bgColor = "#D9D9D9",
+  color = '#07A869',
+  bgColor = '#D9D9D9',
 }: CircularProgressProps) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -57,26 +57,22 @@ function CircularProgress({
         />
       </svg>
 
-      <span className="absolute text-lg font-bold text-[#15445A]">
-        %{percentage}
-      </span>
+      <span className="absolute text-lg font-bold text-[#15445A]">%{percentage}</span>
     </div>
   );
 }
 
 const AdminHome: React.FC = () => {
-  const [regions, setRegions] = useState<Array<{ id: number; name: string }>>(
+  const [regions, setRegions] = useState<Array<{ id: number; name: string }>>([]);
+  const [cities, setCities] = useState<Array<{ id: number; name: string; region: { id: number } }>>(
     []
   );
-  const [cities, setCities] = useState<
-    Array<{ id: number; name: string; region: { id: number } }>
-  >([]);
   const [schools, setSchools] = useState<Array<any>>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [selectedRegion, setSelectedRegion] = useState<number | null>(1);
+  const [selectedRegion, setSelectedRegion] = useState<number | null>(0);
   const [selectedCity, setSelectedCity] = useState<number | null>(null);
-  const [ministryNumber, setMinistryNumber] = useState<string>("");
+  const [ministryNumber, setMinistryNumber] = useState<string>('');
   const [selectedType, setSelectedType] = useState<number | null>(null);
   const [selectedGender, setSelectedGender] = useState<number | null>(null);
   const [selectedSchool, setSelectedSchool] = useState<number | null>(null);
@@ -87,20 +83,15 @@ const AdminHome: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const [selected, setSelected] = useState<"سنة" | "شهر" | "يوم">("يوم");
-  const buttons: Array<"سنة" | "شهر" | "يوم"> = ["سنة", "شهر", "يوم"];
+  const [selected, setSelected] = useState<'سنة' | 'شهر' | 'يوم'>('يوم');
+  const buttons: Array<'سنة' | 'شهر' | 'يوم'> = ['سنة', 'شهر', 'يوم'];
   const [statsLoadingCrud, setStatsLoadingCrud] = useState(false);
   const [statsLoading, setStatsLoading] = useState(false);
   const [showSchoolsMap, setShowSchoolsMap] = useState(false);
-  const [selectedAttend, setSelectedAttend] = useState<
-    "الاحصائيات" | "التقارير"
-  >("الاحصائيات");
-  const buttonsAttend: Array<"الاحصائيات" | "التقارير"> = [
-    "الاحصائيات",
-    "التقارير",
-  ];
-  const [selectedHr, setSelectedHr] = useState<"الطلاب" | "المدراس">("المدراس");
-  const buttonsHr: Array<"الطلاب" | "المدراس"> = ["الطلاب", "المدراس"];
+  const [selectedAttend, setSelectedAttend] = useState<'الاحصائيات' | 'التقارير'>('الاحصائيات');
+  const buttonsAttend: Array<'الاحصائيات' | 'التقارير'> = ['الاحصائيات', 'التقارير'];
+  const [selectedHr, setSelectedHr] = useState<'الطلاب' | 'المدراس'>('المدراس');
+  const buttonsHr: Array<'الطلاب' | 'المدراس'> = ['الطلاب', 'المدراس'];
   const [studentStats, setStudentStats] = useState<{
     present: number;
     absent: number;
@@ -122,7 +113,7 @@ const AdminHome: React.FC = () => {
     }>
   >([]);
 
-  const filterTypeMapping: Record<"سنة" | "شهر" | "يوم", number> = {
+  const filterTypeMapping: Record<'سنة' | 'شهر' | 'يوم', number> = {
     سنة: 3,
     شهر: 2,
     يوم: 1,
@@ -134,70 +125,67 @@ const AdminHome: React.FC = () => {
       try {
         setStatsLoadingCrud(true);
         const type = filterTypeMapping[selected];
-        const res = await axios.get(
-          `admin/home/statistics?filter[type]=${type}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-              "Accept-Language": "ar",
-            },
-          }
-        );
+        const res = await axios.get(`admin/home/statistics?filter[type]=${type}`, {
+          headers: {
+            Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+            'Accept-Language': 'ar',
+          },
+        });
 
         if (res.data.status) {
           const apiData = res.data.data;
 
           const formattedStats = [
             {
-              title: "الحضور",
+              title: 'الحضور',
               value: apiData.present,
-              suffix: "طالب وطالبة",
-              bg: "bg-[#07A869]",
-              text: "text-white",
+              suffix: 'طالب وطالبة',
+              bg: 'bg-[#07A869]',
+              text: 'text-white',
             },
             {
-              title: "الغياب",
+              title: 'الغياب',
               value: apiData.absent,
-              suffix: "طالب وطالبة",
-              bg: "bg-white",
-              text: "text-[#07A869]",
+              suffix: 'طالب وطالبة',
+              bg: 'bg-white',
+              text: 'text-[#07A869]',
               borderStyle: {
-                border: "1px solid #C2C1C1",
-                background: "#f9f9f9",
+                border: '1px solid #C2C1C1',
+                background: '#f9f9f9',
               },
             },
             {
-              title: "التأخير",
+              title: 'التأخير',
               value: apiData.late,
-              suffix: "حالة تأخير",
-              bg: "bg-[#07A869]",
-              text: "text-white",
+              suffix: 'حالة تأخير',
+              bg: 'bg-[#07A869]',
+              text: 'text-white',
             },
             {
-              title: "الاستئذان",
+              title: 'الاستئذان',
               value: apiData.excused,
-              suffix: "حالة استئذان",
-              bg: "bg-white",
-              text: "text-[#07A869]",
+              suffix: 'حالة استئذان',
+              bg: 'bg-white',
+              text: 'text-[#07A869]',
               borderStyle: {
-                border: "1px solid #C2C1C1",
-                background: "#f9f9f9",
+                border: '1px solid #C2C1C1',
+                background: '#f9f9f9',
               },
             },
             {
-              title: "الغرامات",
+              title: 'الغرامات',
               value: apiData.fines.toLocaleString(),
-              suffix: "ريال سعودي",
-              bg: "bg-[#07A869]",
-              text: "text-white",
-              icon: "/riyal.png",
+              suffix: 'ريال سعودي',
+              bg: 'bg-[#07A869]',
+              text: 'text-white',
+              icon: '/riyal.png',
             },
           ];
 
           setStatsData(formattedStats);
         }
       } catch (error) {
-        console.error("Error fetching stats", error);
+        console.error('Error fetching stats', error);
       } finally {
         setStatsLoadingCrud(false);
       }
@@ -206,29 +194,40 @@ const AdminHome: React.FC = () => {
     fetchStats();
   }, [selected, token]);
   useEffect(() => {
-    if (selectedRegion) {
+    if (selectedRegion !== null) {
       handleSearch();
     }
   }, [selectedRegion]);
 
   useEffect(() => {
+    if (regions.length > 0) {
+      handleSearch();
+    }
+  }, [regions]);
+
+  useEffect(() => {
     // Fetch regions
     axios
-      .get("/regions", {
+      .get('/regions', {
         headers: {
-          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-          "Accept-Language": "ar",
+          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+          'Accept-Language': 'ar',
         },
       })
-      .then((res) => res.data.status && setRegions(res.data.data))
+      .then((res) => {
+        if (res.data.status) {
+          const regionsData = res.data.data;
+          setRegions([{ id: 0, name: 'الكل' }, ...regionsData]);
+        }
+      })
       .catch(console.error);
 
     // Fetch cities
     axios
-      .get("/cities", {
+      .get('/cities', {
         headers: {
-          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-          "Accept-Language": "ar",
+          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+          'Accept-Language': 'ar',
         },
       })
       .then((res) => res.data.status && setCities(res.data.data.data))
@@ -236,33 +235,37 @@ const AdminHome: React.FC = () => {
 
     // Fetch schools
     axios
-      .get("/schools", {
+      .get('/schools', {
         headers: {
-          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-          "Accept-Language": "ar",
+          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+          'Accept-Language': 'ar',
         },
       })
       .then((res) => res.data.status && setSchools(res.data.data))
       .catch(console.error);
   }, [token]);
 
-  const handleSearch = async () => {
+  const handleSearch = async (regionId?: number) => {
     try {
       setLoading(true);
 
       const params: any = {};
-      if (selectedRegion) params["filter[region]"] = selectedRegion;
-      if (selectedCity) params["filter[city]"] = selectedCity;
-      if (ministryNumber) params["filter[ministry_number]"] = ministryNumber;
-      if (selectedType) params["filter[type]"] = selectedType;
-      if (selectedGender) params["filter[gender]"] = selectedGender;
+      const regionToUse = regionId ?? selectedRegion;
+
+      // if (selectedRegion !== null && selectedRegion !== 0)
+      //   params['filter[region]'] = selectedRegion;
+      if (regionToUse !== null && regionToUse !== 0) params['filter[region]'] = regionToUse;
+      if (selectedCity) params['filter[city]'] = selectedCity;
+      if (ministryNumber) params['filter[ministry_number]'] = ministryNumber;
+      if (selectedType) params['filter[type]'] = selectedType;
+      if (selectedGender) params['filter[gender]'] = selectedGender;
 
       const queryString = new URLSearchParams(params).toString();
 
       const res = await axios.get(`/admin/home/filter?${queryString}`, {
         headers: {
-          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-          "Accept-Language": "ar",
+          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+          'Accept-Language': 'ar',
         },
       });
 
@@ -273,7 +276,7 @@ const AdminHome: React.FC = () => {
         setHasSearched(true);
       }
     } catch (err) {
-      console.error("Error fetching filtered data", err);
+      console.error('Error fetching filtered data', err);
     } finally {
       setLoading(false);
     }
@@ -281,13 +284,11 @@ const AdminHome: React.FC = () => {
 
   const handleSelectSchool = (schoolId: number) => {
     setSelectedSchool(schoolId);
-    setSelectedHr("الطلاب");
+    setSelectedHr('الطلاب');
 
     const schoolName = schools.find((s) => s.id === schoolId)?.name;
     if (schoolName) {
-      const filteredStudents = allStudents.filter(
-        (student) => student.school === schoolName
-      );
+      const filteredStudents = allStudents.filter((student) => student.school === schoolName);
       setStudentResults(filteredStudents);
     } else {
       setStudentResults([]);
@@ -296,40 +297,34 @@ const AdminHome: React.FC = () => {
 
   const fetchStudentList = async (schoolId: number) => {
     try {
-      const res = await axios.get(
-        `/admin/home/students?school_id=${schoolId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-            "Accept-Language": "ar",
-          },
-        }
-      );
+      const res = await axios.get(`/admin/home/students?school_id=${schoolId}`, {
+        headers: {
+          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+          'Accept-Language': 'ar',
+        },
+      });
       if (res.data.status) {
         setStudentResults(res.data.data || []);
       }
     } catch (err) {
-      console.error("Error fetching students", err);
+      console.error('Error fetching students', err);
     }
   };
   const fetchStudentStats = async (schoolId: number) => {
     try {
       setStatsLoading(true);
-      const res = await axios.get(
-        `/admin/home/student/statistics/${schoolId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-            "Accept-Language": "ar",
-          },
-        }
-      );
+      const res = await axios.get(`/admin/home/student/statistics/${schoolId}`, {
+        headers: {
+          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+          'Accept-Language': 'ar',
+        },
+      });
 
       if (res.data.status) {
         setStudentStats(res.data.data);
       }
     } catch (err) {
-      console.error("Error fetching student statistics", err);
+      console.error('Error fetching student statistics', err);
     } finally {
       setStatsLoading(false);
     }
@@ -338,28 +333,25 @@ const AdminHome: React.FC = () => {
   const handleViewStudent = async (studentId: number) => {
     try {
       setStatsLoading(true);
-      const res = await axios.get(
-        `/admin/home/student/statistics/${studentId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-            "Accept-Language": "ar",
-          },
-        }
-      );
+      const res = await axios.get(`/admin/home/student/statistics/${studentId}`, {
+        headers: {
+          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+          'Accept-Language': 'ar',
+        },
+      });
 
       if (res.data.status) {
         setStudentStats(res.data.data);
       }
     } catch (err) {
-      console.error("Error fetching student stats", err);
+      console.error('Error fetching student stats', err);
     } finally {
       setStatsLoading(false);
     }
   };
 
   useEffect(() => {
-    if (selectedHr === "الطلاب") {
+    if (selectedHr === 'الطلاب') {
       setStudentStats({ present: 0, absent: 0, rewards: 0 });
     }
   }, [selectedHr, selectedSchool]);
@@ -379,30 +371,55 @@ const AdminHome: React.FC = () => {
     fetchData();
   }, []);
 
+  // الخريطة الأصلية بالـ SA codes
   const region = [
-    { id: 1, code: "SA01", name: "Ar Riyad" },
-    { id: 2, code: "SA02", name: "Makkah" },
-    { id: 3, code: "SA03", name: "Al Madinah" },
-    { id: 4, code: "SA04", name: "Ash Sharqiyah" },
-    { id: 5, code: "SA05", name: "Al Quassim" },
-    { id: 6, code: "SA06", name: "Ha'il" },
-    { id: 7, code: "SA07", name: "Tabuk" },
-    { id: 8, code: "SA08", name: "Al Hudud ash Shamaliyah" },
-    { id: 9, code: "SA09", name: "Jizan" },
-    { id: 10, code: "SA10", name: "Najran" },
-    { id: 11, code: "SA11", name: "Al Bahah" },
-    { id: 12, code: "SA12", name: "Al Jawf" },
-    { id: 13, code: "SA13", name: "Northern Borders" },
-    { id: 14, code: "SA14", name: "`Asir" },
+    { id: 1, code: 'SA01', name: 'الرياض' },
+    { id: 2, code: 'SA02', name: 'مكة المكرمة' },
+    { id: 3, code: 'SA03', name: 'المدينة المنورة' },
+    { id: 4, code: 'SA04', name: 'الشرقية' },
+    { id: 5, code: 'SA05', name: 'القصيم' },
+    { id: 6, code: 'SA06', name: 'حائل' },
+    { id: 7, code: 'SA07', name: 'تبوك' },
+    { id: 8, code: 'SA08', name: 'الحدود الشمالية' },
+    { id: 9, code: 'SA09', name: 'جازان' },
+    { id: 10, code: 'SA10', name: 'نجران' },
+    { id: 11, code: 'SA11', name: 'الباحة' },
+    { id: 12, code: 'SA12', name: 'الجوف' },
+    { id: 13, code: 'SA13', name: 'الشمال' },
+    { id: 14, code: 'SA14', name: 'عسير' },
   ];
 
-  const handleSearchRegion = (regionCode: string) => {
-    const regionObj = region.find((r) => r.code === regionCode);
-    if (regionObj) {
-      setSelectedRegion(regionObj.id);
-      handleSearch();
-    }
+  // تحويل كود الخريطة لكود backend مع تعديل الـ id للـ backend
+  const regionMap: Record<string, { code: string; id: number }> = {
+    SA01: { code: '01', id: 1 }, // الرياض
+    SA02: { code: '02', id: 2 }, // مكة
+    SA03: { code: '03', id: 3 }, // المدينة
+    SA04: { code: '05', id: 5 }, // الشرقية
+    SA05: { code: '04', id: 4 }, // القصيم
+    SA06: { code: '08', id: 8 }, // حائل
+    SA07: { code: '07', id: 7 }, // تبوك
+    SA08: { code: '09', id: 9 }, // الحدود الشمالية
+    SA09: { code: '10', id: 10 }, // جازان
+    SA10: { code: '11', id: 11 }, // نجران
+    SA11: { code: '12', id: 12 }, // الباحة
+    SA12: { code: '13', id: 13 }, // الجوف
+    SA13: { code: '13', id: 13 }, // Northern Borders → استخدم نفس الجوف إذا مش موجود
+    SA14: { code: '06', id: 6 }, // عسير
   };
+
+  const handleSearchRegion = (regionId: number) => {
+    // const backendRegion = regionMap[regionCode];
+    // if (!backendRegion) return;
+
+    setSelectedRegion(regionId);
+    setShowSchoolsMap(true);
+    handleSearch(regionId);
+  };
+
+  const filteredSchools =
+    selectedRegion && selectedRegion !== 0
+      ? schoolResults.filter((s) => s.region.id === selectedRegion)
+      : schoolResults;
 
   return (
     <>
@@ -413,7 +430,7 @@ const AdminHome: React.FC = () => {
           <div className=" mb-3 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start  gap-1 lg:gap-5">
             <div
               className="flex rounded-3xl h-9 w-max  overflow-hidden"
-              style={{ border: "1px solid #C2C1C1" }}
+              style={{ border: '1px solid #C2C1C1' }}
             >
               {buttons.map((btn) => {
                 const isSelected = selected === btn;
@@ -423,12 +440,8 @@ const AdminHome: React.FC = () => {
                     onClick={() => setSelected(btn)}
                     className={`
               text-base h-8.5 w-[76px] sm:w-24 rounded-3xl transition-all duration-200 cursor-pointer
-              ${
-                isSelected
-                  ? "bg-[#07A869] text-white"
-                  : "bg-transparent text-[#C2C1C1]"
-              }
-              hover:${isSelected ? "brightness-110" : "bg-gray-100"}
+              ${isSelected ? 'bg-[#07A869] text-white' : 'bg-transparent text-[#C2C1C1]'}
+              hover:${isSelected ? 'brightness-110' : 'bg-gray-100'}
               outline-none border-none
             `}
                   >
@@ -442,10 +455,7 @@ const AdminHome: React.FC = () => {
             </h2>
           </div>
 
-          <div
-            className="flex justify-between items-center flex-wrap gap-5 py-2 mb-5"
-            dir="rtl"
-          >
+          <div className="flex justify-between items-center flex-wrap gap-5 py-2 mb-5" dir="rtl">
             {statsLoadingCrud
               ? Array.from({ length: 5 }).map((_, i) => (
                   <div
@@ -463,30 +473,17 @@ const AdminHome: React.FC = () => {
                     className={`rounded-xl shadow-md p-4 ${item.bg} transform transition duration-300 hover:scale-105 hover:shadow-xl flex-grow w-[160px] text-right`}
                     style={item.borderStyle || {}}
                   >
-                    <h3 className={`${item.text} text-lg font-medium mb-1`}>
-                      {item.title}
-                    </h3>
+                    <h3 className={`${item.text} text-lg font-medium mb-1`}>{item.title}</h3>
                     <div className="flex items-center gap-2 justify-start">
-                      {item.icon && (
-                        <img src={item.icon} alt="icon" className="w-7 h-7" />
-                      )}
-                      <span className={`${item.text} text-2xl font-semibold`}>
-                        {item.value}
-                      </span>
+                      {item.icon && <img src={item.icon} alt="icon" className="w-7 h-7" />}
+                      <span className={`${item.text} text-2xl font-semibold`}>{item.value}</span>
                     </div>
-                    {item.suffix && (
-                      <p className={`${item.text} text-base my-1`}>
-                        {item.suffix}
-                      </p>
-                    )}
+                    {item.suffix && <p className={`${item.text} text-base my-1`}>{item.suffix}</p>}
                   </div>
                 ))}
           </div>
 
-          <div
-            className="mb-6 mt-2 border border-[#C2C1C1] rounded-lg bg-white"
-            dir="rtl"
-          >
+          <div className="mb-6 mt-2 border border-[#C2C1C1] rounded-lg bg-white" dir="rtl">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -496,9 +493,7 @@ const AdminHome: React.FC = () => {
             >
               {/* Region */}
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-700">
-                  المنطقة
-                </label>
+                <label className="text-sm font-medium text-gray-700">المنطقة</label>
                 <Select
                   placeholder="اختر المنطقة"
                   className="w-full"
@@ -515,9 +510,7 @@ const AdminHome: React.FC = () => {
 
               {/* City */}
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-700">
-                  المدينة
-                </label>
+                <label className="text-sm font-medium text-gray-700">المدينة</label>
                 <Select
                   placeholder="اختر المدينة"
                   className="w-full"
@@ -525,9 +518,7 @@ const AdminHome: React.FC = () => {
                   onChange={(val) => setSelectedCity(val)}
                 >
                   {cities
-                    .filter(
-                      (c) => !selectedRegion || c.region.id === selectedRegion
-                    )
+                    .filter((c) => !selectedRegion || c.region.id === selectedRegion)
                     .map((c) => (
                       <Option key={c.id} value={c.id}>
                         {c.name}
@@ -538,9 +529,7 @@ const AdminHome: React.FC = () => {
 
               {/* Ministry Number */}
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-700">
-                  الرقم الوزاري
-                </label>
+                <label className="text-sm font-medium text-gray-700">الرقم الوزاري</label>
                 <input
                   type="text"
                   placeholder="أدخل الرقم الوزاري"
@@ -552,9 +541,7 @@ const AdminHome: React.FC = () => {
 
               {/* Type */}
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-700">
-                  النوع
-                </label>
+                <label className="text-sm font-medium text-gray-700">النوع</label>
                 <Select
                   placeholder="اختر النوع"
                   className="w-full"
@@ -569,9 +556,7 @@ const AdminHome: React.FC = () => {
 
               {/* Gender */}
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-700">
-                  الجنس
-                </label>
+                <label className="text-sm font-medium text-gray-700">الجنس</label>
                 <Select
                   placeholder="اختر الجنس"
                   className="w-full"
@@ -585,9 +570,7 @@ const AdminHome: React.FC = () => {
 
               {/* School */}
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-700">
-                  اسم المدرسة
-                </label>
+                <label className="text-sm font-medium text-gray-700">اسم المدرسة</label>
                 <Select
                   placeholder="اختر المدرسة"
                   className="w-full"
@@ -612,7 +595,7 @@ const AdminHome: React.FC = () => {
                 <Button
                   type="primary"
                   className="flex justify-center items-center gap-1"
-                  onClick={handleSearch}
+                  onClick={() => handleSearch()}
                   loading={loading}
                 >
                   بحث <IoSearch className="text-lg" />
@@ -623,7 +606,7 @@ const AdminHome: React.FC = () => {
 
           <div className="flex flex-col-reverse xl:flex-row justify-between items-stretch  gap-6">
             <div
-              style={{ border: "1px solid #C2C1C1" }}
+              style={{ border: '1px solid #C2C1C1' }}
               className="p-4 rounded-lg w-full xl:w-[35%] flex justify-center items-center"
             >
               <div className="flex flex-col gap-4 w-full">
@@ -638,11 +621,11 @@ const AdminHome: React.FC = () => {
                 {/* Map Container */}
                 <div
                   className="border border-gray-300 rounded-lg overflow-hidden"
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                 >
                   {showSchoolsMap ? (
                     <SchoolsMap
-                      schools={schoolResults}
+                      schools={filteredSchools}
                       selectedSchoolId={selectedSchool}
                       onSelectSchool={(id) => handleSelectSchool(id)}
                     />
@@ -650,6 +633,7 @@ const AdminHome: React.FC = () => {
                     <SaudiMap
                       regions={region}
                       handleSearch={handleSearchRegion}
+                      selectedRegionId={selectedRegion}
                     />
                   )}
                 </div>
@@ -666,7 +650,7 @@ const AdminHome: React.FC = () => {
 
             <div className="flex flex-col-reverse lg:flex-row gap-6 w-full xl:w-[65%]">
               <div
-                style={{ border: "1px solid #C2C1C1" }}
+                style={{ border: '1px solid #C2C1C1' }}
                 className="flex-1  rounded-lg border border-[#C2C1C1] flex flex-col gap-4 w-full lg:w-1/2"
               >
                 <div className="flex gap-2 w-full px-4 pt-3 pb-0">
@@ -677,11 +661,7 @@ const AdminHome: React.FC = () => {
                         key={btn}
                         onClick={() => setSelectedAttend(btn)}
                         className={`flex-1 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 border border-[#07A869] border-solid  cursor-pointer
-                    ${
-                      isSelected
-                        ? "bg-[#07A869] text-white"
-                        : "bg-gray-100 text-[#15445A]"
-                    }
+                    ${isSelected ? 'bg-[#07A869] text-white' : 'bg-gray-100 text-[#15445A]'}
                   `}
                       >
                         {btn}
@@ -745,7 +725,7 @@ const AdminHome: React.FC = () => {
 
               <div
                 className="flex-1 rounded-lg border border-[#C2C1C1] flex flex-col  w-full lg:w-1/2"
-                style={{ border: "1px solid #C2C1C1" }}
+                style={{ border: '1px solid #C2C1C1' }}
               >
                 <div className="flex gap-2 w-full p-4">
                   {buttonsHr.map((btn) => {
@@ -755,11 +735,7 @@ const AdminHome: React.FC = () => {
                         key={btn}
                         onClick={() => setSelectedHr(btn)}
                         className={`flex-1 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 border border-[#07A869] border-solid  cursor-pointer
-                    ${
-                      isSelected
-                        ? "bg-[#07A869] text-white"
-                        : "bg-gray-100 text-[#15445A]"
-                    }
+                    ${isSelected ? 'bg-[#07A869] text-white' : 'bg-gray-100 text-[#15445A]'}
                   `}
                       >
                         {btn}
@@ -793,7 +769,7 @@ const AdminHome: React.FC = () => {
                         </div>
                       ))}
                     </>
-                  ) : selectedHr === "المدراس" ? (
+                  ) : selectedHr === 'المدراس' ? (
                     <div className="flex flex-col gap-2">
                       {loading ? (
                         <>
@@ -873,9 +849,7 @@ const AdminHome: React.FC = () => {
                               <p className="text-right text-[#15445A] text-base font-semibold mb-1">
                                 {student.grade}
                               </p>
-                              <p className="text-xs text-gray-500">
-                                {student.school}
-                              </p>
+                              <p className="text-xs text-gray-500">{student.school}</p>
                             </div>
                             <div className="w-16 h-16 bg-[#C2C1C1] rounded-full flex-shrink-0"></div>
                           </div>

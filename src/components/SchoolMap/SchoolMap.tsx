@@ -14,6 +14,7 @@ interface SchoolsMapProps {
   schools: School[];
   selectedSchoolId: number | null;
   onSelectSchool: (id: number) => void;
+  
 }
 
 const SchoolsMap: React.FC<SchoolsMapProps> = ({
