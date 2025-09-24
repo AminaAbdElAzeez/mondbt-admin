@@ -38,7 +38,7 @@ const getMenuItems = (role: number): MenuItem[] => {
     {
       key: 'excuse',
       to: 'excuse',
-      label: 'الاستئذان',
+      label: 'الاعذار',
       icon: <RiFileEditLine className="!text-xl" />,
     },
     // { key: 'discipline_statistics', to: 'discipline_statistics', label: <FormattedMessage id="discipline_statistics" />, icon: <BsBarChart className="!text-xl" /> },
@@ -61,7 +61,7 @@ const getMenuItems = (role: number): MenuItem[] => {
   {
     key: 'excuse',
     to: 'excuse',
-    label: 'الاستئذان',
+    label: 'الاعذار',
     icon: <RiFileEditLine className="!text-xl" />,
   },
     
@@ -80,7 +80,7 @@ const getMenuItems = (role: number): MenuItem[] => {
     {
       key: 'new-excuse',
       to: 'new-excuse',
-      label: 'الاستئذان',
+      label: 'الاعذار',
       icon: <RiFileEditLine className="!text-xl" />,
     },
   ];

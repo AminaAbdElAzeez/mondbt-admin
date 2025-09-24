@@ -232,7 +232,7 @@ const AdminExcuse: React.FC = () => {
               اصدار التقرير
             </button>
             <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
-              احصائيات الاستئذان
+              احصائيات الاعذار
             </h2>
           </div>
 

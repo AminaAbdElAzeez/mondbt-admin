@@ -94,7 +94,7 @@ const fineReasons = [
   },
   {
     id: '3',
-    name: 'استئذان أثناء اليوم الدراسي',
+    name: 'عذر أثناء اليوم الدراسي',
     value: '1,020,935',
   },
   {
@@ -177,9 +177,9 @@ const ManagerStudents: React.FC = () => {
       icon: '/riyal.png',
     },
     {
-      title: 'الاستئذان',
+      title: 'الاعذار',
       value: '12,650',
-      suffix: 'حالة استئذان',
+      suffix: 'حالة عذر',
       bg: 'bg-white',
       text: 'text-[#07A869]',
       borderStyle: { border: '1px solid #C2C1C1', background: '#f9f9f9' },

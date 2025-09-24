@@ -175,9 +175,9 @@ const ManagerHome: React.FC = () => {
               text: 'text-white',
             },
             {
-              title: 'الاستئذان',
+              title: 'الاعذار',
               value: apiData.excused,
-              suffix: 'حالة استئذان',
+              suffix: 'حالة عذر',
               bg: 'bg-white',
               text: 'text-[#07A869]',
               borderStyle: {
@@ -496,7 +496,7 @@ const ManagerHome: React.FC = () => {
                       bgColor="#E5E7EB"
                     />
                   )}
-                  <span className="text-[#15445A] text-lg font-medium">الاﺳﺘﺌﺬان</span>
+                  <span className="text-[#15445A] text-lg font-medium">الاعذار</span>
                 </div>
               </div>
             </div>

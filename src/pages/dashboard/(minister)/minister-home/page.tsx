@@ -128,9 +128,9 @@ const MinisterHome: React.FC = () => {
       icon: '/riyal.png',
     },
     {
-      title: 'الاستئذان',
+      title: 'الاعذار',
       value: '12,650',
-      suffix: 'حالة استئذان',
+      suffix: 'حالة عذر',
       bg: 'bg-white',
       text: 'text-[#07A869]',
       borderStyle: { border: '1px solid #C2C1C1', background: '#f9f9f9' },
@@ -369,9 +369,9 @@ const MinisterHome: React.FC = () => {
               text: 'text-white',
             },
             {
-              title: 'الاستئذان',
+              title: 'الاعذار',
               value: apiData.excused,
-              suffix: 'حالة استئذان',
+              suffix: 'حالة عذر',
               bg: 'bg-white',
               text: 'text-[#07A869]',
               borderStyle: {

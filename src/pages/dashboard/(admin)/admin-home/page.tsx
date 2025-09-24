@@ -165,9 +165,9 @@ const AdminHome: React.FC = () => {
               text: 'text-white',
             },
             {
-              title: 'الاستئذان',
+              title: 'الاعذار',
               value: apiData.excused,
-              suffix: 'حالة استئذان',
+              suffix: 'حالة عذر',
               bg: 'bg-white',
               text: 'text-[#07A869]',
               borderStyle: {
