@@ -19,6 +19,7 @@ import {
 } from 'recharts';
 import axios from 'utlis/library/helpers/axios';
 import RollerLoading from 'components/loading/roller';
+import SaudiMap from 'components/SaudiMap/SaudiMap';
 
 type CircularProgressProps = {
   percentage: number;
@@ -63,7 +64,7 @@ function CircularProgress({
         />
       </svg>
 
-      <span className="absolute text-3xl font-bold text-[#15445A]">%{percentage}</span>
+      <span className="absolute text-2xl font-bold text-[#15445A]">%{percentage}</span>
     </div>
   );
 }
@@ -101,6 +102,9 @@ const MinisterHome: React.FC = () => {
     'الأعذار',
     'الحضور',
   ];
+  const [topSchools, setTopSchools] = useState<
+    Array<{ school_id: number; score: number; school_name: string }>
+  >([]);
 
   const [statsData, setStatsData] = useState<
     Array<{
@@ -175,6 +179,26 @@ const MinisterHome: React.FC = () => {
   };
 
   useEffect(() => {
+    const fetchTopSchools = async () => {
+      try {
+        const res = await axios.get('/minister/home/top-schools', {
+          headers: {
+            Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+            'Accept-Language': 'ar',
+          },
+        });
+        if (res.data && Array.isArray(res.data)) {
+          setTopSchools(res.data);
+        }
+      } catch (err) {
+        console.error('Error fetching top schools', err);
+      }
+    };
+
+    fetchTopSchools();
+  }, [token]);
+
+  useEffect(() => {
     if (!fromDate || !toDate) return;
 
     if (dayjs(fromDate).isAfter(dayjs(toDate))) {
@@ -220,18 +244,67 @@ const MinisterHome: React.FC = () => {
       ? mapData?.absent || 0
       : mapData?.late || 0;
 
+  const region = [
+    { id: 1, code: 'SA01', name: 'الرياض' },
+    { id: 2, code: 'SA02', name: 'مكة المكرمة' },
+    { id: 3, code: 'SA03', name: 'المدينة المنورة' },
+    { id: 4, code: 'SA04', name: 'الشرقية' },
+    { id: 5, code: 'SA05', name: 'القصيم' },
+    { id: 6, code: 'SA06', name: 'حائل' },
+    { id: 7, code: 'SA07', name: 'تبوك' },
+    { id: 8, code: 'SA08', name: 'الحدود الشمالية' },
+    { id: 9, code: 'SA09', name: 'جازان' },
+    { id: 10, code: 'SA10', name: 'نجران' },
+    { id: 11, code: 'SA11', name: 'الباحة' },
+    { id: 12, code: 'SA12', name: 'الجوف' },
+    { id: 13, code: 'SA13', name: 'الشمال' },
+    { id: 14, code: 'SA14', name: 'عسير' },
+  ];
+
+  // تحويل كود الخريطة لكود backend مع تعديل الـ id للـ backend
+  const regionMap: Record<string, { code: string; id: number }> = {
+    SA01: { code: '01', id: 1 }, // الرياض
+    SA02: { code: '02', id: 2 }, // مكة
+    SA03: { code: '03', id: 3 }, // المدينة
+    SA04: { code: '05', id: 5 }, // الشرقية
+    SA05: { code: '04', id: 4 }, // القصيم
+    SA06: { code: '08', id: 8 }, // حائل
+    SA07: { code: '07', id: 7 }, // تبوك
+    SA08: { code: '09', id: 9 }, // الحدود الشمالية
+    SA09: { code: '10', id: 10 }, // جازان
+    SA10: { code: '11', id: 11 }, // نجران
+    SA11: { code: '12', id: 12 }, // الباحة
+    SA12: { code: '13', id: 13 }, // الجوف
+    SA13: { code: '13', id: 13 }, // Northern Borders → استخدم نفس الجوف إذا مش موجود
+    SA14: { code: '06', id: 6 }, // عسير
+  };
+
+  const [regions] = useState(
+    Object.entries(regionMap).map(([mapCode, { id }]) => ({
+      id,
+      code: mapCode,
+      name: region.find((r) => r.code === mapCode)?.name || '',
+    }))
+  );
+
+  const [selectedRegionId, setSelectedRegionId] = useState<number | null>(regions[0]?.id || null);
+
   useEffect(() => {
     if (!fromDateMap || !toDateMap) return;
+    if (!selectedRegionId) return;
 
     const fetchMapData = async () => {
       try {
         setLoadingMap(true);
-        const res = await axios.get(`minister/home/map?from=${fromDateMap}&to=${toDateMap}`, {
-          headers: {
-            Authorization: `Bearer ${token || localStorage.getItem('token')}`,
-            'Accept-Language': 'ar',
-          },
-        });
+        const res = await axios.get(
+          `minister/home/map?from=${fromDateMap}&to=${toDateMap}&region_id=${selectedRegionId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+              'Accept-Language': 'ar',
+            },
+          }
+        );
 
         if (res.data.status) {
           setMapData(res.data.data);
@@ -246,7 +319,7 @@ const MinisterHome: React.FC = () => {
     };
 
     fetchMapData();
-  }, [fromDateMap, toDateMap, token]);
+  }, [fromDateMap, toDateMap, token, selected, selectedRegionId]);
 
   const filterTypeMapping: Record<'سنة' | 'شهر' | 'يوم', number> = {
     سنة: 3,
@@ -350,6 +423,23 @@ const MinisterHome: React.FC = () => {
       ) : (
         <ConfigProvider locale={arEG} direction="rtl">
           <section dir="ltr" className="text-right px-2">
+            <div className="bg-[#07A869] rounded-lg px-4 py-3 flex items-center mb-5 gap-4">
+              <div className="flex-1 overflow-hidden relative">
+                <div className="marquee-content flex gap-8 w-max">
+                  {[...topSchools, ...topSchools, ...topSchools].map((school, index) => (
+                    <p
+                      key={`${school.school_id}-${index}`}
+                      className="text-white font-semibold w-max shrink-0 mb-0"
+                    >
+                      <bdi>{school.school_name}</bdi>
+                    </p>
+                  ))}
+                </div>
+              </div>
+              <p className="text-white font-semibold text-lg shrink-0 mb-0">
+                <bdi>أفضل 5 مدارس:</bdi>
+              </p>
+            </div>
             <div className=" mb-3 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start  gap-1 lg:gap-5">
               <div
                 className="flex rounded-3xl h-9 w-max  overflow-hidden"
@@ -507,61 +597,19 @@ const MinisterHome: React.FC = () => {
                   </div>
                 </div>
               </div>
-              {/* <div className="flex flex-col lg:flex-row justify-center lg:justify-between gap-4 lg:gap-8 py-4">
-                <div className="flex gap-2 items-center w-full lg:w-1/2">
-                  <input
-                    id="to"
-                    placeholder=" ربيع الأول 1447"
-                    type="text"
-                    className="border border-[#C2C1C1] border-t-[#C2C1C1] border-b-[#C2C1C1] border-l-[#C2C1C1] border-r-[#C2C1C1] border-solid rounded-lg px-3 py-2 w-40 text-center focus:outline-none focus:ring-1 focus:ring-[#07A869] placeholder:text-sm text-sm text-[#15445A] placeholder:text-[#15445A] placeholder:font-semibold bg-[#DDDDDD] flex-grow"
-                  />
-                  <label htmlFor="to" className="text-[#15445A] text-base font-semibold">
-                    الي
-                  </label>
-                </div>
-                <div className="flex gap-2 items-center w-full lg:w-1/2">
-                  <input
-                    id="from"
-                    placeholder=" ربيع الأول 1447"
-                    type="text"
-                    className="border border-[#C2C1C1] border-t-[#C2C1C1] border-b-[#C2C1C1] border-l-[#C2C1C1] border-r-[#C2C1C1] border-solid rounded-lg px-3 py-2 w-40 text-center focus:outline-none focus:ring-1 focus:ring-[#07A869] placeholder:text-sm text-sm text-[#15445A] placeholder:text-[#15445A] placeholder:font-semibold bg-[#DDDDDD] flex-grow"
-                  />
-                  <label htmlFor="from" className="text-[#15445A] text-base font-semibold">
-                    من
-                  </label>
-                </div>
-              </div> */}
+
               <div
                 style={{ border: '1px solid #C2C1C1' }}
                 className="p-4 rounded-lg w-full xl:w-1/2"
               >
-                <div className="px-6 flex justify-center items-center mb-2 lg:mb-0">
-                  <img src="/map.png" alt="map" className="w-full max-w-[500px] " />
-                </div>
-                {/* <div className="flex flex-col lg:flex-row justify-center lg:justify-between gap-4 lg:gap-8 mb-2 lg:mb-0 py-4">
-              <div className="flex gap-2 items-center w-full lg:w-1/2">
-                <input
-                  id="to"
-                  placeholder=" ربيع الأول 1447"
-                  type="text"
-                  className="border border-[#C2C1C1] border-t-[#C2C1C1] border-b-[#C2C1C1] border-l-[#C2C1C1] border-r-[#C2C1C1] border-solid rounded-lg px-3 py-2 w-40 text-center focus:outline-none focus:ring-1 focus:ring-[#07A869] placeholder:text-sm text-sm text-[#15445A] placeholder:text-[#15445A] placeholder:font-semibold bg-[#DDDDDD] flex-grow"
+                <h3 className="text-xl font-semibold text-[#07A869] mb-8">
+                  {regions.find((r) => r.id === selectedRegionId)?.name || 'اختر منطقة'}
+                </h3>
+                <SaudiMap
+                  regions={regions}
+                  selectedRegionId={selectedRegionId}
+                  handleSearch={setSelectedRegionId}
                 />
-                <label htmlFor="to" className="text-[#15445A] text-base font-semibold">
-                  الي
-                </label>
-              </div>
-              <div className="flex gap-2 items-center w-full lg:w-1/2">
-                <input
-                  id="from"
-                  placeholder=" ربيع الأول 1447"
-                  type="text"
-                  className="border border-[#C2C1C1] border-t-[#C2C1C1] border-b-[#C2C1C1] border-l-[#C2C1C1] border-r-[#C2C1C1] border-solid rounded-lg px-3 py-2 w-40 text-center focus:outline-none focus:ring-1 focus:ring-[#07A869] placeholder:text-sm text-sm text-[#15445A] placeholder:text-[#15445A] placeholder:font-semibold bg-[#DDDDDD] flex-grow"
-                />
-                <label htmlFor="from" className="text-[#15445A] text-base font-semibold">
-                  من
-                </label>
-              </div>
-            </div> */}
 
                 <div className="flex flex-col-reverse lg:flex-row justify-center lg:justify-between gap-4 lg:gap-8 py-4 mt-5">
                   <div className="flex gap-2 items-center w-full lg:w-1/2">

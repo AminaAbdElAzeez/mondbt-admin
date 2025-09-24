@@ -20,7 +20,6 @@ import MinisterAttendance from './pages/dashboard/(minister)/minister-attendance
 import ParentHome from './pages/dashboard/(parent)/parent-home/page';
 import DisciplineStatistics from './pages/dashboard/(admin)/admin-home/page';
 import MinisterHome from './pages/dashboard/(minister)/minister-home/page';
-import Departure from './pages/dashboard/(admin)/departure/page';
 import ExcuseStatus from './pages/dashboard/(parent)/excuse-status/excuse-status';
 import PayFines from './pages/dashboard/(parent)/pay-fines/pay-fines';
 import Students from './pages/dashboard/(parent)/student/page';
@@ -33,15 +32,16 @@ import PrivateRoute from 'components/PrivateRoute/PrivateRoute';
 import ParentDashboardLayout from './pages/dashboard/(parent)/layout';
 import MinisterDashboardLayout from './pages/dashboard/(minister)/layout';
 import MinisterAbsent from './pages/dashboard/(minister)/minister-absent/page';
-import MinisterExcuse from './pages/dashboard/(minister)/excuse';
-import MinisterLate from './pages/dashboard/(minister)/late/page';
+import MinisterExcuse from './pages/dashboard/(minister)/minister-excuse/excuse';
+import MinisterLate from './pages/dashboard/(minister)/minister-late/page';
 import AdminAttendance from './pages/dashboard/(admin)/admin-attendance/page';
 import AdminAbsent from './pages/dashboard/(admin)/admin-absent/page';
-import AdminExcuse from './pages/dashboard/(admin)/excuse';
-import AdminLate from './pages/dashboard/(admin)/late/page';
+import AdminExcuse from './pages/dashboard/(admin)/admin-excuse/excuse';
+import AdminLate from './pages/dashboard/(admin)/admin-late/page';
 import ManagerHome from './pages/dashboard/(manager)/manager-home/page';
 import ManagerDashboardLayout from './pages/dashboard/(manager)/layout';
 import ManagerStudents from './pages/dashboard/(manager)/student/page';
+import PayTotalFines from './pages/dashboard/(parent)/pay-totalFines/pay-totalFines';
 
 const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
@@ -114,7 +114,9 @@ const router = createBrowserRouter([
               { path: 'home', element: <ParentHome /> },
               { path: 'student/:id', element: <Students /> },
               { path: 'student/:id/excuses/:id', element: <ExcuseStatus /> },
-              { path: 'pay-fines', element: <PayFines /> },
+              { path: 'student/:id/pay-fines', element: <PayFines /> },
+              { path: 'pay-total-fines', element: <PayTotalFines /> },
+
               { path: 'new-excuse', element: <NewExcuse /> },
             ],
           },

@@ -24,6 +24,7 @@ interface Child {
   name: string;
   grade: string;
   school?: string;
+  image?: string;
 }
 
 const ParentHome: React.FC = () => {
@@ -47,6 +48,9 @@ const ParentHome: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { token } = useSelector((state: any) => state.Auth);
+   const [topSchools, setTopSchools] = useState<
+      Array<{ school_id: number; score: number; school_name: string }>
+    >([]);
 
   const columns: TableColumnsType<Excuse> = [
     {
@@ -103,6 +107,26 @@ const ParentHome: React.FC = () => {
       ),
     },
   ];
+
+  useEffect(() => {
+    const fetchTopSchools = async () => {
+      try {
+        const res = await axios.get('/parent/top-schools', {
+          headers: {
+            Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+            'Accept-Language': 'ar',
+          },
+        });
+        if (res.data && Array.isArray(res.data)) {
+          setTopSchools(res.data);
+        }
+      } catch (err) {
+        console.error('Error fetching top schools', err);
+      }
+    };
+
+    fetchTopSchools();
+  }, [token]);
 
   // fetch children
   useEffect(() => {
@@ -232,6 +256,24 @@ const ParentHome: React.FC = () => {
         <RollerLoading />
       ) : (
         <section dir="ltr" className="text-right px-2">
+          <div className="bg-[#07A869] rounded-lg px-4 py-3 flex items-center mb-5 gap-4">
+            <div className="flex-1 overflow-hidden relative">
+              <div className="marquee-content flex gap-8 w-max">
+                {[...topSchools, ...topSchools, ...topSchools].map((school, index) => (
+                  <p
+                    key={`${school.school_id}-${index}`}
+                    className="text-white font-semibold w-max shrink-0 mb-0"
+                  >
+                    <bdi>{school.school_name}</bdi>
+                  </p>
+                ))}
+              </div>
+            </div>
+            <p className="text-white font-semibold text-lg shrink-0 mb-0">
+              <bdi>أفضل 5 مدارس:</bdi>
+            </p>
+          </div>
+
           <div className=" mb-1 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start  gap-1 lg:gap-5">
             <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
               أبنائي
@@ -253,7 +295,11 @@ const ParentHome: React.FC = () => {
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div className="w-max flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#D9D9D9]"></div>
+                        <img
+                          src={child.image}
+                          alt="student img"
+                          className="w-12 h-12 rounded-full bg-[#D9D9D9]"
+                        />
                       <span className="text-[#07A869] text-lg font-semibold">{child.name}</span>
                     </div>
                     <BsThreeDotsVertical className="text-2xl text-[#15445A] cursor-pointer hover:text-[#07A869] transition-colors duration-500" />
@@ -337,7 +383,7 @@ const ParentHome: React.FC = () => {
 
             <div className="flex justify-center md:justify-start mb-1.5">
               <Link
-                to="/parent/pay-fines"
+                to="/parent/pay-total-fines"
                 className="bg-[#07A869] text-[#fff] text-sm sm:text-base font-semibold px-8 py-2 rounded-3xl outline-none border border-[#07A869] border-solid cursor-pointer hover:text-[#07A869] hover:bg-[#fff] transition-colors duration-500 "
               >
                 دفع الغرامات

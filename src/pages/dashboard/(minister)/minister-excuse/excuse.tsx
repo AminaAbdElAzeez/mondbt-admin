@@ -71,15 +71,15 @@ function CircularProgress({
   );
 }
 
-const AdminAttendance: React.FC = () => {
+const MinisterExcuse: React.FC = () => {
   const [selected, setSelected] = useState<'سنة' | 'شهر' | 'يوم'>('يوم');
   const buttons: Array<'سنة' | 'شهر' | 'يوم'> = ['سنة', 'شهر', 'يوم'];
   const [selectedBottom, setSelectedBottom] = useState<'سنة' | 'شهر' | 'يوم'>('يوم');
-  const buttonsBottom: Array<'سنة' | 'شهر' | 'يوم'> = ['سنة', 'شهر', 'يوم'];
-
-  const { token } = useSelector((state: any) => state.Auth);
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const buttonsBottom: Array<'سنة' | 'شهر' | 'يوم'> = ['سنة', 'شهر', 'يوم'];
+  const { token } = useSelector((state: any) => state.Auth);
 
   const [attendanceData, setAttendanceData] = useState({
     all: 0,
@@ -148,7 +148,7 @@ const AdminAttendance: React.FC = () => {
         setLoading(true);
         const type = filterTypeMapping[selected];
         const res = await axios.get(
-          `/admin/attendance?filter[type]=${type}&region_id=${selectedRegionId}`,
+          `/minister/excuses?filter[type]=${type}&region_id=${selectedRegionId}`,
           {
             headers: {
               Authorization: `Bearer ${token || localStorage.getItem('token')}`,
@@ -201,12 +201,12 @@ const AdminAttendance: React.FC = () => {
         <RollerLoading />
       ) : (
         <section dir="ltr" className="text-right px-2">
-          <div className="mb-5 md:mb-3 flex flex-col-reverse md:flex-row justify-end items-end lg:items-start gap-1 md:gap-2">
+          <div className=" mb-5 md:mb-3 flex flex-col-reverse md:flex-row justify-end items-end lg:items-start gap-1 md:gap-2">
             <button
               onClick={async () => {
                 try {
                   const res = await axios.get(
-                    `/exports/attendance?filter[type]=${filterTypeMapping[selected]}&region_id=${selectedRegionId}`,
+                    `/exports/excuses?filter[type]=${filterTypeMapping[selected]}&region_id=${selectedRegionId}`,
                     {
                       headers: {
                         Authorization: `Bearer ${token || localStorage.getItem('token')}`,
@@ -232,8 +232,8 @@ const AdminAttendance: React.FC = () => {
             >
               اصدار التقرير
             </button>
-            <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500 ">
-              احصائيات الحضور
+            <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
+              احصائيات الاستئذان
             </h2>
           </div>
 
@@ -252,8 +252,7 @@ const AdminAttendance: React.FC = () => {
             >
               <h3 className="text-xl font-semibold text-[#07A869] mb-8">
                 {regions.find((r) => r.id === selectedRegionId)?.name || 'اختر منطقة'}
-              </h3>
-
+              </h3>{' '}
               <div
                 className="flex rounded-3xl h-9 w-full sm:w-max  overflow-hidden mx-auto"
                 style={{ border: '1px solid #C2C1C1' }}
@@ -276,7 +275,6 @@ const AdminAttendance: React.FC = () => {
                   );
                 })}
               </div>
-
               <div className="mt-6 grid max-[400px]:grid-cols-1 min-[401px]:grid-cols-2  md:grid-cols-3  gap-6 justify-items-center">
                 {loading ? (
                   Array.from({ length: 6 }).map((_, i) => (
@@ -345,4 +343,4 @@ const AdminAttendance: React.FC = () => {
   );
 };
 
-export default AdminAttendance;
+export default MinisterExcuse;

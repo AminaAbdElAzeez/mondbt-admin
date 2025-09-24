@@ -1,26 +1,60 @@
-import RollerLoading from "components/loading/roller";
-import { useEffect, useState } from "react";
+import RollerLoading from 'components/loading/roller';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import axios from 'utlis/library/helpers/axios';
 
-const PayFines: React.FC = () => {
-  const [method, setMethod] = useState("credit");
-  const [loading, setLoading] = useState(false);
+type Fine = {
+  id: number;
+  type: string;
+  amount: number;
+};
+
+const PayTotalFines: React.FC = () => {
+  const [method, setMethod] = useState('credit');
+  const [isLoading, setIsLoading] = useState(false);
+  const [totalFines, setTotalFines] = useState<number>(0);
+  const { token } = useSelector((state: any) => state.Auth);
+  const [fine, setFine] = useState<number>(0);
+  const [loadingFine, setLoadingFine] = useState(false);
 
   const options = [
-    { id: "bank", label: "تحويل بنكي" },
-    { id: "credit", label: "بطاقة ائتمان" },
-    { id: "apple", label: "Apple Pay" },
-    { id: "sadad", label: "فاتورة سداد" },
+    { id: 'bank', label: 'تحويل بنكي' },
+    { id: 'credit', label: 'بطاقة ائتمان' },
+    { id: 'apple', label: 'Apple Pay' },
+    { id: 'sadad', label: 'فاتورة سداد' },
   ];
+
+  // fetch total fine
+  useEffect(() => {
+    const fetchFine = async () => {
+      try {
+        setLoadingFine(true);
+        const res = await axios.get(`parent/totalfine`, {
+          headers: {
+            Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+          },
+        });
+        setFine(res.data?.data?.fine_amount || 0);
+      } catch (error) {
+        console.error('Error fetching fine', error);
+      } finally {
+        setLoadingFine(false);
+      }
+    };
+
+    fetchFine();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        setIsLoading(true);
+        await new Promise((resolve) => setTimeout(resolve, 600));
       } catch (err) {
         console.error(err);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
@@ -29,7 +63,7 @@ const PayFines: React.FC = () => {
 
   return (
     <>
-      {loading ? (
+      {isLoading ? (
         <RollerLoading />
       ) : (
         <section dir="ltr" className="text-right px-2">
@@ -41,14 +75,14 @@ const PayFines: React.FC = () => {
 
           <div className="flex flex-col md:flex-row justify-center md:justify-between  items-end md:items-start mb-3 gap-1 w-full lg:w-[67%] ml-auto">
             <div className="flex items-center gap-2 justify-end text-[#07A869]">
-              <img
-                src="/green-riyal.png"
-                alt="icon"
-                className="w-7 md:w-9 h-auto"
-              />
-              <span className="text-[#07A869]  text-2xl font-semibold">
-                1,020,935
-              </span>
+              <img src="/green-riyal.png" alt="icon" className="w-7 md:w-9 h-auto" />
+              {loadingFine ? (
+                <span className="text-[#07A869]  text-xl">جار التحميل...</span>
+              ) : (
+                <span className="text-[#07A869]  text-2xl font-semibold">
+                  {fine.toLocaleString()}
+                </span>
+              )}{' '}
             </div>
             <h3 className="text-[#07A869] hover:text-[#15445A] transition-colors duration-500  text-xl sm:text-xl font-semibold">
               <bdi>مجموع الغرامات:</bdi>
@@ -65,18 +99,12 @@ const PayFines: React.FC = () => {
             {options.map((opt) => (
               <label
                 key={opt.id}
-                style={{ border: "1px solid #DDDDDD" }}
+                style={{ border: '1px solid #DDDDDD' }}
                 className={`flex items-center justify-end gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all duration-300
-        ${
-          method === opt.id
-            ? "border-[#07A869] bg-[#07A869]"
-            : "border-gray-300 bg-white"
-        }`}
+        ${method === opt.id ? 'border-[#07A869] bg-[#07A869]' : 'border-gray-300 bg-white'}`}
               >
                 <span
-                  className={`${
-                    method === opt.id ? "text-white" : "text-[#15445A]"
-                  } font-medium`}
+                  className={`${method === opt.id ? 'text-white' : 'text-[#15445A]'} font-medium`}
                 >
                   {opt.label}
                 </span>
@@ -93,14 +121,12 @@ const PayFines: React.FC = () => {
                 <span
                   className={`w-5 h-5 rounded-full flex items-center justify-center transition-all duration-300 border-solid
           ${
-            method === opt.id
-              ? "bg-white border border-white"
-              : "bg-white border border-[#15445A]"
+            method === opt.id ? 'bg-white border border-white' : 'bg-white border border-[#15445A]'
           }`}
                 >
                   <span
                     className={`w-4 h-4 rounded-full flex items-center justify-center transition-all duration-300
-            ${method === opt.id ? "bg-[#07A869]" : "bg-[#fff]"}`}
+            ${method === opt.id ? 'bg-[#07A869]' : 'bg-[#fff]'}`}
                   >
                     {method === opt.id && (
                       <span className="w-2.5 h-2.5 rounded-full bg-white"></span>
@@ -122,4 +148,4 @@ const PayFines: React.FC = () => {
   );
 };
 
-export default PayFines;
+export default PayTotalFines;

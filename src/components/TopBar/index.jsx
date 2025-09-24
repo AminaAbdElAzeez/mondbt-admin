@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 function TopBar({ collapsed }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const name = localStorage.getItem('name') || 'المستخدم';
+  const role = localStorage.getItem('role');
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const today = new Date();
@@ -37,6 +38,22 @@ function TopBar({ collapsed }) {
     hijriParts.find((p) => p.type === 'month')?.value
   }/${hijriParts.find((p) => p.type === 'day')?.value} هـ`;
 
+  const getGreeting = () => {
+    switch (role) {
+      case '1':
+        return 'المشرف العام';
+      case '2':
+        return 'معالي الوزير';
+      case '3':
+        return 'مدير المدرسة';
+      case '4':
+        return 'ولي الأمر';
+      default:
+        return '';
+    }
+  };
+  const greeting = getGreeting();
+
   return (
     <section
       className={`
@@ -53,7 +70,10 @@ function TopBar({ collapsed }) {
       <div className="flex lg:hidden items-center justify-between w-full">
         <h5 className="text-[#15445A] text-base hover:text-[#07A869] transition-colors p-0 m-0">
           {/* اهلا معالي الوزير */}
-          <bdi> اهلا {name}</bdi>
+          <bdi>
+            اهلا {greeting} 
+            {/* {name} */}
+          </bdi>{' '}
         </h5>
 
         <button
@@ -112,7 +132,6 @@ function TopBar({ collapsed }) {
                 تسجيل الخروج
               </button>
 
-              
               <p className="text-[#15445A] text-sm p-0 mb-2">
                 <strong className="text-[#07A869] mx-1">التاريخ:</strong>{' '}
                 {hijri.replaceAll('-', '/')}
@@ -131,7 +150,10 @@ function TopBar({ collapsed }) {
         <div className="flex items-center gap-5">
           <h5 className="text-[#15445A] text-base hover:text-[#07A869] transition-colors duration-500 p-0 m-0">
             {/* اهلا معالي الوزير */}
-            <bdi> اهلا {name}</bdi>
+            <bdi>
+              اهلا {greeting} 
+              {/* {name} */}
+            </bdi>{' '}
           </h5>
           {/* <Switch
             checkedChildren="م"

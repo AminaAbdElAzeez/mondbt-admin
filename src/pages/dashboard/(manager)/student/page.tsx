@@ -22,6 +22,8 @@ type StudentData = {
   name: string;
   grade: string;
   school: string;
+    image?: string;
+
 };
 type Reward = {
   month: number;
@@ -360,7 +362,10 @@ const ManagerStudents: React.FC = () => {
             )}
 
             {/* الصورة */}
-            <div className="w-20 h-20 bg-[#C2C1C1] rounded-full shrink-0"></div>
+            {/* <div className="w-20 h-20 bg-[#C2C1C1] rounded-full shrink-0"></div> */}
+            {student && (
+              <img src={student.image} alt="student img" className="w-20 h-20 rounded-full" />
+            )}
           </div>
 
           <div className="flex flex-col xl:flex-row justify-between  items-stretch  gap-6 mb-6">

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import axios from "utlis/library/helpers/axios";
-import "antd/dist/reset.css";
-import { useSelector } from "react-redux";
-import { FiEye } from "react-icons/fi";
-import { Link } from "react-router-dom";
-import RollerLoading from "components/loading/roller";
+import React, { useEffect, useState } from 'react';
+import axios from 'utlis/library/helpers/axios';
+import 'antd/dist/reset.css';
+import { useSelector } from 'react-redux';
+import { FiEye } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
+import RollerLoading from 'components/loading/roller';
 
 type CircularProgressProps = {
   percentage: number;
@@ -18,8 +18,8 @@ function CircularProgress({
   percentage,
   size = 200,
   strokeWidth = 20,
-  color = "#07A869",
-  bgColor = "#D9D9D9", // gray-200
+  color = '#07A869',
+  bgColor = '#D9D9D9', // gray-200
 }: CircularProgressProps) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -49,25 +49,21 @@ function CircularProgress({
         />
       </svg>
 
-      <span className="absolute text-lg font-bold text-[#15445A]">
-        %{percentage}
-      </span>
+      <span className="absolute text-lg font-bold text-[#15445A]">%{percentage.toFixed(2)}</span>
     </div>
   );
 }
 
 const ManagerHome: React.FC = () => {
-  const [regions, setRegions] = useState<Array<{ id: number; name: string }>>(
+  const [regions, setRegions] = useState<Array<{ id: number; name: string }>>([]);
+  const [cities, setCities] = useState<Array<{ id: number; name: string; region: { id: number } }>>(
     []
   );
-  const [cities, setCities] = useState<
-    Array<{ id: number; name: string; region: { id: number } }>
-  >([]);
   const [schools, setSchools] = useState<Array<any>>([]);
 
   const [selectedRegion, setSelectedRegion] = useState<number | null>(null);
   const [selectedCity, setSelectedCity] = useState<number | null>(null);
-  const [ministryNumber, setMinistryNumber] = useState<string>("");
+  const [ministryNumber, setMinistryNumber] = useState<string>('');
   const [selectedType, setSelectedType] = useState<number | null>(null);
   const [selectedGender, setSelectedGender] = useState<number | null>(null);
   const [selectedSchool, setSelectedSchool] = useState<number | null>(null);
@@ -80,19 +76,20 @@ const ManagerHome: React.FC = () => {
     Array<{
       grade_id: number;
       grade_name: string;
-      students: Array<{ id: number; name: string }>;
+      students: Array<{ id: number; name: string; image?: string }>;
     }>
   >([]);
   const [selectedStudentStats, setSelectedStudentStats] = useState({
     present: 0,
     absent: 0,
     rewards: 0,
+    excuses: 0,
   });
   const [statsLoading, setStatsLoading] = useState(true);
   const [statsLoadingStudent, setStatsLoadingStudent] = useState(true);
 
-  const [selected, setSelected] = useState<"سنة" | "شهر" | "يوم">("يوم");
-  const buttons: Array<"سنة" | "شهر" | "يوم"> = ["سنة", "شهر", "يوم"];
+  const [selected, setSelected] = useState<'سنة' | 'شهر' | 'يوم'>('يوم');
+  const buttons: Array<'سنة' | 'شهر' | 'يوم'> = ['سنة', 'شهر', 'يوم'];
   const [animatedStats, setAnimatedStats] = useState({
     present: 0,
     absent: 0,
@@ -127,7 +124,7 @@ const ManagerHome: React.FC = () => {
     }>
   >([]);
 
-  const filterTypeMapping: Record<"سنة" | "شهر" | "يوم", number> = {
+  const filterTypeMapping: Record<'سنة' | 'شهر' | 'يوم', number> = {
     سنة: 3,
     شهر: 2,
     يوم: 1,
@@ -141,70 +138,85 @@ const ManagerHome: React.FC = () => {
         setStatsLoading(true);
 
         const type = filterTypeMapping[selected]; // 1 يوم، 2 شهر، 3 سنة
-        const res = await axios.get(
-          `manager/home/statistic?filter[type]=${type}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-              "Accept-Language": "ar",
-            },
-          }
-        );
+        const res = await axios.get(`manager/home/statistic?filter[type]=${type}`, {
+          headers: {
+            Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+            'Accept-Language': 'ar',
+          },
+        });
 
         if (res.data.status) {
           const apiData = res.data.data;
 
           const formattedStats = [
             {
-              title: "الحضور",
+              title: 'الحضور',
               value: apiData.present,
-              suffix: "طالب وطالبة",
-              bg: "bg-[#07A869]",
-              text: "text-white",
+              suffix: 'طالب وطالبة',
+              bg: 'bg-[#07A869]',
+              text: 'text-white',
             },
             {
-              title: "الغياب",
+              title: 'الغياب',
               value: apiData.absent,
-              suffix: "طالب وطالبة",
-              bg: "bg-white",
-              text: "text-[#07A869]",
+              suffix: 'طالب وطالبة',
+              bg: 'bg-white',
+              text: 'text-[#07A869]',
               borderStyle: {
-                border: "1px solid #C2C1C1",
-                background: "#f9f9f9",
+                border: '1px solid #C2C1C1',
+                background: '#f9f9f9',
               },
             },
             {
-              title: "التأخير",
+              title: 'التأخير',
               value: apiData.late,
-              suffix: "حالة تأخير",
-              bg: "bg-[#07A869]",
-              text: "text-white",
+              suffix: 'حالة تأخير',
+              bg: 'bg-[#07A869]',
+              text: 'text-white',
             },
             {
-              title: "الاستئذان",
+              title: 'الاستئذان',
               value: apiData.excused,
-              suffix: "حالة استئذان",
-              bg: "bg-white",
-              text: "text-[#07A869]",
+              suffix: 'حالة استئذان',
+              bg: 'bg-white',
+              text: 'text-[#07A869]',
               borderStyle: {
-                border: "1px solid #C2C1C1",
-                background: "#f9f9f9",
+                border: '1px solid #C2C1C1',
+                background: '#f9f9f9',
               },
             },
+            // {
+            //   title: "الغرامات",
+            //   value: apiData.fines.toLocaleString(),
+            //   suffix: "ريال سعودي",
+            //   bg: "bg-[#07A869]",
+            //   text: "text-white",
+            //   icon: "/riyal.png",
+            // },
             {
-              title: "الغرامات",
-              value: apiData.fines.toLocaleString(),
-              suffix: "ريال سعودي",
-              bg: "bg-[#07A869]",
-              text: "text-white",
-              icon: "/riyal.png", // الصورة موجودة فقط لكارت الغرامات
+              title: 'الغياب بعذر',
+              value: apiData.excused.toLocaleString(),
+              suffix: 'طالب وطالبة',
+              bg: 'bg-[#07A869]',
+              text: 'text-white',
+            },
+            {
+              title: 'الغياب بدون عذر',
+              value: apiData.withoutExcused.toLocaleString(),
+              suffix: 'طالب وطالبة',
+              bg: 'bg-white',
+              text: 'text-[#07A869]',
+              borderStyle: {
+                border: '1px solid #C2C1C1',
+                background: '#f9f9f9',
+              },
             },
           ];
 
           setStatsData(formattedStats);
         }
       } catch (error) {
-        console.error("Error fetching stats", error);
+        console.error('Error fetching stats', error);
       } finally {
         setStatsLoading(false);
         setLoading(false);
@@ -217,17 +229,17 @@ const ManagerHome: React.FC = () => {
   useEffect(() => {
     const fetchTopSchools = async () => {
       try {
-        const res = await axios.get("/manager/home/top-schools", {
+        const res = await axios.get('/manager/home/top-schools', {
           headers: {
-            Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-            "Accept-Language": "ar",
+            Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+            'Accept-Language': 'ar',
           },
         });
         if (res.data && Array.isArray(res.data)) {
           setTopSchools(res.data);
         }
       } catch (err) {
-        console.error("Error fetching top schools", err);
+        console.error('Error fetching top schools', err);
       }
     };
 
@@ -237,15 +249,15 @@ const ManagerHome: React.FC = () => {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const res = await axios.get("/manager/home/students", {
+        const res = await axios.get('/manager/home/students', {
           headers: {
-            Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-            "Accept-Language": "ar",
+            Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+            'Accept-Language': 'ar',
           },
         });
         if (res.data) setGrades(res.data);
       } catch (err) {
-        console.error("Error fetching students", err);
+        console.error('Error fetching students', err);
       }
     };
 
@@ -255,24 +267,22 @@ const ManagerHome: React.FC = () => {
   const handleViewStudent = async (studentId: number) => {
     try {
       setStatsLoadingStudent(true);
-      const res = await axios.get(
-        `/manager/home/student/statistics/${studentId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-            "Accept-Language": "ar",
-          },
-        }
-      );
+      const res = await axios.get(`/manager/home/student/statistics/${studentId}`, {
+        headers: {
+          Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+          'Accept-Language': 'ar',
+        },
+      });
       const stats = res.data.data;
 
       setSelectedStudentStats({
         present: stats.present || 0,
         absent: stats.absent || 0,
         rewards: stats.rewards || 0,
+        excuses: stats.excuses || 0,
       });
     } catch (err) {
-      console.error("Error fetching student stats", err);
+      console.error('Error fetching student stats', err);
     } finally {
       setStatsLoadingStudent(false);
     }
@@ -294,7 +304,7 @@ const ManagerHome: React.FC = () => {
   }, []);
   return (
     <>
-      {" "}
+      {' '}
       {isLoading ? (
         <RollerLoading />
       ) : (
@@ -302,18 +312,14 @@ const ManagerHome: React.FC = () => {
           <div className="bg-[#07A869] rounded-lg px-4 py-3 flex items-center mb-8 gap-4">
             <div className="flex-1 overflow-hidden relative">
               <div className="marquee-content flex gap-8 w-max">
-                {[...topSchools, ...topSchools, ...topSchools].map(
-                  (school, index) => (
-                    <p
-                      key={`${school.school_id}-${index}`}
-                      className="text-white font-semibold w-max shrink-0 mb-0"
-                    >
-                      <bdi>
-                        {school.school_name} ({school.score}%)
-                      </bdi>
-                    </p>
-                  )
-                )}
+                {[...topSchools, ...topSchools, ...topSchools].map((school, index) => (
+                  <p
+                    key={`${school.school_id}-${index}`}
+                    className="text-white font-semibold w-max shrink-0 mb-0"
+                  >
+                    <bdi>{school.school_name}</bdi>
+                  </p>
+                ))}
               </div>
             </div>
             <p className="text-white font-semibold text-lg shrink-0 mb-0">
@@ -324,7 +330,7 @@ const ManagerHome: React.FC = () => {
           <div className=" mb-3 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start  gap-1 lg:gap-5">
             <div
               className="flex rounded-3xl h-9 w-max  overflow-hidden"
-              style={{ border: "1px solid #C2C1C1" }}
+              style={{ border: '1px solid #C2C1C1' }}
             >
               {buttons.map((btn) => {
                 const isSelected = selected === btn;
@@ -334,12 +340,8 @@ const ManagerHome: React.FC = () => {
                     onClick={() => setSelected(btn)}
                     className={`
               text-base h-8.5 w-[76px] sm:w-24 rounded-3xl transition-all duration-200 cursor-pointer
-              ${
-                isSelected
-                  ? "bg-[#07A869] text-white"
-                  : "bg-transparent text-[#C2C1C1]"
-              }
-              hover:${isSelected ? "brightness-110" : "bg-gray-100"}
+              ${isSelected ? 'bg-[#07A869] text-white' : 'bg-transparent text-[#C2C1C1]'}
+              hover:${isSelected ? 'brightness-110' : 'bg-gray-100'}
               outline-none border-none
             `}
                   >
@@ -353,10 +355,7 @@ const ManagerHome: React.FC = () => {
             </h2>
           </div>
 
-          <div
-            className="flex justify-between items-center flex-wrap gap-5 py-2 mb-5"
-            dir="rtl"
-          >
+          <div className="flex justify-between items-center flex-wrap gap-5 py-2 mb-5" dir="rtl">
             {statsLoading
               ? Array.from({ length: 5 }).map((_, i) => (
                   <div
@@ -374,22 +373,12 @@ const ManagerHome: React.FC = () => {
                     className={`rounded-xl shadow-md p-4 ${item.bg} transform transition duration-300 hover:scale-105 hover:shadow-xl flex-grow w-[160px] text-right`}
                     style={item.borderStyle || {}}
                   >
-                    <h3 className={`${item.text} text-lg font-medium mb-1`}>
-                      {item.title}
-                    </h3>
+                    <h3 className={`${item.text} text-lg font-medium mb-1`}>{item.title}</h3>
                     <div className="flex items-center gap-2 justify-start">
-                      {item.icon && (
-                        <img src={item.icon} alt="icon" className="w-7 h-7" />
-                      )}
-                      <span className={`${item.text} text-2xl font-semibold`}>
-                        {item.value}
-                      </span>
+                      {item.icon && <img src={item.icon} alt="icon" className="w-7 h-7" />}
+                      <span className={`${item.text} text-2xl font-semibold`}>{item.value}</span>
                     </div>
-                    {item.suffix && (
-                      <p className={`${item.text} text-base my-1`}>
-                        {item.suffix}
-                      </p>
-                    )}
+                    {item.suffix && <p className={`${item.text} text-base my-1`}>{item.suffix}</p>}
                   </div>
                 ))}
           </div>
@@ -400,7 +389,7 @@ const ManagerHome: React.FC = () => {
           >
             <div
               className=" rounded-lg border flex flex-col gap-4 !w-full lg:!w-1/2"
-              style={{ border: "1px solid #C2C1C1" }}
+              style={{ border: '1px solid #C2C1C1' }}
               dir="ltr"
             >
               <div className="flex-shrink-0">
@@ -440,7 +429,12 @@ const ManagerHome: React.FC = () => {
                               {grade.grade_name}
                             </p>
                           </div>
-                          <div className="w-16 h-16 bg-[#C2C1C1] rounded-full flex-shrink-0"></div>
+                          <img
+                            src={student.image}
+                            alt="student img"
+                            className="w-14 h-14 rounded-full"
+                          />
+                          {/* <div className="w-16 h-16 bg-[#C2C1C1] rounded-full flex-shrink-0"></div> */}
                         </div>
                       </div>
                     ))}
@@ -449,7 +443,7 @@ const ManagerHome: React.FC = () => {
               </div>
             </div>
             <div
-              style={{ border: "1px solid #C2C1C1" }}
+              style={{ border: '1px solid #C2C1C1' }}
               dir="ltr"
               className=" rounded-lg border flex flex-col gap-4 !w-full lg:!w-1/2 "
             >
@@ -472,9 +466,7 @@ const ManagerHome: React.FC = () => {
                       bgColor="#E5E7EB"
                     />
                   )}
-                  <span className="text-[#15445A] text-lg font-medium">
-                    الحضور
-                  </span>
+                  <span className="text-[#15445A] text-lg font-medium">الحضور</span>
                 </div>
 
                 <div className="flex items-center gap-4 justify-between px-4 mb-8">
@@ -489,9 +481,7 @@ const ManagerHome: React.FC = () => {
                       bgColor="#E5E7EB"
                     />
                   )}
-                  <span className="text-[#15445A] text-lg font-medium">
-                    الغياب
-                  </span>
+                  <span className="text-[#15445A] text-lg font-medium">الغياب</span>
                 </div>
 
                 <div className="flex items-center gap-4 justify-between px-4 mb-8">
@@ -499,16 +489,14 @@ const ManagerHome: React.FC = () => {
                     <div className="w-[90px] h-[90px] rounded-full bg-gray-200 animate-pulse" />
                   ) : (
                     <CircularProgress
-                      percentage={selectedStudentStats.rewards}
+                      percentage={selectedStudentStats.excuses}
                       size={100}
                       strokeWidth={12}
                       color="#07A869"
                       bgColor="#E5E7EB"
                     />
                   )}
-                  <span className="text-[#15445A] text-lg font-medium">
-                    المكافآت
-                  </span>
+                  <span className="text-[#15445A] text-lg font-medium">الاﺳﺘﺌﺬان</span>
                 </div>
               </div>
             </div>

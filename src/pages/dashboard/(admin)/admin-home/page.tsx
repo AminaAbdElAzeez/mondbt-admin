@@ -101,6 +101,9 @@ const AdminHome: React.FC = () => {
     absent: 0,
     rewards: 0,
   });
+  const [topSchools, setTopSchools] = useState<
+    Array<{ school_id: number; score: number; school_name: string }>
+  >([]);
   const [statsData, setStatsData] = useState<
     Array<{
       title: string;
@@ -172,14 +175,14 @@ const AdminHome: React.FC = () => {
                 background: '#f9f9f9',
               },
             },
-            {
-              title: 'الغرامات',
-              value: apiData.fines.toLocaleString(),
-              suffix: 'ريال سعودي',
-              bg: 'bg-[#07A869]',
-              text: 'text-white',
-              icon: '/riyal.png',
-            },
+            // {
+            //   title: 'الغرامات',
+            //   value: apiData.fines.toLocaleString(),
+            //   suffix: 'ريال سعودي',
+            //   bg: 'bg-[#07A869]',
+            //   text: 'text-white',
+            //   icon: '/riyal.png',
+            // },
           ];
 
           setStatsData(formattedStats);
@@ -294,6 +297,26 @@ const AdminHome: React.FC = () => {
       setStudentResults([]);
     }
   };
+
+  useEffect(() => {
+    const fetchTopSchools = async () => {
+      try {
+        const res = await axios.get('/admin/home/top-schools', {
+          headers: {
+            Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+            'Accept-Language': 'ar',
+          },
+        });
+        if (res.data && Array.isArray(res.data)) {
+          setTopSchools(res.data);
+        }
+      } catch (err) {
+        console.error('Error fetching top schools', err);
+      }
+    };
+
+    fetchTopSchools();
+  }, [token]);
 
   const fetchStudentList = async (schoolId: number) => {
     try {
@@ -427,6 +450,23 @@ const AdminHome: React.FC = () => {
         <RollerLoading />
       ) : (
         <section dir="ltr" className="text-right px-2">
+          <div className="bg-[#07A869] rounded-lg px-4 py-3 flex items-center mb-8 gap-4">
+            <div className="flex-1 overflow-hidden relative">
+              <div className="marquee-content flex gap-8 w-max">
+                {[...topSchools, ...topSchools, ...topSchools].map((school, index) => (
+                  <p
+                    key={`${school.school_id}-${index}`}
+                    className="text-white font-semibold w-max shrink-0 mb-0"
+                  >
+                    <bdi>{school.school_name}</bdi>
+                  </p>
+                ))}
+              </div>
+            </div>
+            <p className="text-white font-semibold text-lg shrink-0 mb-0">
+              <bdi>أفضل 5 مدارس:</bdi>
+            </p>
+          </div>
           <div className=" mb-3 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start  gap-1 lg:gap-5">
             <div
               className="flex rounded-3xl h-9 w-max  overflow-hidden"
@@ -851,7 +891,12 @@ const AdminHome: React.FC = () => {
                               </p>
                               <p className="text-xs text-gray-500">{student.school}</p>
                             </div>
-                            <div className="w-16 h-16 bg-[#C2C1C1] rounded-full flex-shrink-0"></div>
+                            <img
+                              src={student.image}
+                              alt="student img"
+                              className="w-14 h-14 rounded-full"
+                            />
+                            {/* <div className="w-16 h-16 bg-[#C2C1C1] rounded-full flex-shrink-0"></div> */}
                           </div>
                         </div>
                       ))}
