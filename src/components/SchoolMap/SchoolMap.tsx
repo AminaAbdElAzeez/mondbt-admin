@@ -14,7 +14,6 @@ interface SchoolsMapProps {
   schools: School[];
   selectedSchoolId: number | null;
   onSelectSchool: (id: number) => void;
-  
 }
 
 const SchoolsMap: React.FC<SchoolsMapProps> = ({
@@ -39,13 +38,16 @@ const SchoolsMap: React.FC<SchoolsMapProps> = ({
     return null;
   };
 
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+
   const icon = new L.Icon({
     iconUrl: "/marker-icon.png",
     iconRetinaUrl: "/marker-icon-2x.png",
-    iconAnchor: [12, 41],
+    iconSize: isMobile ? [20, 30] : [25, 41],
+    iconAnchor: isMobile ? [10, 30] : [12, 41],
     popupAnchor: [1, -34],
     shadowUrl: "/marker-shadow.png",
-    shadowSize: [41, 41],
+    shadowSize: isMobile ? [30, 30] : [41, 41],
   });
 
   return (
@@ -53,6 +55,7 @@ const SchoolsMap: React.FC<SchoolsMapProps> = ({
       center={[24.7743, 46.6753]}
       zoom={6}
       style={{ height: "400px", width: "100%" }}
+      className=" relative !z-0"
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       {schools.map((school) => (

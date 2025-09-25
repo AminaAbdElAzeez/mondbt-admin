@@ -693,3 +693,13 @@ html[dir="rtl"] .leaflet-control-geosearch button.reset {
 .login :where(.css-dev-only-do-not-override-dudko7).ant-card .ant-card-body {
   padding: 24px 24px 0 24px !important;
 }
+
+/* when hover on region on map */
+.region:hover {
+  fill: #36b987 !important;
+}
+
+/* in radial chart in minister */
+.recharts-wrapper {
+  margin-left: 0px !important;
+}
