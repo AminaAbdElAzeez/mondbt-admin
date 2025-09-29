@@ -98,7 +98,7 @@ const AdminExcuse: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [excuses, setExcuses] = useState<Excuse[]>([]);
-  // const [loading, setLoading] = useState(false);
+  const [loadingTable, setLoadingTable] = useState(false);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const pageSize = 10;
@@ -206,7 +206,7 @@ const AdminExcuse: React.FC = () => {
   ];
 
   const fetchExcuses = async (pageNum: number = 1) => {
-    setLoading(true);
+    setLoadingTable(true);
     try {
       const skip = (pageNum - 1) * pageSize;
       const res = await axios.get(`/admin/student/excuses`, {
@@ -223,7 +223,7 @@ const AdminExcuse: React.FC = () => {
     } catch (err) {
       message.error('فشل في تحميل البيانات');
     } finally {
-      setLoading(false);
+      setLoadingTable(false);
     }
   };
 
@@ -262,28 +262,28 @@ const AdminExcuse: React.FC = () => {
       dataIndex: 'student',
       key: 'student',
       align: 'center',
-      width: '24%',
+      width: '25%',
     },
     {
       title: 'الوصف',
       dataIndex: 'type',
       key: 'type',
       align: 'center',
-      width: '22%',
+      width: '20%',
     },
     {
       title: 'التاريخ',
       dataIndex: 'date',
       key: 'date',
       align: 'center',
-      width: '17%',
+      width: '20%',
     },
     {
       title: 'الحالة',
       dataIndex: 'status',
       key: 'status',
       align: 'center',
-      width: '17%',
+      width: '20%',
 
       render: (status: string) => <span>{status}</span>,
     },
@@ -488,7 +488,7 @@ const AdminExcuse: React.FC = () => {
             bordered
             dataSource={excuses}
             columns={columns}
-            loading={loading}
+            loading={loadingTable}
             pagination={{
               current: page,
               pageSize,
