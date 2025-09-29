@@ -313,7 +313,7 @@ const AdminExcuse: React.FC = () => {
               // }}
             >
               <button className="bg-transparent border-0">
-                <IoCheckbox className="text-[#07a869] text-2xl sm:text-3xl cursor-pointer" />
+                <IoCheckbox className="text-[#07a869] text-2xl lg:text-3xl cursor-pointer" />
               </button>
             </Popconfirm>
           </AntdTooltip>
@@ -335,14 +335,14 @@ const AdminExcuse: React.FC = () => {
               // }}
             >
               <button className="bg-transparent border-0">
-                <AiFillCloseSquare className="text-[#db3737] text-2xl sm:text-3xl cursor-pointer rounded-2xl" />
+                <AiFillCloseSquare className="text-[#db3737] text-2xl lg:text-3xl cursor-pointer rounded-2xl" />
               </button>
             </Popconfirm>
           </AntdTooltip>
 
           <AntdTooltip title="عرض التفاصيل" color="#15445A">
             <FiEye
-              className="text-[#15445A] text-xl sm:text-2xl cursor-pointer mt-[2px]"
+              className="text-[#15445A] text-xl lg:text-2xl cursor-pointer mt-[2px]"
               onClick={() => {
                 setSelectedFile(record.file);
                 setIsModalOpen(true);
