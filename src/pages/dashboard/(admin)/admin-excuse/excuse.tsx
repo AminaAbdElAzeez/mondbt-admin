@@ -295,7 +295,7 @@ const AdminExcuse: React.FC = () => {
       fixed: 'right',
 
       render: (_, record) => (
-        <div className="flex justify-center gap-1.5">
+        <div className="flex justify-center gap-1 sm:gap-1.5">
           <AntdTooltip title="قبول العذر" color="#07A869">
             <Popconfirm
               title={<span className="text-[#07a869] font-bold">تأكيد القبول</span>}
@@ -313,7 +313,7 @@ const AdminExcuse: React.FC = () => {
               // }}
             >
               <button className="bg-transparent border-0">
-                <IoCheckbox className="text-[#07a869] text-3xl cursor-pointer" />
+                <IoCheckbox className="text-[#07a869] text-2xl sm:text-3xl cursor-pointer" />
               </button>
             </Popconfirm>
           </AntdTooltip>
@@ -335,14 +335,14 @@ const AdminExcuse: React.FC = () => {
               // }}
             >
               <button className="bg-transparent border-0">
-                <AiFillCloseSquare className="text-[#db3737] text-3xl cursor-pointer rounded-2xl" />
+                <AiFillCloseSquare className="text-[#db3737] text-2xl sm:text-3xl cursor-pointer rounded-2xl" />
               </button>
             </Popconfirm>
           </AntdTooltip>
 
           <AntdTooltip title="عرض التفاصيل" color="#15445A">
             <FiEye
-              className="text-[#15445A] text-2xl cursor-pointer mt-[2px]"
+              className="text-[#15445A] text-xl sm:text-2xl cursor-pointer mt-[2px]"
               onClick={() => {
                 setSelectedFile(record.file);
                 setIsModalOpen(true);
@@ -493,6 +493,8 @@ const AdminExcuse: React.FC = () => {
               current: page,
               pageSize,
               total,
+              responsive: true,
+              //  size: "small",
               onChange: (p) => setPage(p),
               showSizeChanger: false,
             }}
