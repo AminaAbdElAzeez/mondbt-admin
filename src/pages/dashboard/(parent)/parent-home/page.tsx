@@ -1,15 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { BsThreeDotsVertical } from 'react-icons/bs';
-import { MdAccessAlarms } from 'react-icons/md';
-import { RiFileEditLine, RiUserFollowLine, RiUserUnfollowLine } from 'react-icons/ri';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell } from 'recharts';
-import { Modal, Table, TableColumnsType, Tag } from 'antd';
-import { FiEye } from 'react-icons/fi';
-import { Tooltip } from 'antd';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'utlis/library/helpers/axios';
-import { useSelector } from 'react-redux';
-import RollerLoading from 'components/loading/roller';
+import React, { useEffect, useState } from "react";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { MdAccessAlarms } from "react-icons/md";
+import {
+  RiFileEditLine,
+  RiUserFollowLine,
+  RiUserUnfollowLine,
+} from "react-icons/ri";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
+import { Modal, Table, TableColumnsType, Tag } from "antd";
+import { FiEye } from "react-icons/fi";
+import { Tooltip } from "antd";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "utlis/library/helpers/axios";
+import { useSelector } from "react-redux";
+import RollerLoading from "components/loading/roller";
 
 interface Excuse {
   key: string;
@@ -48,52 +60,52 @@ const ParentHome: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { token } = useSelector((state: any) => state.Auth);
-   const [topSchools, setTopSchools] = useState<
-      Array<{ school_id: number; score: number; school_name: string }>
-    >([]);
+  const [topSchools, setTopSchools] = useState<
+    Array<{ school_id: number; score: number; school_name: string }>
+  >([]);
 
   const columns: TableColumnsType<Excuse> = [
     {
-      title: 'الوصف',
-      dataIndex: 'type',
-      key: 'type',
-      width: '25%',
-      align: 'center',
+      title: "الوصف",
+      dataIndex: "type",
+      key: "type",
+      width: "25%",
+      align: "center",
       // render: (text) =>
       //   text || (
       //     <p className="text-gray-300">{<FormattedMessage id="noData" />}</p>
       //   ),
     },
     {
-      title: 'التاريخ',
-      dataIndex: 'date',
-      key: 'date',
-      width: '21%',
-      align: 'center',
+      title: "التاريخ",
+      dataIndex: "date",
+      key: "date",
+      width: "21%",
+      align: "center",
     },
     {
-      title: 'الابن',
-      dataIndex: 'student',
-      key: 'student',
-      width: '27%',
-      align: 'center',
+      title: "الابن",
+      dataIndex: "student",
+      key: "student",
+      width: "27%",
+      align: "center",
     },
     {
-      title: 'الحالة',
-      dataIndex: 'status',
-      key: 'status',
-      width: '19%',
-      align: 'center',
+      title: "الحالة",
+      dataIndex: "status",
+      key: "status",
+      width: "19%",
+      align: "center",
 
       render: (status: string) => <span className="!m-0">{status}</span>,
     },
 
     {
-      title: '',
-      dataIndex: 'action',
-      key: 'action',
-      fixed: 'right',
-      width: '8%',
+      title: "",
+      dataIndex: "action",
+      key: "action",
+      fixed: "right",
+      width: "8%",
       render: (_, record: any) => (
         <Tooltip title="عرض التفاصيل" color="#07A869">
           <FiEye
@@ -111,17 +123,17 @@ const ParentHome: React.FC = () => {
   useEffect(() => {
     const fetchTopSchools = async () => {
       try {
-        const res = await axios.get('/parent/top-schools', {
+        const res = await axios.get("/parent/top-schools", {
           headers: {
-            Authorization: `Bearer ${token || localStorage.getItem('token')}`,
-            'Accept-Language': 'ar',
+            Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+            "Accept-Language": "ar",
           },
         });
         if (res.data && Array.isArray(res.data)) {
           setTopSchools(res.data);
         }
       } catch (err) {
-        console.error('Error fetching top schools', err);
+        console.error("Error fetching top schools", err);
       }
     };
 
@@ -135,13 +147,13 @@ const ParentHome: React.FC = () => {
         setLoadingChildren(true);
         const res = await axios.get(`parent/children`, {
           headers: {
-            Authorization: `Bearer ${token || localStorage.getItem('token')}`,
-            'Accept-Language': 'ar',
+            Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+            "Accept-Language": "ar",
           },
         });
         setChildren(res.data?.data || []);
       } catch (error) {
-        console.error('Error fetching children', error);
+        console.error("Error fetching children", error);
       } finally {
         setLoadingChildren(false);
       }
@@ -157,12 +169,12 @@ const ParentHome: React.FC = () => {
         setLoadingFine(true);
         const res = await axios.get(`parent/totalfine`, {
           headers: {
-            Authorization: `Bearer ${token || localStorage.getItem('token')}`,
+            Authorization: `Bearer ${token || localStorage.getItem("token")}`,
           },
         });
         setFine(res.data?.data?.fine_amount || 0);
       } catch (error) {
-        console.error('Error fetching fine', error);
+        console.error("Error fetching fine", error);
       } finally {
         setLoadingFine(false);
       }
@@ -178,13 +190,13 @@ const ParentHome: React.FC = () => {
         setLoadingExcuses(true);
         const res = await axios.get(`parent/excuses`, {
           headers: {
-            Authorization: `Bearer ${token || localStorage.getItem('token')}`,
-            'Accept-Language': 'ar',
+            Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+            "Accept-Language": "ar",
           },
         });
         setExcuses(res.data?.data || []);
       } catch (error) {
-        console.error('Error fetching excuses', error);
+        console.error("Error fetching excuses", error);
       } finally {
         setLoadingExcuses(false);
       }
@@ -259,14 +271,16 @@ const ParentHome: React.FC = () => {
           <div className="bg-[#07A869] rounded-lg px-4 py-3 flex items-center mb-5 gap-4">
             <div className="flex-1 overflow-hidden relative">
               <div className="marquee-content flex gap-8 w-max">
-                {[...topSchools, ...topSchools, ...topSchools].map((school, index) => (
-                  <p
-                    key={`${school.school_id}-${index}`}
-                    className="text-white font-semibold w-max shrink-0 mb-0"
-                  >
-                    <bdi>{school.school_name}</bdi>
-                  </p>
-                ))}
+                {[...topSchools, ...topSchools, ...topSchools].map(
+                  (school, index) => (
+                    <p
+                      key={`${school.school_id}-${index}`}
+                      className="text-white font-semibold w-max shrink-0 mb-0"
+                    >
+                      <bdi>{school.school_name}</bdi>
+                    </p>
+                  )
+                )}
               </div>
             </div>
             <p className="text-white font-semibold text-lg shrink-0 mb-0">
@@ -280,27 +294,36 @@ const ParentHome: React.FC = () => {
             </h2>
           </div>
 
-          <div className="flex justify-between items-center flex-wrap gap-5 py-2 mb-5" dir="rtl">
+          <div
+            className="flex justify-between items-center flex-wrap gap-5 py-2 mb-5"
+            dir="rtl"
+          >
             {loadingChildren ? (
-              <p className="text-[#07A869] text-center text-2xl w-full">جار التحميل...</p>
+              <p className="text-[#07A869] text-center text-2xl w-full">
+                جار التحميل...
+              </p>
             ) : children.length === 0 ? (
-              <p className="text-[#ff0000] text-center text-2xl w-full">لا يوجد أبناء</p>
+              <p className="text-[#ff0000] text-center text-2xl w-full">
+                لا يوجد أبناء
+              </p>
             ) : (
               children.map((child) => (
                 <div
                   key={child.id}
                   className="rounded-xl shadow-md p-4 pb-6 transform transition duration-300 hover:scale-105 hover:shadow-xl flex-grow w-[230px] text-right cursor-pointer"
-                  style={{ border: '1px solid #07A86940' }}
+                  style={{ border: "1px solid #07A86940" }}
                   onClick={() => navigate(`/parent/student/${child.id}`)}
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div className="w-max flex items-center gap-3">
-                        <img
-                          src={child.image}
-                          alt="student img"
-                          className="w-12 h-12 rounded-full bg-[#D9D9D9]"
-                        />
-                      <span className="text-[#07A869] text-lg font-semibold">{child.name}</span>
+                      <img
+                        src={child.image}
+                        alt="student img"
+                        className="w-12 h-12 rounded-full bg-[#D9D9D9]"
+                      />
+                      <span className="text-[#07A869] text-lg font-semibold">
+                        {child.name}
+                      </span>
                     </div>
                     <BsThreeDotsVertical className="text-2xl text-[#15445A] cursor-pointer hover:text-[#07A869] transition-colors duration-500" />
                   </div>
@@ -311,8 +334,12 @@ const ParentHome: React.FC = () => {
                     </div>
                     {child.school && (
                       <div className="flex items-center gap-2 text-sm">
-                        <strong className="text-[#07A869] w-[50px]">المدرسة:</strong>
-                        <span className="text-[#15445A] text-[13px]">{child.school}</span>
+                        <strong className="text-[#07A869] w-[50px]">
+                          المدرسة:
+                        </strong>
+                        <span className="text-[#15445A] text-[13px]">
+                          {child.school}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -323,7 +350,7 @@ const ParentHome: React.FC = () => {
 
           <div className=" mb-1 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start  gap-1 lg:gap-5">
             <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
-              قائمة الأعذار
+              قائمة الاستئذان
             </h2>
           </div>
           <Table<Excuse>
@@ -335,7 +362,7 @@ const ParentHome: React.FC = () => {
             rowKey="id"
             scroll={{ x: 800, y: 300 }}
             className="custom-table rounded-lg"
-            style={{ border: '1px solid #D9D9D9' }}
+            style={{ border: "1px solid #D9D9D9" }}
             footer={() => (
               <div className="flex justify-end">
                 <button className="bg-[#07A869] text-[#fff] text-sm sm:text-base font-semibold px-8 py-2 rounded-3xl outline-none border border-[#07A869] border-solid cursor-pointer hover:text-[#07A869] hover:bg-[#fff] transition-colors duration-500 ">
@@ -363,13 +390,19 @@ const ParentHome: React.FC = () => {
 
           <div
             className={`rounded-xl shadow-md p-4 transform transition duration-300  mt-5`}
-            style={{ border: '1px solid #D9D9D9' }}
+            style={{ border: "1px solid #D9D9D9" }}
           >
             <div className="flex flex-col md:flex-row justify-center md:justify-between items-center md:items-start mb-1.5 gap-1">
               <div className="flex items-center gap-2 justify-end text-[#07A869]">
-                <img src="/green-riyal.png" alt="icon" className="w-7 md:w-9 h-auto" />
+                <img
+                  src="/green-riyal.png"
+                  alt="icon"
+                  className="w-7 md:w-9 h-auto"
+                />
                 {loadingFine ? (
-                  <span className="text-[#07A869]  text-xl">جار التحميل...</span>
+                  <span className="text-[#07A869]  text-xl">
+                    جار التحميل...
+                  </span>
                 ) : (
                   <span className="text-[#07A869]  text-2xl font-semibold">
                     {fine.toLocaleString()}

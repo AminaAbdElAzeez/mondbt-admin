@@ -248,7 +248,7 @@ const MinisterExcuse: React.FC = () => {
               اصدار التقرير
             </button>
             <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
-              احصائيات الاعذار
+              احصائيات الاستئذان
             </h2>
           </div>
 

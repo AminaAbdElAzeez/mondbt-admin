@@ -682,10 +682,10 @@ const AdminHome: React.FC = () => {
               {/* Type */}
               <div className="flex flex-col gap-1">
                 <label className="text-sm font-medium text-gray-700">
-                  النوع
+                  المرحلة
                 </label>
                 <Select
-                  placeholder="اختر النوع"
+                  placeholder="اختر المرحلة"
                   className="w-full"
                   value={selectedType}
                   onChange={(val) => setSelectedType(val)}
@@ -699,16 +699,16 @@ const AdminHome: React.FC = () => {
               {/* Gender */}
               <div className="flex flex-col gap-1">
                 <label className="text-sm font-medium text-gray-700">
-                  الجنس
+                  النوع
                 </label>
                 <Select
-                  placeholder="اختر الجنس"
+                  placeholder="اختر النوع"
                   className="w-full"
                   value={selectedGender}
                   onChange={(val) => setSelectedGender(val)}
                 >
-                  <Option value={1}>ذكر</Option>
-                  <Option value={2}>أنثى</Option>
+                  <Option value={1}>بنين</Option>
+                  <Option value={2}>بنات</Option>
                 </Select>
               </div>
 
