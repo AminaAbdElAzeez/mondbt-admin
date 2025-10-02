@@ -268,32 +268,39 @@ const AdminExcuse: React.FC = () => {
 
   const columns: TableColumnsType<Excuse> = [
     {
-      title: "الابن",
+      title: "الطالب",
       dataIndex: "student",
       key: "student",
       align: "center",
-      width: "25%",
+      width: "20%",
+    },
+    {
+      title: "المدرسة",
+      dataIndex: "school",
+      key: "school",
+      align: "center",
+      width: "20%",
     },
     {
       title: "الوصف",
       dataIndex: "type",
       key: "type",
       align: "center",
-      width: "20%",
+      width: "15%",
     },
     {
       title: "التاريخ",
       dataIndex: "date",
       key: "date",
       align: "center",
-      width: "20%",
+      width: "15%",
     },
     {
       title: "الحالة",
       dataIndex: "status",
       key: "status",
       align: "center",
-      width: "20%",
+      width: "15%",
 
       render: (status: string) => <span>{status}</span>,
     },

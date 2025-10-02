@@ -197,7 +197,7 @@ const NewExcuse: React.FC = () => {
               onClick={handleSubmit}
               className="bg-[#07A869] w-full h-[45px] sm:w-[220px] text-[#fff] text-base sm:text-lg font-semibold px-8 py-3 rounded-3xl outline-none border border-[#07A869] border-solid cursor-pointer hover:text-[#07A869] hover:bg-[#fff] transition-colors duration-500"
             >
-              <bdi>{submitting ? "جاري الإرسال..." : "طلب استئذان جديد"}</bdi>
+              <bdi>{submitting ? "جاري الإرسال..." : "تقديم الطلب"}</bdi>
             </Button>
           </div>
         </section>

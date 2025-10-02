@@ -231,7 +231,7 @@ const Students: React.FC = () => {
     { day: 20, value: 80, hijri: "16" },
     { day: 21, value: 40, hijri: "15" },
   ];
-
+  const [selectedCoupon, setSelectedCoupon] = useState<string>("");
   const [openFirst, setOpenFirst] = useState(false);
   const [openSecond, setOpenSecond] = useState(false);
 
@@ -253,6 +253,13 @@ const Students: React.FC = () => {
     },
     { title: "شوال", type: "فضي" },
     { title: "ذو القعدة", type: "فضي" },
+  ];
+
+  const coupons = [
+    { id: "jarir", label: "كوبون خصم 10% من مكتبة جرير" },
+    { id: "majed", label: "قسيمة شراء 50 ريال من الماجد للعود" },
+    { id: "baik", label: "قسيمة خصم 10% من مطاعم البيك" },
+    { id: "toys", label: "قسيمة شراء 50 ريال من TOYS R US" },
   ];
 
   useEffect(() => {
@@ -692,28 +699,88 @@ const Students: React.FC = () => {
               اختر من القائمة
             </h4>
 
-            <div className="flex flex-col gap-2 mb-6">
+            <div className="flex flex-col gap-4 mb-6" dir="ltr">
+              {coupons.map((coupon) => (
+                <label
+                  key={coupon.id}
+                  style={{ border: "1px solid #DDDDDD" }}
+                  className={`flex items-center justify-end gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all duration-300
+              ${
+                selectedCoupon === coupon.id
+                  ? "border-[#07A869] bg-[#07A869]"
+                  : "border-gray-300 bg-white"
+              }`}
+                >
+                  <span
+                    className={`${
+                      selectedCoupon === coupon.id
+                        ? "text-white"
+                        : "text-[#15445A]"
+                    } font-medium`}
+                  >
+                    <bdi>{coupon.label}</bdi>
+                  </span>
+
+                  <input
+                    type="radio"
+                    name="coupon"
+                    value={coupon.id}
+                    checked={selectedCoupon === coupon.id}
+                    onChange={() => setSelectedCoupon(coupon.id)}
+                    className="hidden"
+                  />
+
+                  <span
+                    className={`w-5 h-5 rounded-full flex items-center justify-center transition-all duration-300 border-solid
+                ${
+                  selectedCoupon === coupon.id
+                    ? "bg-white border border-white"
+                    : "bg-white border border-[#15445A]"
+                }`}
+                  >
+                    <span
+                      className={`w-4 h-4 rounded-full flex items-center justify-center transition-all duration-300
+                  ${
+                    selectedCoupon === coupon.id ? "bg-[#07A869]" : "bg-[#fff]"
+                  }`}
+                    >
+                      {selectedCoupon === coupon.id && (
+                        <span className="w-2.5 h-2.5 rounded-full bg-white"></span>
+                      )}
+                    </span>
+                  </span>
+                </label>
+              ))}
+            </div>
+
+            <button
+              className="w-full bg-[#07A869] text-[#fff] text-sm sm:text-base font-semibold p-2 rounded-lg border border-solid cursor-pointer hover:bg-[#fff] hover:text-[#07A869] transition-colors duration-500 border-[#07A869]"
+              onClick={() => {
+                if (selectedCoupon) {
+                  setOpenFirst(false);
+                  setOpenSecond(true);
+                }
+              }}
+            >
+              احصل على الكود
+            </button>
+
+            {/* <div className="flex flex-col gap-2 mb-6">
               <button className="bg-[#faf8f8] text-[#15445A] text-sm sm:text-base font-semibold p-2 rounded-lg border border-solid cursor-pointer hover:bg-[#07A869] hover:text-[#fff] transition-colors duration-500 border-[#d8d7d7]">
                 كوبون خصم 10% من مكتبة جرير
               </button>
               <button className="bg-[#faf8f8] text-[#15445A] text-sm sm:text-base font-semibold p-2 rounded-lg border border-solid cursor-pointer hover:bg-[#07A869] hover:text-[#fff] transition-colors duration-500 border-[#d8d7d7]">
                 قسيمة شراء 50 ريال من الماجد للعود
               </button>
-              <button
-                disabled
-                className="  disabled:text-[#757474] bg-[#faf8f8] text-sm sm:text-base font-semibold p-2 rounded-lg border border-solid cursor-not-allowed"
-              >
+              <button className="bg-[#faf8f8] text-[#15445A] text-sm sm:text-base font-semibold p-2 rounded-lg border border-solid cursor-pointer hover:bg-[#07A869] hover:text-[#fff] transition-colors duration-500 border-[#d8d7d7]">
                 قسيمة خصم 10% من مطاعم البيك
               </button>
-              <button
-                disabled
-                className="  disabled:text-[#757474] bg-[#faf8f8] text-sm sm:text-base font-semibold p-2 rounded-lg border border-solid cursor-not-allowed"
-              >
+              <button className="bg-[#faf8f8] text-[#15445A] text-sm sm:text-base font-semibold p-2 rounded-lg border border-solid cursor-pointer hover:bg-[#07A869] hover:text-[#fff] transition-colors duration-500 border-[#d8d7d7]">
                 قسيمة شراء 50 ريال من TOYS R US
               </button>
-            </div>
+            </div> */}
 
-            <button
+            {/* <button
               className="w-full bg-[#07A869] text-[#fff] text-sm sm:text-base font-semibold p-2 rounded-lg border border-solid cursor-pointer hover:bg-[#fff] hover:text-[#07A869] transition-colors duration-500 border-[#07A869]"
               onClick={() => {
                 setOpenFirst(false);
@@ -721,10 +788,9 @@ const Students: React.FC = () => {
               }}
             >
               احصل على الكود
-            </button>
+            </button> */}
           </Modal>
 
-          {/* المودال الثاني */}
           <Modal
             open={openSecond}
             onCancel={() => setOpenSecond(false)}

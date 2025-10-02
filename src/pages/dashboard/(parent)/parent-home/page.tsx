@@ -363,13 +363,7 @@ const ParentHome: React.FC = () => {
             scroll={{ x: 800, y: 300 }}
             className="custom-table rounded-lg"
             style={{ border: "1px solid #D9D9D9" }}
-            footer={() => (
-              <div className="flex justify-end">
-                <button className="bg-[#07A869] text-[#fff] text-sm sm:text-base font-semibold px-8 py-2 rounded-3xl outline-none border border-[#07A869] border-solid cursor-pointer hover:text-[#07A869] hover:bg-[#fff] transition-colors duration-500 ">
-                  عرض الكل
-                </button>
-              </div>
-            )}
+            footer={null}
           />
 
           {/* Modal */}
