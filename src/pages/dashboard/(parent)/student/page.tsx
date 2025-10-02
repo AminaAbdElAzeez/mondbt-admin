@@ -20,6 +20,7 @@ import {
 } from "recharts";
 import { useSelector } from "react-redux";
 import RollerLoading from "components/loading/roller";
+import { Button, Modal } from "antd";
 
 type StudentData = {
   id: number;
@@ -156,7 +157,7 @@ const Students: React.FC = () => {
   // console.log(id)
   const [student, setStudent] = useState<StudentData | null>(null);
   const [attendance, setAttendance] = useState<number>(0);
-  const [rewards, setRewards] = useState<Reward[]>([]);
+  // const [rewards, setRewards] = useState<Reward[]>([]);
   const [excuses, setExcuses] = useState<Excuse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -231,6 +232,29 @@ const Students: React.FC = () => {
     { day: 21, value: 40, hijri: "15" },
   ];
 
+  const [openFirst, setOpenFirst] = useState(false);
+  const [openSecond, setOpenSecond] = useState(false);
+
+  const rewards = [
+    { title: "صفر", type: "ذهبي", withUser: true },
+    { title: "ربيع الأول", type: "ذهبي", withUser: true },
+    {
+      title: "ربيع الآخر",
+      type: "ذهبي",
+      clickable: true,
+    },
+    { title: "جمادى الأولى", type: "فضي" },
+    { title: "جمادى الآخرة", type: "فضي" },
+    { title: "رجب", type: "فضي" },
+    { title: "شعبان", type: "فضي" },
+    {
+      title: "رمضان",
+      type: "فضي",
+    },
+    { title: "شوال", type: "فضي" },
+    { title: "ذو القعدة", type: "فضي" },
+  ];
+
   useEffect(() => {
     if (!id) return;
 
@@ -246,17 +270,19 @@ const Students: React.FC = () => {
       })
       .catch((err) => console.error(err));
 
-    axios
-      .get(`parent/student/rewards/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-          "Accept-Language": "ar",
-        },
-      })
-      .then((res) => {
-        setRewards(res.data.data.rewards);
-      })
-      .catch((err) => console.error(err));
+    // rewards api
+
+    // axios
+    //   .get(`parent/student/rewards/${id}`, {
+    //     headers: {
+    //       Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+    //       "Accept-Language": "ar",
+    //     },
+    //   })
+    //   .then((res) => {
+    //     setRewards(res.data.data.rewards);
+    //   })
+    //   .catch((err) => console.error(err));
   }, [id]);
 
   // console.log(id)
@@ -393,7 +419,8 @@ const Students: React.FC = () => {
           </div>
 
           <div className="flex flex-col xl:flex-row justify-between  items-stretch  gap-6 mb-6">
-            <div
+            {/* with api */}
+            {/* <div
               style={{ border: "1px solid #C2C1C1" }}
               className=" p-4 rounded-lg w-full xl:w-1/2 "
             >
@@ -420,6 +447,51 @@ const Students: React.FC = () => {
                     />
                     <h5 className="text-[#15445A] text-sm group-hover:text-[#07A869] transition-colors duration-500 font-semibold text-center">
                       {reward.reward_title || "بدون عنوان"}
+                    </h5>
+                  </div>
+                ))}
+              </div>
+            </div> */}
+            <div
+              style={{ border: "1px solid #C2C1C1" }}
+              className="p-4 rounded-lg w-full xl:w-1/2"
+            >
+              <h3 className="text-[#07A869] font-semibold hover:text-[#15445A] transition-colors duration-500 text-2xl mb-7">
+                المكافئات
+              </h3>
+
+              <div
+                className="flex justify-between items-center flex-wrap gap-2"
+                dir="rtl"
+              >
+                {rewards.map((reward, idx) => (
+                  <div
+                    key={idx}
+                    className={`relative flex flex-col justify-center items-center gap-1 group w-[90px] flex-grow mb-2 cursor-${
+                      reward.clickable ? "pointer" : "default"
+                    }`}
+                    onClick={() => reward.clickable && setOpenFirst(true)}
+                  >
+                    <div className="relative">
+                      {reward.withUser ? (
+                        <img
+                          src="/used.png"
+                          alt="used"
+                          className="w-16 h-auto"
+                        />
+                      ) : (
+                        <img
+                          src={
+                            reward.type === "ذهبي" ? "/gold.png" : "/silver.png"
+                          }
+                          alt={reward.type}
+                          className="w-16 h-auto"
+                        />
+                      )}
+                    </div>
+
+                    <h5 className="text-[#15445A] text-sm group-hover:text-[#07A869] transition-colors duration-500 font-semibold text-center">
+                      {reward.title}
                     </h5>
                   </div>
                 ))}
@@ -593,11 +665,79 @@ const Students: React.FC = () => {
                   to="/parent/new-excuse"
                   className="bg-[#07A869] w-full sm:w-[220px] text-[#fff] text-base sm:text-lg font-semibold px-8 py-2 rounded-3xl outline-none border border-[#07A869] border-solid cursor-pointer hover:text-[#07A869] hover:bg-[#fff] transition-colors duration-500 text-center"
                 >
-                  قدم عذر جديد
+                  طلب استئذان جديد
                 </Link>
               </div>
             </div>
           </div>
+          <Modal
+            open={openFirst}
+            onCancel={() => setOpenFirst(false)}
+            footer={null}
+            centered
+            closable={false}
+          >
+            <h3 className="text-center text-[#07A869] font-bold text-2xl sm:text-4xl mb-4 mt-2">
+              تهانينا
+            </h3>
+            <p className="text-center text-base font-semibold text-[#15445A] mb-4">
+              لقد حصلت على مكافأة نتيجة انضباطك المدرسي
+            </p>
+
+            <div className="bg-[rgba(224,208,88,0.7)] rounded-full w-24 h-24 text-center mx-auto mb-4 flex justify-center items-center text-[#fff] font-semibold text-lg">
+              ربيع الآخر
+            </div>
+
+            <h4 className="text-center text-[#07A869] font-bold text-lg sm:text-xl mb-4 mt-2">
+              اختر من القائمة
+            </h4>
+
+            <div className="flex flex-col gap-2 mb-6">
+              <button className="bg-[#faf8f8] text-[#15445A] text-sm sm:text-base font-semibold p-2 rounded-lg border border-solid cursor-pointer hover:bg-[#07A869] hover:text-[#fff] transition-colors duration-500 border-[#d8d7d7]">
+                كوبون خصم 10% من مكتبة جرير
+              </button>
+              <button className="bg-[#faf8f8] text-[#15445A] text-sm sm:text-base font-semibold p-2 rounded-lg border border-solid cursor-pointer hover:bg-[#07A869] hover:text-[#fff] transition-colors duration-500 border-[#d8d7d7]">
+                قسيمة شراء 50 ريال من الماجد للعود
+              </button>
+              <button
+                disabled
+                className="  disabled:text-[#757474] bg-[#faf8f8] text-sm sm:text-base font-semibold p-2 rounded-lg border border-solid cursor-not-allowed"
+              >
+                قسيمة خصم 10% من مطاعم البيك
+              </button>
+              <button
+                disabled
+                className="  disabled:text-[#757474] bg-[#faf8f8] text-sm sm:text-base font-semibold p-2 rounded-lg border border-solid cursor-not-allowed"
+              >
+                قسيمة شراء 50 ريال من TOYS R US
+              </button>
+            </div>
+
+            <button
+              className="w-full bg-[#07A869] text-[#fff] text-sm sm:text-base font-semibold p-2 rounded-lg border border-solid cursor-pointer hover:bg-[#fff] hover:text-[#07A869] transition-colors duration-500 border-[#07A869]"
+              onClick={() => {
+                setOpenFirst(false);
+                setOpenSecond(true);
+              }}
+            >
+              احصل على الكود
+            </button>
+          </Modal>
+
+          {/* المودال الثاني */}
+          <Modal
+            open={openSecond}
+            onCancel={() => setOpenSecond(false)}
+            footer={null}
+            centered
+          >
+            <h3 className="text-center text-red-600 font-bold text-lg mb-4">
+              هذا الشهر لم ينتهِ بعد
+            </h3>
+            <p className="text-center text-gray-600">
+              لا يمكنك الحصول على الكود الآن، الرجاء المحاولة لاحقًا.
+            </p>
+          </Modal>
         </section>
       )}
     </>

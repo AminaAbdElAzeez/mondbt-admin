@@ -108,7 +108,7 @@ const NewExcuse: React.FC = () => {
         <section dir="ltr" className="text-right px-2">
           <div className="mb-2 flex flex-col-reverse lg:flex-row justify-end items-end lg:items-start gap-1 lg:gap-5">
             <h2 className="text-[#15445A] font-semibold hover:text-[#07A869] transition-colors duration-500">
-              تقديم عذر جديد
+              طلب استئذان جديد
             </h2>
           </div>
 
@@ -197,7 +197,7 @@ const NewExcuse: React.FC = () => {
               onClick={handleSubmit}
               className="bg-[#07A869] w-full h-[45px] sm:w-[220px] text-[#fff] text-base sm:text-lg font-semibold px-8 py-3 rounded-3xl outline-none border border-[#07A869] border-solid cursor-pointer hover:text-[#07A869] hover:bg-[#fff] transition-colors duration-500"
             >
-              <bdi>{submitting ? "جاري الإرسال..." : "قدّم العذر"}</bdi>
+              <bdi>{submitting ? "جاري الإرسال..." : "طلب استئذان جديد"}</bdi>
             </Button>
           </div>
         </section>

@@ -169,14 +169,14 @@ const AdminHome: React.FC = () => {
             {
               title: "الحضور",
               value: apiData.present,
-              suffix: "طالب وطالبة",
+              suffix: "طالب",
               bg: "bg-[#07A869]",
               text: "text-white",
             },
             {
               title: "الغياب",
               value: apiData.absent,
-              suffix: "طالب وطالبة",
+              suffix: "طالب",
               bg: "bg-white",
               text: "text-[#07A869]",
               borderStyle: {

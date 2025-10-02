@@ -152,7 +152,7 @@ const MinisterHome: React.FC = () => {
     {
       title: "الغياب",
       value: "314,919",
-      suffix: "طالب وطالبة",
+      suffix: "طالب",
       bg: "bg-white",
       text: "text-[#07A869]",
       borderStyle: { border: "1px solid #C2C1C1", background: "#f9f9f9" },
@@ -160,7 +160,7 @@ const MinisterHome: React.FC = () => {
     {
       title: "الحضور",
       value: "5,983,404",
-      suffix: "طالب وطالبة",
+      suffix: "طالب",
       bg: "bg-[#07A869]",
       text: "text-white",
     },
@@ -358,14 +358,14 @@ const MinisterHome: React.FC = () => {
             {
               title: "الحضور",
               value: apiData.present,
-              suffix: "طالب وطالبة",
+              suffix: "طالب",
               bg: "bg-[#07A869]",
               text: "text-white",
             },
             {
               title: "الغياب",
               value: apiData.absent,
-              suffix: "طالب وطالبة",
+              suffix: "طالب",
               bg: "bg-white",
               text: "text-[#07A869]",
               borderStyle: {
@@ -427,6 +427,9 @@ const MinisterHome: React.FC = () => {
 
     fetchData();
   }, []);
+
+  const maxValue = Math.max(...chartData.map((d) => d.count));
+  const roundedMax = Math.ceil(maxValue / 100) * 100;
 
   return (
     <>
@@ -540,58 +543,104 @@ const MinisterHome: React.FC = () => {
                   className="w-full xl:w-1/2 p-4 rounded-lg"
                   style={{ border: "1px solid #C2C1C1" }}
                 >
-                  <div className="flex flex-col md:flex-row justify-center md:justify-between items-center gap-5 md:gap-0 mb-8">
-                    {loadingMap ? (
-                      <div className="w-[145px] h-[145px] rounded-full border-[20px] border-gray-200 animate-pulse flex items-center justify-center">
-                        <div className="w-20 h-20 rounded-full bg-gray-200 animate-pulse" />
-                      </div>
-                    ) : (
-                      <CircularProgress
-                        percentage={percentage}
-                        size={145}
-                        color="#07A869"
-                        bgColor="#E5E7EB"
-                      />
-                    )}
+                  <div>
+                    <h3 className="text-xl font-semibold text-[#07A869] mb-1">
+                      {regions.find((r) => r.id === selectedRegionId)?.name ||
+                        "اختر منطقة"}
+                    </h3>
 
-                    <div className="text-[#07A869] flex flex-col gap-3">
-                      <div
-                        className={`flex gap-1 group cursor-pointer ${
-                          selectedMetric === "attendance"
-                            ? "text-[#07A869]"
-                            : "text-[#15445A]"
-                        }`}
-                        onClick={() => setSelectedMetric("attendance")}
-                      >
-                        <p className="font-medium w-[50px]">الحضور</p>
-                        <RiUserFollowLine className="!text-xl" />
-                      </div>
+                    <div className="flex flex-col-reverse lg:flex-row justify-center lg:justify-between gap-4 lg:gap-8 py-4 mb-2">
+                      <div className="flex gap-2 items-center w-full lg:w-1/2">
+                        <DatePicker
+                          placeholder="اختر تاريخ النهاية"
+                          format="YYYY/MM/DD"
+                          className="w-full py-2"
+                          value={
+                            toDateMap ? dayjs(toDateMap, "YYYY/MM/DD") : null
+                          }
+                          onChange={(date) =>
+                            setToDateMap(date ? date.format("YYYY/MM/DD") : "")
+                          }
+                        />
 
-                      <div
-                        className={`flex gap-1 group cursor-pointer ${
-                          selectedMetric === "absent"
-                            ? "text-[#07A869]"
-                            : "text-[#15445A]"
-                        }`}
-                        onClick={() => setSelectedMetric("absent")}
-                      >
-                        <p className="font-medium w-[50px]">الغياب</p>
-                        <RiUserUnfollowLine className="!text-xl" />
+                        <label className="text-[#15445A] text-base font-semibold">
+                          الي
+                        </label>
                       </div>
-
-                      <div
-                        className={`flex gap-1 group cursor-pointer ${
-                          selectedMetric === "late"
-                            ? "text-[#07A869]"
-                            : "text-[#15445A]"
-                        }`}
-                        onClick={() => setSelectedMetric("late")}
-                      >
-                        <p className="font-medium w-[50px]">التأخير</p>
-                        <MdAccessAlarms className="!text-xl" />
+                      <div className="flex gap-2 items-center w-full lg:w-1/2">
+                        <DatePicker
+                          placeholder="اختر تاريخ البداية"
+                          format="YYYY/MM/DD"
+                          className="w-full py-2"
+                          value={
+                            fromDateMap
+                              ? dayjs(fromDateMap, "YYYY/MM/DD")
+                              : null
+                          }
+                          onChange={(date) =>
+                            setFromDateMap(
+                              date ? date.format("YYYY/MM/DD") : ""
+                            )
+                          }
+                        />
+                        <label className="text-[#15445A] text-base font-semibold">
+                          من
+                        </label>
                       </div>
+                    </div>
 
-                      {/* <div
+                    <div className="flex flex-col md:flex-row justify-center md:justify-between items-center gap-5 md:gap-0 mb-8">
+                      {loadingMap ? (
+                        <div className="w-[145px] h-[145px] rounded-full border-[20px] border-gray-200 animate-pulse flex items-center justify-center">
+                          <div className="w-20 h-20 rounded-full bg-gray-200 animate-pulse" />
+                        </div>
+                      ) : (
+                        <CircularProgress
+                          percentage={percentage}
+                          size={145}
+                          color="#07A869"
+                          bgColor="#E5E7EB"
+                        />
+                      )}
+
+                      <div className="text-[#07A869] flex flex-col gap-3">
+                        <div
+                          className={`flex gap-1 group cursor-pointer ${
+                            selectedMetric === "attendance"
+                              ? "text-[#07A869]"
+                              : "text-[#15445A]"
+                          }`}
+                          onClick={() => setSelectedMetric("attendance")}
+                        >
+                          <p className="font-medium w-[50px]">الحضور</p>
+                          <RiUserFollowLine className="!text-xl" />
+                        </div>
+
+                        <div
+                          className={`flex gap-1 group cursor-pointer ${
+                            selectedMetric === "absent"
+                              ? "text-[#07A869]"
+                              : "text-[#15445A]"
+                          }`}
+                          onClick={() => setSelectedMetric("absent")}
+                        >
+                          <p className="font-medium w-[50px]">الغياب</p>
+                          <RiUserUnfollowLine className="!text-xl" />
+                        </div>
+
+                        <div
+                          className={`flex gap-1 group cursor-pointer ${
+                            selectedMetric === "late"
+                              ? "text-[#07A869]"
+                              : "text-[#15445A]"
+                          }`}
+                          onClick={() => setSelectedMetric("late")}
+                        >
+                          <p className="font-medium w-[50px]">التأخير</p>
+                          <MdAccessAlarms className="!text-xl" />
+                        </div>
+
+                        {/* <div
                         className={`flex gap-1 group cursor-pointer ${
                           selectedMetric === "late"
                             ? "text-[#07A869]"
@@ -602,8 +651,10 @@ const MinisterHome: React.FC = () => {
                         <p className="font-medium w-[50px]">الاستئذان</p>
                         <MdAccessAlarms className="!text-xl" />
                       </div> */}
+                      </div>
                     </div>
                   </div>
+
                   <div className="flex justify-center items-center">
                     <button
                       className="bg-[#07A869] outline-0 border border-[#07A869] border-solid rounded-3xl py-2 px-8 text-[#fff] text-base font-medium hover:bg-[#fff] hover:text-[#07A869] transition-colors duration-500 cursor-pointer mb-4"
@@ -639,55 +690,20 @@ const MinisterHome: React.FC = () => {
                     </button>
                   </div>
                 </div>
+
                 <div
                   className="w-full xl:w-1/2 p-4 rounded-lg"
                   style={{ border: "1px solid #C2C1C1" }}
                 >
-                  <h3 className="text-xl font-semibold text-[#07A869] mb-8">
+                  {/* <h3 className="text-xl font-semibold text-[#07A869] mb-8">
                     {regions.find((r) => r.id === selectedRegionId)?.name ||
                       "اختر منطقة"}
-                  </h3>
+                  </h3> */}
                   <SaudiMap
                     regions={regions}
                     selectedRegionId={selectedRegionId}
                     handleSearch={setSelectedRegionId}
                   />
-
-                  <div className="flex flex-col-reverse lg:flex-row justify-center lg:justify-between gap-4 lg:gap-8 py-4 mt-5">
-                    <div className="flex gap-2 items-center w-full lg:w-1/2">
-                      <DatePicker
-                        placeholder="اختر تاريخ النهاية"
-                        format="YYYY/MM/DD"
-                        className="w-full py-2"
-                        value={
-                          toDateMap ? dayjs(toDateMap, "YYYY/MM/DD") : null
-                        }
-                        onChange={(date) =>
-                          setToDateMap(date ? date.format("YYYY/MM/DD") : "")
-                        }
-                      />
-
-                      <label className="text-[#15445A] text-base font-semibold">
-                        الي
-                      </label>
-                    </div>
-                    <div className="flex gap-2 items-center w-full lg:w-1/2">
-                      <DatePicker
-                        placeholder="اختر تاريخ البداية"
-                        format="YYYY/MM/DD"
-                        className="w-full py-2"
-                        value={
-                          fromDateMap ? dayjs(fromDateMap, "YYYY/MM/DD") : null
-                        }
-                        onChange={(date) =>
-                          setFromDateMap(date ? date.format("YYYY/MM/DD") : "")
-                        }
-                      />
-                      <label className="text-[#15445A] text-base font-semibold">
-                        من
-                      </label>
-                    </div>
-                  </div>
                 </div>
               </div>
 
@@ -805,27 +821,35 @@ const MinisterHome: React.FC = () => {
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart
                         data={chartData}
-                        margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
-                        barCategoryGap="20%"
+                        margin={{ top: 10, right: 0, left: 0, bottom: 30 }}
+                        barCategoryGap="30%"
                       >
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
                         <XAxis
                           dataKey="date"
                           tick={{ fontSize: 12 }}
-                          interval={0}
+                          // interval={0}
+                          interval="preserveStartEnd"
                           angle={-45}
                           textAnchor="end"
                         />
+
                         <YAxis
-                          domain={[0, 100]}
-                          ticks={[0, 20, 40, 60, 80, 100]}
+                          domain={[0, roundedMax]}
+                          ticks={Array.from(
+                            { length: roundedMax / 100 + 1 },
+                            (_, i) => i * 100
+                          )}
                           tick={{ fontSize: 12 }}
+                          tickMargin={20}
+                          allowDecimals={false}
                         />
                         <Tooltip
                           labelFormatter={(label: any) => `تاريخ: ${label}`}
+                          formatter={(value: any) => [`${value}`, "القيمة"]}
                         />
 
-                        <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={40}>
+                        <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={30}>
                           {chartData.map((entry, index) => (
                             <Cell
                               key={`cell-${index}`}

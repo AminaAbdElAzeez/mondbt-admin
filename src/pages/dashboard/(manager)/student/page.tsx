@@ -162,7 +162,7 @@ const ManagerStudents: React.FC = () => {
   // console.log(id)
   const [student, setStudent] = useState<StudentData | null>(null);
   const [attendance, setAttendance] = useState<number>(0);
-  const [rewards, setRewards] = useState<Reward[]>([]);
+  // const [rewards, setRewards] = useState<Reward[]>([]);
   const [selected, setSelected] = useState<"سنة" | "شهر" | "يوم">("يوم");
   const buttons: Array<"سنة" | "شهر" | "يوم"> = ["سنة", "شهر", "يوم"];
   const [isLoading, setIsLoading] = useState(false);
@@ -227,6 +227,29 @@ const ManagerStudents: React.FC = () => {
     { day: 21, value: 40, hijri: "15" },
   ];
 
+  const [openFirst, setOpenFirst] = useState(false);
+  const [openSecond, setOpenSecond] = useState(false);
+
+  const rewards = [
+    { title: "صفر", type: "ذهبي", withUser: true },
+    { title: "ربيع الأول", type: "ذهبي", withUser: true },
+    {
+      title: "ربيع الآخر",
+      type: "ذهبي",
+      clickable: true,
+    },
+    { title: "جمادى الأولى", type: "فضي" },
+    { title: "جمادى الآخرة", type: "فضي" },
+    { title: "رجب", type: "فضي" },
+    { title: "شعبان", type: "فضي" },
+    {
+      title: "رمضان",
+      type: "فضي",
+    },
+    { title: "شوال", type: "فضي" },
+    { title: "ذو القعدة", type: "فضي" },
+  ];
+
   useEffect(() => {
     if (!id) return;
 
@@ -242,17 +265,17 @@ const ManagerStudents: React.FC = () => {
       })
       .catch((err) => console.error(err));
 
-    axios
-      .get(`manager/student/rewards/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-          "Accept-Language": "ar",
-        },
-      })
-      .then((res) => {
-        setRewards(res.data.data.rewards);
-      })
-      .catch((err) => console.error(err));
+    // axios
+    //   .get(`manager/student/rewards/${id}`, {
+    //     headers: {
+    //       Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+    //       "Accept-Language": "ar",
+    //     },
+    //   })
+    //   .then((res) => {
+    //     setRewards(res.data.data.rewards);
+    //   })
+    //   .catch((err) => console.error(err));
   }, [id]);
 
   // console.log(id)
@@ -383,11 +406,12 @@ const ManagerStudents: React.FC = () => {
           <div className="flex flex-col xl:flex-row justify-between  items-stretch  gap-6 mb-6">
             <div
               style={{ border: "1px solid #C2C1C1" }}
-              className=" p-4 rounded-lg w-full xl:w-1/2 "
+              className="p-4 rounded-lg w-full xl:w-1/2"
             >
               <h3 className="text-[#07A869] font-semibold hover:text-[#15445A] transition-colors duration-500 text-2xl mb-7">
                 المكافئات
               </h3>
+
               <div
                 className="flex justify-between items-center flex-wrap gap-2"
                 dir="rtl"
@@ -395,15 +419,30 @@ const ManagerStudents: React.FC = () => {
                 {rewards.map((reward, idx) => (
                   <div
                     key={idx}
-                    className="flex flex-col justify-center items-center gap-1 group w-[90px] flex-grow mb-2"
+                    className={`relative flex flex-col justify-center items-center gap-1 group w-[90px] flex-grow mb-2
+                    }`}
+                    // onClick={() => reward.clickable && setOpenFirst(true)}
                   >
-                    <img
-                      src={reward.used ? "/img.png" : "/gray-img.png"}
-                      alt="icon"
-                      className="w-16 h-auto"
-                    />
+                    <div className="relative">
+                      {reward.withUser ? (
+                        <img
+                          src="/used.png"
+                          alt="used"
+                          className="w-16 h-auto"
+                        />
+                      ) : (
+                        <img
+                          src={
+                            reward.type === "ذهبي" ? "/gold.png" : "/silver.png"
+                          }
+                          alt={reward.type}
+                          className="w-16 h-auto"
+                        />
+                      )}
+                    </div>
+
                     <h5 className="text-[#15445A] text-sm group-hover:text-[#07A869] transition-colors duration-500 font-semibold text-center">
-                      {reward.reward_title || "بدون عنوان"}
+                      {reward.title}
                     </h5>
                   </div>
                 ))}
