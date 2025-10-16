@@ -1,13 +1,19 @@
 import { BsBarChart } from "react-icons/bs";
 import { FaUsers } from "react-icons/fa";
 import { LuAlarmClock } from "react-icons/lu";
-import { MdHome, MdLocalOffer } from "react-icons/md";
+import {
+  MdBalance,
+  MdContactPhone,
+  MdHome,
+  MdLocalOffer,
+} from "react-icons/md";
 import {
   RiFileEditLine,
   RiUserFollowLine,
   RiUserUnfollowLine,
 } from "react-icons/ri";
 import { FormattedMessage } from "react-intl";
+import { LuMonitor } from "react-icons/lu";
 
 interface MenuItem {
   key: string;
@@ -55,6 +61,18 @@ const getMenuItems = (role: number): MenuItem[] => {
       label: "الاعذار",
       icon: <RiFileEditLine className="!text-xl" />,
     },
+    {
+      key: "openmonitoring",
+      to: "openmonitoring",
+      label: "طلب فتح رصد",
+      icon: <LuMonitor className="!text-xl" />,
+    },
+    {
+      key: "contacts",
+      to: "contacts",
+      label: "جهات الاتصال",
+      icon: <MdContactPhone className="!text-xl" />,
+    },
     // { key: 'discipline_statistics', to: 'discipline_statistics', label: <FormattedMessage id="discipline_statistics" />, icon: <BsBarChart className="!text-xl" /> },
   ];
 
@@ -85,7 +103,20 @@ const getMenuItems = (role: number): MenuItem[] => {
     },
   ];
 
-  const managerItems: MenuItem[] = [];
+  const managerItems: MenuItem[] = [
+    {
+      key: "openmonitoring",
+      to: "openmonitoring",
+      label: "طلب فتح رصد",
+      icon: <LuMonitor className="!text-xl" />,
+    },
+    {
+      key: "contact",
+      to: "contact",
+      label: "تواصل معنا",
+      icon: <MdContactPhone className="!text-xl" />,
+    },
+  ];
 
   const parentItems: MenuItem[] = [
     // { key: 'home', to: 'home', label: <FormattedMessage id="home1" />, icon: <MdHome className="!text-xl" /> },
@@ -96,6 +127,12 @@ const getMenuItems = (role: number): MenuItem[] => {
       to: "new-excuse",
       label: "الاستئذان",
       icon: <RiFileEditLine className="!text-xl" />,
+    },
+    {
+      key: "contact",
+      to: "contact",
+      label: "تواصل معنا",
+      icon: <MdContactPhone className="!text-xl" />,
     },
   ];
 
