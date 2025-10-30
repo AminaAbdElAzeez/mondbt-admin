@@ -118,28 +118,28 @@ const ManagerBalance: React.FC = () => {
       dataIndex: ["school", "name"],
       key: "school",
       align: "center",
-      width: "20%",
+      width: "22%",
     },
     {
       title: "سبب فتح الطلب",
       dataIndex: "reason",
       key: "reason",
       align: "center",
-      width: "20%",
+      width: "22%",
     },
     {
       title: "الموضوع / المشكلة",
       dataIndex: "subject",
       key: "subject",
       align: "center",
-      width: "20%",
+      width: "22%",
     },
     {
       title: "التاريخ",
       dataIndex: "observation_date",
       key: "observation_date",
       align: "center",
-      width: "15%",
+      width: "17%",
       render: (date) => (
         <span>{new Date(date).toLocaleDateString("ar-EG")}</span>
       ),
@@ -149,7 +149,7 @@ const ManagerBalance: React.FC = () => {
       dataIndex: "status",
       key: "status",
       align: "center",
-      width: "15%",
+      width: "17%",
       render: (status: string) => (
         <span
           className={`font-semibold ${
@@ -164,24 +164,23 @@ const ManagerBalance: React.FC = () => {
         </span>
       ),
     },
-    {
-      title: "",
-      key: "action",
-      align: "center",
-      width: "10%",
-      fixed: "right",
-      render: (_, record) => (
-        <Tooltip color="#07A869" title="إضافة ملاحظة جديدة">
-          <button
-            className="border-none bg-transparent cursor-pointer"
-            onClick={() => setIsAddModalOpen(true)}
-          >
-            {/* إضافة ملاحظة جديدة */}
-            <IoAddCircle className="text-[#07A869] text-3xl" />
-          </button>
-        </Tooltip>
-      ),
-    },
+    // {
+    //   title: "",
+    //   key: "action",
+    //   align: "center",
+    //   width: "10%",
+    //   fixed: "right",
+    //   render: (_, record) => (
+    //     <Tooltip color="#07A869" title="إضافة ملاحظة جديدة">
+    //       <button
+    //         className="border-none bg-transparent cursor-pointer"
+    //         onClick={() => setIsAddModalOpen(true)}
+    //       >
+    //         <IoAddCircle className="text-[#07A869] text-3xl" />
+    //       </button>
+    //     </Tooltip>
+    //   ),
+    // },
   ];
 
   return (
@@ -190,12 +189,6 @@ const ManagerBalance: React.FC = () => {
         <RollerLoading />
       ) : (
         <section dir="ltr" className="text-right px-2">
-          <div className="mb-5">
-            <h2 className="text-[#15445A] hover:text-[#07A869] transition-colors duration-500 font-semibold text-[20px] sm:text-[22px] text-right">
-              طلب فتح رصد
-            </h2>
-          </div>
-
           <Table<Observation>
             bordered
             dataSource={observations}
@@ -211,6 +204,21 @@ const ManagerBalance: React.FC = () => {
             rowKey="id"
             scroll={{ x: 1200, y: 400 }}
             className="custom-table rounded-lg"
+            title={() => (
+              <div className="flex items-center justify-between px-2 py-1">
+                <h2 className="text-[#15445A] hover:text-[#07A869] transition-colors duration-500 font-semibold text-[20px] sm:text-[22px] text-right">
+                  طلب فتح رصد
+                </h2>
+                <Tooltip color="#07A869" title="طلب فتح رصد">
+                  <button
+                    className="border-none cursor-pointer"
+                    onClick={() => setIsAddModalOpen(true)}
+                  >
+                    <IoAddCircle className="text-[#07A869] text-3xl hover:scale-110 transition-transform" />
+                  </button>
+                </Tooltip>
+              </div>
+            )}
           />
 
           <Modal
@@ -229,14 +237,18 @@ const ManagerBalance: React.FC = () => {
             )}
           </Modal>
 
-          {/* ➕ إضافة ملاحظة */}
           <Modal
-            title="إضافة ملاحظة جديدة"
+            title="طلب فتح رصد"
             open={isAddModalOpen}
             onCancel={() => setIsAddModalOpen(false)}
             footer={null}
           >
-            <Form form={form} layout="vertical" onFinish={handleAddObservation}>
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={handleAddObservation}
+              className="mt-4"
+            >
               <Form.Item
                 label="سبب فتح الطلب"
                 name="reason"

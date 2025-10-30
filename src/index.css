@@ -305,7 +305,7 @@ html[dir="rtl"]
   @apply !text-primary;
 }
 .ant-table-title button {
-  @apply !bg-primary;
+  @apply !bg-white;
 }
 p {
   @apply whitespace-normal !important;
