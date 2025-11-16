@@ -60,7 +60,10 @@ function Index() {
   // const logoSrc = isDarkMode ? '/bg-logo.svg' : '/bg-logo.svg';
 
   return (
-    <div className="bg-texture-light dark:bg-texture-dark">
+    <div
+      className="bg-texture-light dark:bg-texture-dark"
+      style={{ backgroundImage: 'url("/back.png")' }}
+    >
       <div className="box-border min-w-screen min-h-screen  flex items-center container mx-auto justify-center px-2 py-5">
         <div className="box-border absolute inset-x-0 top-0 w-full flex items-center justify-between container mx-auto py-5 px-2">
           <div className="flex items-center w-full text-[#3730a3] no-underline hover:no-underline font-bold text-2xl lg:text-4xl">

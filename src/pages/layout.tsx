@@ -3,10 +3,7 @@ import { Outlet } from "react-router-dom";
 
 function Layout({ children }: any) {
   return (
-    <div
-      className="relative antialiased text-slate-500 dark:text-slate-400 bg-[#fff] dark:bg-slate-900"
-      style={{ backgroundImage: 'url("/back.png")' }}
-    >
+    <div className="relative antialiased text-slate-500 dark:text-slate-400 bg-[#fff] dark:bg-slate-900">
       <div className="absolute z-20 top-0 inset-x-0 flex justify-center overflow-hidden pointer-events-none">
         <div className="w-[108rem] flex-none flex justify-end ">
           <picture>
