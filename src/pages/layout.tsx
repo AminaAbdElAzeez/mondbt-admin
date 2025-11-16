@@ -3,9 +3,12 @@ import { Outlet } from "react-router-dom";
 
 function Layout({ children }: any) {
   return (
-    <div className="relative antialiased text-slate-500 dark:text-slate-400 bg-[#fff] dark:bg-slate-900">
+    <div
+      className="relative antialiased text-slate-500 dark:text-slate-400 bg-[#fff] dark:bg-slate-900"
+      style={{ backgroundImage: 'url("/back.png")' }}
+    >
       <div className="absolute z-20 top-0 inset-x-0 flex justify-center overflow-hidden pointer-events-none">
-        <div className="w-[108rem] flex-none flex justify-end">
+        <div className="w-[108rem] flex-none flex justify-end ">
           <picture>
             <source srcSet="/bg/shapeA.avif" type="image/avif" />
             <img
@@ -27,8 +30,8 @@ function Layout({ children }: any) {
           </picture>
         </div>
       </div>
-
-      <div className="backdrop-blur ">
+      {/* className="backdrop-blur " */}
+      <div className="">
         <Outlet />
       </div>
     </div>

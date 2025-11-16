@@ -170,7 +170,10 @@ function Login() {
         </ul>
       </div>
 
-      <div className="min-h-[100dvh] box-border w-full flex flex-col items-center justify-center px-3 sm:px-6 py-0 sm:py-8 mx-auto lg:py-0">
+      <div
+        className="min-h-[100dvh] box-border w-full flex flex-col items-center justify-center px-3 sm:px-6 py-0 sm:py-8 mx-auto lg:py-0"
+        style={{ backgroundImage: 'url("/back.png")' }}
+      >
         <motion.div
           initial={{ y: -150, opacity: 1 }}
           animate={{ y: 0, opacity: 1 }}

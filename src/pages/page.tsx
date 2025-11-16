@@ -1,29 +1,35 @@
-import { useState, Fragment, useEffect } from 'react';
-import { Link, json, useLoaderData, useNavigate, useNavigation } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
-import LangSwitcher from 'containers/layout/Topbar/LangSwitcher';
+import { useState, Fragment, useEffect } from "react";
+import {
+  Link,
+  json,
+  useLoaderData,
+  useNavigate,
+  useNavigation,
+} from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import LangSwitcher from "containers/layout/Topbar/LangSwitcher";
 // import ThemesSwitcher from 'containers/layout/Topbar/ThemesSwitcher';
-import { Button, Card } from 'antd';
-import { useSelector } from 'react-redux';
-import SmallLogo from 'components/LogoWraper/small-logo';
-import { FormattedMessage } from 'react-intl';
+import { Button, Card } from "antd";
+import { useSelector } from "react-redux";
+import SmallLogo from "components/LogoWraper/small-logo";
+import { FormattedMessage } from "react-intl";
 
 function Index() {
   const data = useLoaderData();
   const [visiable, setVisiable] = useState(true);
 
   const navigate = useNavigate();
-  const role = localStorage.getItem('role');
+  const role = localStorage.getItem("role");
 
-  let redirectPath = '/';
-  if (role === '1') {
-    redirectPath = '/admin/home';
-  } else if (role === '2') {
-    redirectPath = '/minister/home';
-  } else if (role === '3') {
-    redirectPath = '/manager/home';
-  } else if (role === '4') {
-    redirectPath = '/parent/home';
+  let redirectPath = "/";
+  if (role === "1") {
+    redirectPath = "/admin/home";
+  } else if (role === "2") {
+    redirectPath = "/minister/home";
+  } else if (role === "3") {
+    redirectPath = "/manager/home";
+  } else if (role === "4") {
+    redirectPath = "/parent/home";
   }
 
   // const [isDarkMode, setIsDarkMode] = useState(false);
@@ -58,7 +64,7 @@ function Index() {
       <div className="box-border min-w-screen min-h-screen  flex items-center container mx-auto justify-center px-2 py-5">
         <div className="box-border absolute inset-x-0 top-0 w-full flex items-center justify-between container mx-auto py-5 px-2">
           <div className="flex items-center w-full text-[#3730a3] no-underline hover:no-underline font-bold text-2xl lg:text-4xl">
-            <Link to={'/'} className="p-3 rounded-md !bg-[#07A869]">
+            <Link to={"/"} className="p-3 rounded-md !bg-[#07A869]">
               <img
                 className=" h-auto rounded-md w-[70px] md:w-[95px]"
                 src="/bg-logo.svg"
@@ -80,10 +86,10 @@ function Index() {
         <motion.div
           initial={{ y: -150, opacity: 1 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ type: 'spring', stiffness: 100 }}
-          className="w-full max-w-sm"
+          transition={{ type: "spring", stiffness: 100 }}
+          className="w-full max-w-sm bg-[#fff] rounded-3xl"
         >
-          <Card className="box-border bg-transparent  rounded-3xl shadow-lg  text-gray-600 sm:px-4 py-3 border border-[#DDDDDD]">
+          <Card className="box-border bg-transparent  rounded-3xl shadow-lg   text-gray-600 sm:px-4 py-3 border border-[#DDDDDD]">
             <div className="overflow-hidden relative">
               <div className="overflow-hidden relative cursor-grab">
                 <div className="flex gap-2 flex-col sm:gap-4 justify-center items-center">
@@ -109,7 +115,7 @@ function Index() {
                           onClick={() => {
                             setVisiable(false);
                             setTimeout(() => {
-                              navigate('/login');
+                              navigate("/login");
                             }, 600);
                           }}
                           className="!bg-[#07A869] text-white rounded-lg !h-auto w-auto whitespace-normal hover:!text-[#07A869] !border-[#07A869] hover:!bg-[#fff] transition-colors duration-500"
@@ -145,12 +151,12 @@ function Index() {
 export default Index;
 
 export const loader = () => {
-  console.log('welcome from loader');
+  console.log("welcome from loader");
   return json(
     {
-      sorry: 'You have been fired.',
-      hrEmail: 'hr@bigco.com',
+      sorry: "You have been fired.",
+      hrEmail: "hr@bigco.com",
     },
-    { status: 401, statusText: 'u are not authorized' }
+    { status: 401, statusText: "u are not authorized" }
   );
 };
