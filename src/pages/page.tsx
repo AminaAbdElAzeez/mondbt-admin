@@ -61,7 +61,7 @@ function Index() {
 
   return (
     <div
-      className="bg-texture-light dark:bg-texture-dark"
+      className="bg-texture-light dark:bg-texture-dark bg-cover bg-no-repeat"
       style={{ backgroundImage: 'url("/back.png")' }}
     >
       <div className="box-border min-w-screen min-h-screen  flex items-center container mx-auto justify-center px-2 py-5">
